@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>python实现redis三种cas操作</title>
+  <meta name="description" content="cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="python实现redis三种cas操作">
+  <meta name="twitter:description" content="cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="python实现redis三种cas操作">
+  <meta property="og:description" content="cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-12-08 21:10:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-08</time> &#8226; <span class="post-meta__tags tags"></span>
+    </div>
+    <h1 class="post-title">python实现redis三种cas操作</h1>
+  </header>
+
+  <section class="post">
+    <p>cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：
+维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># 初始化
+r = redis.Redis()
+if not r.exists("key_test"):
+    r.set("key_test", 0)
+
+def inc():
+    count = int(r.get('key_test')) + 30 #1
+    # 如果值比当前时间小，则设置为当前时间
+    count = max(count, int(time.time())) #2
+    r.set('key_test', count) #3
+    return count
+</code></pre>
+</div>
+
+<p>很简单的一段代码，在单线程环境下可以跑的很欢，但显然，是无法移植到多线程或者是多进程环境的（进程A和B同时运行到#1，获取了相同的count值，然后运行#2#3，会导致count值总共只增加了30）。而为了能在多进程环境下运行，我们需要引入一些其他的东西。</p>
+<h3 id="py-redis本身自带的事务操作">py-redis本身自带的事务操作</h3>
+<p>redis有这么几个和事务相关的命令，multi,exec,watch。通过这几个命令，可以实现‘将多个命令打包，然后一次性、按顺序执行，且不会被终端’。事务会从MULTI开始，执行EXEC后触发事件。另外，我们还需要WATCH，watch可以监视任意数量的键，当在调用EXEC执行事务时，如果任意一个键被修改了，整个事务不会执行。</p>
+
+<p>下边是使用redis本身的事务解决cas问题的代码。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>class CasNormal(object):
+    def __init__(self, host, key):
+        self.r = redis.Redis(host)
+        self.key = key
+        if not self.r.exists(self.key):
+            self.r.set(self.key, 0)
+
+    def inc(self):
+        with self.r.pipeline() as pipe:
+            while True:
+                try:
+            		#监视一个key，如果在执行期间被修改了，会抛出WatchError
+                    pipe.watch(self.key)
+                    next_count = 30 + int(pipe.get(self.key))
+                    pipe.multi()
+                    if next_count &lt; int(time.time()):
+                        next_count = int(time.time())
+                    pipe.set(self.key, next_count)
+                    pipe.execute()
+                    return next_count
+                except WatchError:
+                    continue
+                finally:
+                    pipe.reset()
+</code></pre>
+</div>
+
+<p>代码也不复杂，引入了之前说到的multi,exec,watch，如果对事务操作比较熟悉的同学，可以很容易看出来，这是一个乐观锁的操作（咱们假设没人竞争来着，每次去拿数据的时候都不会上锁，真有人来改了再说。）乐观锁在高并发的情况下会显得很无力，文末的性能对比会显示这个问题。</p>
+
+<h3 id="使用基于redis的悲观锁">使用基于redis的悲观锁</h3>
+<p>悲观锁，就是很悲观的锁，每次拿数据都会假设别人也要拿，先给锁起来，用完再把锁释放掉。redis本身没有实现悲观锁，但我们可以先用redis实现一个悲观锁。</p>
+
+<blockquote>
+  <p>此处应该有个推倒出redis悲观锁的过程，不过太麻烦了…直接丢个链接吧…
+https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
+</blockquote>
+
+<p>ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>lock_conn = redis.Redis("localhost")
+
+class CasLock(object):
+    def __init__(self, host, key):
+        self.r = redis.Redis(host)
+        self.key = key
+        if not self.r.exists(self.key):
+            self.r.set(self.key, 0)
+
+    @synchronized(lock_conn, "lock", 10)
+    def inc(self):
+        next_count = 30 + int(self.r.get(self.key))
+        if next_count &lt; int(time.time()):
+            next_count = int(time.time())
+        self.r.set(self.key, next_count)
+        return next_count
+</code></pre>
+</div>
+<p>代码看上去少多了（因为引入了synchronized…）</p>
+
+<h3 id="基于lua脚本实现">基于lua脚本实现</h3>
+<p>上边两种方法都是用锁来实现的，锁的实现总会出现竞争的问题，区别无非是出现竞争了咋办的问题。使用redis lua脚本的实现，可以直接把这个cas操作当成一个<b>原子操作</b>。</p>
+
+<p>我们知道，redis本身的一系列操作，都是原子操作，且redis会按顺序执行所有收到的命令。先看代码</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>class CasLua(object):
+    def __init__(self, host, key):
+        self.r = redis.Redis(host)
+        self.key = key
+        if not self.r.exists(self.key):
+            self.r.set(self.key, 0)
+        self._lua = self.r.register_script("""
+        local next_count = redis.call('get',KEYS[1]) + ARGV[1]
+        ARGV[2] = tonumber(ARGV[2])
+        if next_count &lt; ARGV[2] then
+        	next_count = ARGV[2]
+        end
+        redis.call('set',KEYS[1],next_count)
+        return tostring(next_count)
+                """)
+
+    def inc(self):
+        return int(self._lua([self.key], [30, int(time.time())]))
+</code></pre>
+</div>
+
+<p>这里先注册了这个脚本，后边可以直接去使用他。关于redis lua脚本的文章有不少，感兴趣的可以去搜搜看，这边就不赘述了。</p>
+
+<h3 id="性能对比">性能对比</h3>
+<p>这边的测试只是一个非常简单的测试（不过还是能看出效果来的），测试换机就是自己的开发机，数字看个大小就行了。</p>
+
+<p>分别测了三种操作在单线程，五个线程，十个线程，五十个线程情况下，进行1000次操作各自的表现，时间如下</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">线程数</th>
+      <th style="text-align: center">乐观锁实现</th>
+      <th style="text-align: center">悲观锁实现</th>
+      <th style="text-align: center">lua</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">0.43</td>
+      <td style="text-align: center">0.71</td>
+      <td style="text-align: center">0.35</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
+      <td style="text-align: center">5.80</td>
+      <td style="text-align: center">3.10</td>
+      <td style="text-align: center">0.62</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">10</td>
+      <td style="text-align: center">17.80</td>
+      <td style="text-align: center">5.60</td>
+      <td style="text-align: center">1.30</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">50</td>
+      <td style="text-align: center">245.00</td>
+      <td style="text-align: center">29.60</td>
+      <td style="text-align: center">6.50</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>依次是redis本身事务实现的乐观锁，基于redis实现的悲观锁以及lua实现。</p>
+
+<p>在比较悲观锁和乐观锁之前，需要先说明一点，这边的测试对乐观锁不是很公平，乐观锁本身就是假设不会有很多的并发的。在单线程情况下，悲观锁要差一些。单线程下，不存在竞争关系，悲观锁耗时长仅因为是多了一次redis的网络交互。随着线程的增加，悲观锁的性能逐渐变好，毕竟悲观锁本身就是为了解决这种高并发高竞争的环境而诞生的。在50线程的时候，乐观锁的实现单次操作的时间要0.245秒，非常恐怖，如果是生产环境，几乎都不能用了。</p>
+
+<p>至于lua的性能，快的不可思议，几乎就是线性增加。（50线程的情况下，平均的1000次完成时间是6.5s，换言之，6.5秒内执行了50 * 1000次cas操作）。</p>
+
+<p>以上测试都是本地redis，本地测试，如果redis是远端的，网络交互时间会增加，lua优势会更加明显。</p>
+
+<p>以上。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/";
+        this.page.identifier = "/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-20 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
