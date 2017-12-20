@@ -106,7 +106,7 @@
             <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
   <header class="post-header">
     <div class="post-meta">
-      <time datetime="2017-12-08 21:10:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-08</time> &#8226; <span class="post-meta__tags tags"></span>
+      <time datetime="2017-12-08 21:10:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-08</time> &#8226; <span class="post-meta__tags tags">redis python</span>
     </div>
     <h1 class="post-title">python实现redis三种cas操作</h1>
   </header>
@@ -115,17 +115,17 @@
     <p>cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：
 维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code># 初始化
-r = redis.Redis()
-if not r.exists("key_test"):
-    r.set("key_test", 0)
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># 初始化</span>
+<span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">()</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">"key_test"</span><span class="p">):</span>
+    <span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="s">"key_test"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-def inc():
-    count = int(r.get('key_test')) + 30 #1
-    # 如果值比当前时间小，则设置为当前时间
-    count = max(count, int(time.time())) #2
-    r.set('key_test', count) #3
-    return count
+<span class="k">def</span> <span class="nf">inc</span><span class="p">():</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'key_test'</span><span class="p">))</span> <span class="o">+</span> <span class="mi">30</span> <span class="c">#1</span>
+    <span class="c"># 如果值比当前时间小，则设置为当前时间</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span> <span class="c">#2</span>
+    <span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="s">'key_test'</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="c">#3</span>
+    <span class="k">return</span> <span class="n">count</span>
 </code></pre>
 </div>
 
@@ -135,30 +135,30 @@ def inc():
 
 <p>下边是使用redis本身的事务解决cas问题的代码。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>class CasNormal(object):
-    def __init__(self, host, key):
-        self.r = redis.Redis(host)
-        self.key = key
-        if not self.r.exists(self.key):
-            self.r.set(self.key, 0)
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasNormal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    def inc(self):
-        with self.r.pipeline() as pipe:
-            while True:
-                try:
-            		#监视一个key，如果在执行期间被修改了，会抛出WatchError
-                    pipe.watch(self.key)
-                    next_count = 30 + int(pipe.get(self.key))
-                    pipe.multi()
-                    if next_count &lt; int(time.time()):
-                        next_count = int(time.time())
-                    pipe.set(self.key, next_count)
-                    pipe.execute()
-                    return next_count
-                except WatchError:
-                    continue
-                finally:
-                    pipe.reset()
+    <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">pipeline</span><span class="p">()</span> <span class="k">as</span> <span class="n">pipe</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+            		<span class="c">#监视一个key，如果在执行期间被修改了，会抛出WatchError</span>
+                    <span class="n">pipe</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">next_count</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+                    <span class="n">pipe</span><span class="o">.</span><span class="n">multi</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">next_count</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()):</span>
+                        <span class="n">next_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+                    <span class="n">pipe</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">next_count</span><span class="p">)</span>
+                    <span class="n">pipe</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">next_count</span>
+                <span class="k">except</span> <span class="n">WatchError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="n">pipe</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 </code></pre>
 </div>
 
@@ -174,22 +174,22 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
 
 <p>ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>lock_conn = redis.Redis("localhost")
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">lock_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
 
-class CasLock(object):
-    def __init__(self, host, key):
-        self.r = redis.Redis(host)
-        self.key = key
-        if not self.r.exists(self.key):
-            self.r.set(self.key, 0)
+<span class="k">class</span> <span class="nc">CasLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    @synchronized(lock_conn, "lock", 10)
-    def inc(self):
-        next_count = 30 + int(self.r.get(self.key))
-        if next_count &lt; int(time.time()):
-            next_count = int(time.time())
-        self.r.set(self.key, next_count)
-        return next_count
+    <span class="nd">@synchronized</span><span class="p">(</span><span class="n">lock_conn</span><span class="p">,</span> <span class="s">"lock"</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">next_count</span> <span class="o">=</span> <span class="mi">30</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">next_count</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()):</span>
+            <span class="n">next_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">next_count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">next_count</span>
 </code></pre>
 </div>
 <p>代码看上去少多了（因为引入了synchronized…）</p>
@@ -199,13 +199,13 @@ class CasLock(object):
 
 <p>我们知道，redis本身的一系列操作，都是原子操作，且redis会按顺序执行所有收到的命令。先看代码</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>class CasLua(object):
-    def __init__(self, host, key):
-        self.r = redis.Redis(host)
-        self.key = key
-        if not self.r.exists(self.key):
-            self.r.set(self.key, 0)
-        self._lua = self.r.register_script("""
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasLua</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lua</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">register_script</span><span class="p">(</span><span class="s">"""
         local next_count = redis.call('get',KEYS[1]) + ARGV[1]
         ARGV[2] = tonumber(ARGV[2])
         if next_count &lt; ARGV[2] then
@@ -213,10 +213,10 @@ class CasLock(object):
         end
         redis.call('set',KEYS[1],next_count)
         return tostring(next_count)
-                """)
+                """</span><span class="p">)</span>
 
-    def inc(self):
-        return int(self._lua([self.key], [30, int(time.time())]))
+    <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lua</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())]))</span>
 </code></pre>
 </div>
 
@@ -314,7 +314,7 @@ class CasLock(object):
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-20 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
         <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
     </footer>
 </section>

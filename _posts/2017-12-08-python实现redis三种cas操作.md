@@ -1,13 +1,17 @@
 ---
 layout: post
 title: python实现redis三种cas操作
+description: 简介了redis的三种cas操作，并加以性能分析。
 date: 2017.12.08 21:10 +08:00
+tags: 
+ - redis 
+ - python
 ---
 
 cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：
 维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:
 
-```
+```python
 # 初始化
 r = redis.Redis()
 if not r.exists("key_test"):
@@ -27,7 +31,7 @@ redis有这么几个和事务相关的命令，multi,exec,watch。通过这几�
 
 下边是使用redis本身的事务解决cas问题的代码。
 
-```
+```python
 class CasNormal(object):
     def __init__(self, host, key):
         self.r = redis.Redis(host)
@@ -60,11 +64,11 @@ class CasNormal(object):
 悲观锁，就是很悲观的锁，每次拿数据都会假设别人也要拿，先给锁起来，用完再把锁释放掉。redis本身没有实现悲观锁，但我们可以先用redis实现一个悲观锁。
 
 >此处应该有个推倒出redis悲观锁的过程，不过太麻烦了...直接丢个链接吧...
-https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434
+>https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434
 
 ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。
 
-```
+```python
 lock_conn = redis.Redis("localhost")
 
 class CasLock(object):
@@ -89,7 +93,7 @@ class CasLock(object):
 
 我们知道，redis本身的一系列操作，都是原子操作，且redis会按顺序执行所有收到的命令。先看代码
 
-```
+```python
 class CasLua(object):
     def __init__(self, host, key):
         self.r = redis.Redis(host)
@@ -118,12 +122,12 @@ class CasLua(object):
 分别测了三种操作在单线程，五个线程，十个线程，五十个线程情况下，进行1000次操作各自的表现，时间如下
 
 
-| 线程数  | 乐观锁实现 | 悲观锁实现  | lua|
-| :------: |:--------:| :--------:|:--------:|
-| 1      | 0.43 			  | 0.71| 0.35|
-| 5      | 5.80    		  |   3.10 | 0.62|
-| 10 	  | 17.80	         |    5.60 | 1.30|
-| 50 	  | 245.00        |    29.60 | 6.50|
+| 线程数  | 乐观锁实现  | 悲观锁实现 | lua  |
+| :--: | :----: | :---: | :--: |
+|  1   |  0.43  | 0.71  | 0.35 |
+|  5   |  5.80  | 3.10  | 0.62 |
+|  10  | 17.80  | 5.60  | 1.30 |
+|  50  | 245.00 | 29.60 | 6.50 |
 
 依次是redis本身事务实现的乐观锁，基于redis实现的悲观锁以及lua实现。
 
