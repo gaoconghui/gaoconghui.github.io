@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>python随笔之从__dict__说起</title>
+  <meta name="description" content="先上一段代码，来源是github。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="python随笔之从__dict__说起">
+  <meta name="twitter:description" content="先上一段代码，来源是github。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="python随笔之从__dict__说起">
+  <meta property="og:description" content="先上一段代码，来源是github。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-08-25 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-08-25</time> &#8226; <span class="post-meta__tags tags">python随笔</span>
+    </div>
+    <h1 class="post-title">python随笔之从__dict__说起</h1>
+  </header>
+
+  <section class="post">
+    <p>先上一段代码，来源是<a href="https://github.com/faif/python-patterns/blob/master/creational/borg.py">github</a>。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Borg</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__shared_state</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__shared_state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Init'</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span>
+
+<span class="k">class</span> <span class="nc">YourBorg</span><span class="p">(</span><span class="n">Borg</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">rm1</span> <span class="o">=</span> <span class="n">Borg</span><span class="p">()</span>
+    <span class="n">rm2</span> <span class="o">=</span> <span class="n">Borg</span><span class="p">()</span>
+
+    <span class="n">rm1</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Idle'</span>
+    <span class="n">rm2</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Running'</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+
+    <span class="n">rm2</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Zombie'</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1 id: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm1</span><span class="p">)))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2 id: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm2</span><span class="p">)))</span>
+
+    <span class="n">rm3</span> <span class="o">=</span> <span class="n">YourBorg</span><span class="p">()</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm3: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm3</span><span class="p">))</span>
+
+<span class="c">### OUTPUT ###</span>
+<span class="c"># rm1: Running</span>
+<span class="c"># rm2: Running</span>
+<span class="c"># rm1: Zombie</span>
+<span class="c"># rm2: Zombie</span>
+<span class="c"># rm1 id: 140732837899224</span>
+<span class="c"># rm2 id: 140732837899296</span>
+<span class="c"># rm1: Init</span>
+<span class="c"># rm2: Init</span>
+<span class="c"># rm3: Init</span>
+</code></pre>
+</div>
+
+<p>上面这一段代码，乍看挺神奇的，Borg 的各个实例共享了state。实现起来也很巧妙，利用了__dict__。 我们知道，python中__dict__存储了该对象的一些属性。类和实例分别拥有自己的__dict__，且实例会共享类的__dict__。</p>
+
+<p>这里有一个我一直以来都搞混的知识点，在__init__ 中声明的变量 ，以及在方法体之外声明的变量分别是在哪里。很简单的测试就能得到，在__init__中，self.xxx = xxx会把变量存在实例的__dict__中，仅会在该实例中能获取到，而在方法体外声明的，会在class的__dict__中。下面的简单的测试。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>class MyclassA():
+
+    in_class = {}
+
+    def __init__(self):
+        self.in_func = {}
+
+a = MyclassA()
+
+
+print MyclassA.__dict__  # {'in_class': {}, '__module__': '__main__', '__doc__': None, '__init__': &lt;function __init__ at 0x10eb040c8&gt;}
+print a.__dict__ # {'in_func': {}}
+
+</code></pre>
+</div>
+<hr />
+<p>有个有意思的问题，调用obj.key的搜索顺序是咋样的？</p>
+<h4 id="attr的搜索顺序">attr的搜索顺序</h4>
+<p>这个很有意思，比我想象的要复杂很多，因为涉及到了descriptor，不仅仅只是查询实例或者是类的__dict__这么简单，直接上个结论</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1.如果attr是一个Python自动产生的属性，找到！(优先级非常高！)
+2.查找obj.__class__.__dict__，如果attr存在并且是data descriptor，返回data descriptor的__get__方法的结果，如果没有继续在obj.__class__的父类以及祖先类中寻找data descriptor
+3.在obj.__dict__中查找，这一步分两种情况，第一种情况是obj是一个普通实例，找到就直接返回，找不到进行下一步。第二种情况是obj是一个类，依次在obj和它的父类、祖先类的__dict__中查找，如果找到一个descriptor就返回descriptor的__get__方法的结果，否则直接返回attr。如果没有找到，进行下一步。
+4.在obj.__class__.__dict__中查找，如果找到了一个descriptor(插一句：这里的descriptor一定是non-data descriptor，如果它是data descriptor，第二步就找到它了)descriptor的__get__方法的结果。如果找到一个普通属性，直接返回属性值。如果没找到，进行下一步。
+5.很不幸，Python终于受不了。在这一步，它raise AttributeError
+</code></pre>
+</div>
+<p>用代码解释上面的过程(这其中包含了descriptor相关概念)</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="err">作者：刘缙</span>
+<span class="err">链接：</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">zhihu</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">question</span><span class="o">/</span><span class="mi">25391709</span><span class="o">/</span><span class="n">answer</span><span class="o">/</span><span class="mi">30634637</span>
+<span class="err">来源：知乎</span>
+<span class="err">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</span>
+
+<span class="k">def</span> <span class="nf">object_getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="s">'Look for attribute /name/ in object /obj/.'</span>
+    <span class="c"># First look in class and base classes.</span>
+    <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">class_lookup</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__get__'</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__set__'</span><span class="p">):</span>
+        <span class="c"># Data descriptor.  Overrides instance member.</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># Found in object</span>
+        <span class="k">return</span> <span class="n">w</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__get__'</span><span class="p">):</span>
+            <span class="c"># Function-like descriptor.</span>
+            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Normal data member in class</span>
+            <span class="k">return</span> <span class="n">v</span>
+    <span class="k">raise</span> <span class="nb">AttributeError</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    
+ <span class="k">def</span> <span class="nf">class_lookup</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> 
+     <span class="s">'Look for attribute /name/ in class /cls/ and bases.'</span> 
+     <span class="n">v</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> 
+     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
+         <span class="c"># found in this class </span>
+         <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> 
+     <span class="c"># search in base classes </span>
+     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">__bases__</span><span class="p">:</span> 
+         <span class="n">v</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">class_lookup</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> 
+         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
+             <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">c</span> 
+     <span class="c"># not found </span>
+     <span class="k">return</span> <span class="bp">None</span>
+
+</code></pre>
+</div>
+
+<p>经常看到有人说obj.key = val 等价于obj.__dict__[key] = val，其实根据我们上面的那个搜索顺序，在有descriptor的情况下，会不太一样。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DataDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">init_value</span>
+
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">"DataDescriptor __get__"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">print</span> <span class="s">"DataDescriptor __set__"</span>
+
+<span class="k">class</span> <span class="nc">ClassA</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">val_descriptor</span> <span class="o">=</span> <span class="n">DataDescriptor</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">val_normal</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ClassA</span><span class="p">()</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c"># DataDescriptor __get__0</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c"># 0</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="o">=</span> <span class="s">"has change"</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="o">=</span> <span class="s">"has change"</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span>  <span class="c"># DataDescriptor __get__has change</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c"># has change</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_descriptor"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_normal"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c"># DataDescriptor __get__has change</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c">#change again</span>
+</code></pre>
+</div>
+
+<p>重点是最后两行行，要修改的是一个descriptor 的话，obj.key = val 的方式是而已修改成功的，会调用descriptor 的__set__ 方法，而直接修改__dict__的方式则会有问题，因为在搜索attr的时候会先查找class的descriptor（对，即便<code class="highlighter-rouge">a.__dict__["val_descriptor"] = DataDescriptor("change again")</code>这样子也是没用的）。</p>
+
+<hr />
+
+<p>关于__dict__，还有一个有趣的点。cls.__dict__ 是一个dictproxy，obj.__dict__ 是一个dict，前者是一个只读对象，后者是一般的dict。</p>
+
+<p>这意味着，对于一个实例，可以使用obj.__dict__[key] = val的方式去赋值，也可以使用obj.key = value的方式赋值（这种方式会调用__setattr__方法，会按照attr的搜索顺序去搜索），而cls只能使用后者，即必须经过__setattr__ ，stackoverflow 上有人解释说是为了编译器优化。</p>
+
+<p>个人认为这种设置还有另外一种原因，即保护了descriptor的使用。</p>
+
+<p>看上面那长段的代码，我们发现，如果一个类中设置了一个descriptor，后续没有任何办法绕过descriptor的__set__方法。</p>
+<ul>
+  <li>使用obj.key = val 的方式，毫无以为会调用descriptor的__set__方法。</li>
+  <li>obj.__dict__[key] = val的方式，会修改实例的__dict__，但是按照搜索的顺序会先搜索类的descriptor，所以相当于没有修改</li>
+  <li>cls.key = val，会调用descriptor的__set__方法</li>
+  <li>于是只剩下直接修改cls.__dict__，但很可惜，这是一个只读对象无法修改。</li>
+</ul>
+
+<h3 id="后记">后记</h3>
+<p>非常的乱，这些东西都是我在看python的设计模式的时候逐渐发现问题慢慢搜索的，主要是为了给自己做个记录，当做一个随笔，不太适合除了我以外的人看… 有空的时候会整理下。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/" title="link to python随笔之SocketServer">python随笔之SocketServer</a></h2>
+       <p class="excerpt">从SocketServer 讲起    +------------+    | BaseServer |    +------------+          |          v    +-----------+        +------------------+    | TCPServer |-------&gt;| UnixStreamServer |    +-----------+        +------------------+          |      ...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-08-29 21:00:00 +0800" class="post-list__meta--date date">2017-08-29</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/" title="link to 爬虫之百度指数">爬虫之百度指数</a></h2>
+       <p class="excerpt">蛮早之前公司有个产品问我能不能爬百度指数，我随便瞄了眼，直接回了可以，然后…光速打脸…今儿个有空，研究研究这玩意儿。嫌长的可以直接拉到最后看后记。####目标先明确下要做什么，目标不是要写出一个可用的完整的爬虫，只是要个思路。我们的目标仅仅只是爬取这边的数字，162和125，还有后边的比例。分析先说点题外话，业界对数字的加密真是做的丧心病狂，返回假数据然后js重新计算修改都是简单的了，复杂的还有某移动端网页返回数字234，然而因为使用了特殊的字体显示123的，这边还有个更恶心的迷之加密。开...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-07-26 21:00:00 +0800" class="post-list__meta--date date">2017-07-26</time> &#8226; <span class="post-list__meta--tags tags">爬虫</span><a class="btn-border-small" href=/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/";
+        this.page.identifier = "/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>mysql随笔之事务隔离级别</title>
+  <meta name="description" content="这是一个相当基础的问题">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="mysql随笔之事务隔离级别">
+  <meta name="twitter:description" content="这是一个相当基础的问题">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="mysql随笔之事务隔离级别">
+  <meta property="og:description" content="这是一个相当基础的问题">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-09-08 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-09-08</time> &#8226; <span class="post-meta__tags tags">mysql随笔</span>
+    </div>
+    <h1 class="post-title">mysql随笔之事务隔离级别</h1>
+  </header>
+
+  <section class="post">
+    <p>这是一个相当基础的问题</p>
+
+<blockquote>
+  <p>SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。</p>
+
+  <p>Read Uncommitted（读取未提交内容）
+在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。</p>
+
+  <p>Read Committed（读取提交内容）
+这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。</p>
+
+  <p>Repeatable Read（可重读）
+这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影” 行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）机制解决了该问题。</p>
+
+  <p>Serializable（可串行化）
+这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。</p>
+</blockquote>
+
+<p>这几行看了不知道多少次了，感觉理解总还是有问题，遂写一下。</p>
+
+<p>理解有障碍的在于Repeatable Read 级别所解决的问题以及幻读的成因。这个级别解决了__nonrepatable read__的问题。事务A执行期间，事务B的__修改__操作将不会对A造成影响，因为他会保证在事务中多次读取的__同样的记录__结果是一致的。</p>
+
+<p>那幻读是什么呢？ 幻读是事务A期间，事务B __insert__了一些记录，事务A在query一个范围内记录的时候恰巧包含了刚插入的记录，导致前后query的结果不一样。</p>
+
+<p>综上，我理解的是可重复读这个级别，其他事务update操作不会对这个事务的query造成影响，但是insert或delete还是会有影响的。</p>
+
+<p>另外，mysql默认的是可重复读的级别，他解决幻读的方式是MVCC。</p>
+
+<p>innoDB的MVCC是通过在每行记录后面保存两个隐藏的列来实现的，这两列，一个保存了行的创建时间，一个保存了过期时间（此处时间不是真的时间，而是版本号）。每个事务，版本号都会递增。下边是可重复读级别下的具体行为</p>
+
+<blockquote>
+  <p>SELECT</p>
+
+  <p>Innodb检查每行数据，确保他们符合两个标准：</p>
+
+  <p>1、InnoDB只查找版本早于当前事务版本的数据行(也就是数据行的版本必须小于等于事务的版本)，这确保当前事务读取的行都是事务之前已经存在的，或者是由当前事务创建或修改的行</p>
+
+  <p>2、行的删除操作的版本一定是未定义的或者大于当前事务的版本号，确定了当前事务开始之前，行没有被删除</p>
+
+  <p>符合了以上两点则返回查询结果。</p>
+
+  <p>INSERT</p>
+
+  <p>InnoDB为每个新增行记录当前系统版本号作为创建ID。</p>
+
+  <p>DELETE</p>
+
+  <p>InnoDB为每个删除行的记录当前系统版本号作为行的删除ID。</p>
+
+  <p>UPDATE</p>
+
+  <p>InnoDB复制了一行。这个新行的版本号使用了系统版本号。它也把系统版本号作为了删除行的版本。</p>
+</blockquote>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" title="link to python随笔--socket关闭之后端口占用的问题">python随笔--socket关闭之后端口占用的问题</a></h2>
+       <p class="excerpt">先上一段代码class MyHttpHandler(BaseHTTPRequestHandler):    def do_GET(self):        print "do get"        self.send_response(code=200)        self.end_headers()        self.wfile.write("hello world")if __name__ == '__main__':    serv = TCPServer(('', 2...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-09-11 21:00:00 +0800" class="post-list__meta--date date">2017-09-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 socket</span><a class="btn-border-small" href=/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/" title="link to python随笔之SocketServer">python随笔之SocketServer</a></h2>
+       <p class="excerpt">从SocketServer 讲起    +------------+    | BaseServer |    +------------+          |          v    +-----------+        +------------------+    | TCPServer |-------&gt;| UnixStreamServer |    +-----------+        +------------------+          |      ...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-08-29 21:00:00 +0800" class="post-list__meta--date date">2017-08-29</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/";
+        this.page.identifier = "/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

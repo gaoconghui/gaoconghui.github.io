@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>python随笔--socket关闭之后端口占用的问题</title>
+  <meta name="description" content="先上一段代码">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="python随笔--socket关闭之后端口占用的问题">
+  <meta name="twitter:description" content="先上一段代码">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="python随笔--socket关闭之后端口占用的问题">
+  <meta property="og:description" content="先上一段代码">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-09-11 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-09-11</time> &#8226; <span class="post-meta__tags tags">python随笔 socket</span>
+    </div>
+    <h1 class="post-title">python随笔--socket关闭之后端口占用的问题</h1>
+  </header>
+
+  <section class="post">
+    <p>先上一段代码</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyHttpHandler</span><span class="p">(</span><span class="n">BaseHTTPRequestHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">do_GET</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">"do get"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">serv</span> <span class="o">=</span> <span class="n">TCPServer</span><span class="p">((</span><span class="s">''</span><span class="p">,</span> <span class="mi">20001</span><span class="p">),</span> <span class="n">MyHttpHandler</span><span class="p">)</span>
+    <span class="n">serv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</code></pre>
+</div>
+<p>上面这段代码，运行，client访问多次后关闭，再启动，会报一个<code class="highlighter-rouge">socket.error: [Errno 48] Address already in use</code>的错。<code class="highlighter-rouge">lsof -i:20001</code> 没能找到任何进程占用端口，一个乍一看很迷的错误，记录下，怕以后忘掉。</p>
+
+<p>解决方案很简单，增加<code class="highlighter-rouge">TCPServer.allow_reuse_address = True</code>。具体起作用的为<code class="highlighter-rouge">socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</code>这。</p>
+
+<p>原因如下。操作系统的网络栈会非常谨慎的处理连接的关闭，仅仅用于监听的服务器套接字是可以立即关闭并操作系统忽略的，但是对于实际与客户端进行通信的连接套接字就不行了。即使客户端和服务器都关闭了连接并向对方发从了FIN数据包，连接套接字也无法立即取消。为什么呢？因为即使网络栈发送了最后一个数据包将套接字关闭，也还是无法确认该数据包是否可以被接收。如果数据包正好被网络丢弃了，那么另一方无法得知该数据包长时间无法传达的原因，可能会重新发送FIN数据包，希望能收到响应。</p>
+
+<p>操作系统对上述问题的解决方案为，一个应用程序任务某个TCP连接最终关闭了，操作系统的网络栈实际上会在一个等待状态中将该连接的记录保存最多4分钟。RFC将这些状态命名为CLOSE-WAIT 和TIME-WAIT，当关闭的套接字还处于其中某一状态时，任何最终的FIN数据包都是可以得到适当响应的。</p>
+
+<p>因此，当服务器试图声明某个几分钟前运行的连接所使用的端口时，实际上是在试图声明从某种意义上仍在使用的端口。所以就报错了~</p>
+
+<p>而SO_REUSEADDR可以指明应用程序能够使用一些网络客户端之前的连接正在关闭的端口。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/" title="link to LocalProxy作用的一点感悟">LocalProxy作用的一点感悟</a></h2>
+       <p class="excerpt">这里的LocalProxy是指 werkzeug.local中的一个类class werkzeug.local.LocalProxy(*local*, *name=None*)[]Acts as a proxy for a werkzeug local. Forwards all operations to a proxied object. The only operations not supported for forwarding are right handed operands...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-10-18 21:00:00 +0800" class="post-list__meta--date date">2017-10-18</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" title="link to mysql随笔之事务隔离级别">mysql随笔之事务隔离级别</a></h2>
+       <p class="excerpt">这是一个相当基础的问题  SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。  Read Uncommitted（读取未提交内容）在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。  Read Committed（读取提交内容）这是大多数数据库系统的默认...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-09-08 21:00:00 +0800" class="post-list__meta--date date">2017-09-08</time> &#8226; <span class="post-list__meta--tags tags">mysql随笔</span><a class="btn-border-small" href=/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/";
+        this.page.identifier = "/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

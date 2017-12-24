@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>较大规模图片phash去重</title>
+  <meta name="description" content="起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="较大规模图片phash去重">
+  <meta name="twitter:description" content="起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="较大规模图片phash去重">
+  <meta property="og:description" content="起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-07-25 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-07-25</time> &#8226; <span class="post-meta__tags tags">phash</span>
+    </div>
+    <h1 class="post-title">较大规模图片phash去重</h1>
+  </header>
+
+  <section class="post">
+    <h4 id="起因">起因</h4>
+<p>先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。</p>
+
+<p>什么样的图片属于相同图片呢？因为会存在一些有水印的图片（如下图），或者是略微变形的图片（如1024 * 720 与1020 * 720的图片）</p>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/5574483-c69a8346c6734326.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/620" alt="with_logo.jpeg" /></p>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/5574483-4ab179eb94eaa54b.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/620" alt="without_logo.jpeg" /></p>
+
+<h4 id="phash">phash</h4>
+
+<p>phash全称是感知哈希算法（Perceptual hash algorithm），使用这玩意儿可以对每个图片生成一个值，如上面两个图分别是2582314446007581403 与 2582314446141799129 （转为二进制再比较），然后计算他们的hamming distance，简单的说就是数一数二进制之后有几位不同。整个处理流程有点像对文章去重时先算simhash再算hamming distance，很多东西都可以直接套用过来。</p>
+
+<p>phash具体的实现可以很多地方都有了，可以搜到很多差不多的内容，在这我也就简单的记录下，具体可以去谷歌或者百度搜下。</p>
+<ul>
+  <li><strong>缩小尺寸</strong> 为了后边的步骤计算简单些</li>
+  <li><strong>简化色彩</strong> 将图片转化成灰度图像，进一步简化计算量</li>
+  <li><strong>计算DCT</strong> 计算图片的DCT变换，得到32*32的DCT系数矩阵。</li>
+  <li><strong>缩小DCT</strong> 虽然DCT的结果是32*32大小的矩阵，但我们只要保留左上角的8*8的矩阵，这部分呈现了图片中的最低频率。</li>
+  <li><strong>计算平均值</strong> 如同均值哈希一样，计算DCT的均值。</li>
+  <li><strong>计算hash值</strong> 根据8*8的DCT矩阵，设置0或1的64位的hash值，大于等于DCT均值的设为”1”，小于DCT均值的设为“0”。组合在一起，就构成了一个64位的整数，这就是这张图片的指纹。
+python 版本的实现</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">compiler.ast</span> <span class="kn">import</span> <span class="n">flatten</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">pHash</span><span class="p">(</span><span class="n">imgfile</span><span class="p">):</span>
+    <span class="c"># 加载并调整图片为32x32灰度图片</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">imgfile</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">interpolation</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">INTER_CUBIC</span><span class="p">)</span>
+
+    <span class="c"># 创建二维列表</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">vis0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">vis0</span><span class="p">[:</span><span class="n">h</span><span class="p">,</span> <span class="p">:</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>  <span class="c"># 填充数据</span>
+
+    <span class="c"># 二维Dct变换</span>
+    <span class="n">vis1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">dct</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">dct</span><span class="p">(</span><span class="n">vis0</span><span class="p">))</span>
+    <span class="c"># 拿到左上角的8 * 8</span>
+    <span class="n">vis1</span> <span class="o">=</span> <span class="n">vis1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+
+    <span class="c"># 把二维list变成一维list</span>
+    <span class="n">img_list</span> <span class="o">=</span> <span class="n">flatten</span><span class="p">(</span><span class="n">vis1</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+    <span class="c"># 计算均值</span>
+    <span class="n">avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">img_list</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">img_list</span><span class="p">)</span>
+    <span class="n">avg_list</span> <span class="o">=</span> <span class="p">[</span><span class="s">'0'</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">avg</span> <span class="k">else</span> <span class="s">'1'</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">img_list</span><span class="p">]</span>
+
+    <span class="c"># 得到哈希值</span>
+    <span class="k">return</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">'</span><span class="si">%</span><span class="s">x'</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">avg_list</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+</code></pre>
+</div>
+<p>这段代码是网上找来做测试用的，当时有个坑，他没有<code class="highlighter-rouge">vis1 = vis1[0:8,0:8]</code>这一步，然后出来的结果就很奇葩，而且指纹长的可怕（32 * 32位），准确率和召回率都低的惊人。这段代码也很简单，几乎和白话一样，就是把上面phash的流程给翻译了一遍。</p>
+
+<p>然鹅，我并没有使用上面的python版的，出于两个原因，一是我上边说的坑，当时并没有发现，二是毕竟是python，虽说大部分计算的部分是用c写的（opencv），但还是觉得会慢。找到的是一个纯c的，来自 <a href="http://phash.org/">phash.org</a> (没错，就是这么官方)。安装啥的网站里边都有，附上一个python调用的脚本。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">pHash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s">'/opt/local/lib/libpHash.dylib'</span><span class="p">,</span> <span class="n">use_errno</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">dct_imagehash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">phash</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lib</span><span class="o">.</span><span class="n">ph_dct_imagehash</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">pointer</span><span class="p">(</span><span class="n">phash</span><span class="p">)):</span>
+            <span class="n">errno_</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">get_errno</span><span class="p">()</span>
+            <span class="n">err</span><span class="p">,</span> <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">errorcode</span><span class="p">[</span><span class="n">errno_</span><span class="p">],</span> <span class="n">os</span><span class="o">.</span><span class="n">strerror</span><span class="p">(</span><span class="n">errno_</span><span class="p">))</span> \
+                <span class="k">if</span> <span class="n">errno_</span> <span class="k">else</span> <span class="p">(</span><span class="s">'none'</span><span class="p">,</span> <span class="s">'errno was set to 0'</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">((</span><span class="s">'Failed to get image hash'</span>
+                   <span class="s">' ({!r}): [{}] {}'</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">err_msg</span><span class="p">),</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">phash</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">hamming_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hash1</span><span class="p">,</span> <span class="n">hash2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lib</span><span class="o">.</span><span class="n">ph_hamming_distance</span><span class="p">(</span>
+            <span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">,</span> <span class="p">[</span><span class="n">hash1</span><span class="p">,</span> <span class="n">hash2</span><span class="p">]))</span>
+</code></pre>
+</div>
+<p>非常贴心的还附赠了海明距的计算。
+因为我的图片都是存在云端，为了速度更快，我会直接用云端图像处理把图片先缩小，压缩后再处理。我本机测试的结果是一千张图生成phash耗时1.5s，相当快了。（有个很惊悚的发现，上头那个python版本千张耗时0.7s…惊呆了…可能实现不太一样吧…）</p>
+
+<h4 id="大量数据hamming-distance-计算">大量数据hamming distance 计算</h4>
+<p>如标题所述，较大规模图片，我这边的大概是百万级别，但是即便是千万级别应该还是差不多的方式，亿级别的数据可能我的小破开发机就受不了了（没错…没用服务器…）</p>
+
+<p>先说说海明距，咱们上边不是生成了一段64位的数呢？海明距就是数一数两个hash值有多少位的差异，一般小于5的都算近似，就是这么简单：）</p>
+
+<p>假设有1000万已经处理完的phash值吧，现在来了一个新的phash，如何找出所有可能和他重复的图呢？
+最简单粗暴的，直接遍历一次…即遍历1000万次….那么耗时大概…不用算了，肯定是个很夸张的值，不靠谱。</p>
+
+<p>这边我采用的是一种内存换速度的方式，64位的的hash值，分为八组，每组八位。建立八个dict，每个dict代表一组，以每组的值作为key，value是一个list，存放key相同的hash值。查找的时候，把hash值分成八个，分别在八个map里边查找，如果有key相同的，取出key相同的所有hash值进行遍历。</p>
+
+<p>说的相当的乱，下边是代码。</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">split_count</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c"># 每个64位的phash值分为八段，每段8位</span>
+
+<span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">split_count</span><span class="p">):</span>
+    <span class="n">pre_length</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">/</span> <span class="n">split_count</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">key</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">pre_length</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">pre_length</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">split_count</span><span class="p">)]</span>
+
+<span class="k">class</span> <span class="nc">ImageManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phash</span> <span class="o">=</span> <span class="n">pHash</span><span class="p">()</span> <span class="c"># 就是上面那个pHash类</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phash_cache</span> <span class="o">=</span> <span class="p">[</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">split_count</span><span class="p">)]</span> <span class="c">#</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_phash_map</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">init_phash_map</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#我是把所有的phash存在sqlite里边，这边取出所有的Image</span>
+        <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">Image</span><span class="o">.</span><span class="n">select</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_to_image_cache</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add_to_image_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="c"># 将hash值分割为8段</span>
+        <span class="n">key_split</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">phash</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="s">'0'</span><span class="p">),</span> <span class="n">split_count</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key_split</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">phash_cache</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">has_same</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ori_image</span><span class="p">):</span>
+        <span class="n">phash</span> <span class="o">=</span> <span class="n">ori_image</span><span class="o">.</span><span class="n">phash</span>
+        <span class="n">key_split</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">phash</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="s">'0'</span><span class="p">),</span> <span class="n">split_count</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key_split</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phash_cache</span><span class="p">[</span><span class="n">index</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">phash_cache</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="n">k</span><span class="p">]:</span>
+                    <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">phash</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">phash</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">distance</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="ow">and</span> <span class="n">ori_image</span><span class="o">.</span><span class="n">key</span> <span class="o">!=</span> <span class="n">image</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+                        <span class="n">result</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">False</span><span class="p">,[]</span>
+</code></pre>
+</div>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/" title="link to 爬虫之百度指数">爬虫之百度指数</a></h2>
+       <p class="excerpt">蛮早之前公司有个产品问我能不能爬百度指数，我随便瞄了眼，直接回了可以，然后…光速打脸…今儿个有空，研究研究这玩意儿。嫌长的可以直接拉到最后看后记。####目标先明确下要做什么，目标不是要写出一个可用的完整的爬虫，只是要个思路。我们的目标仅仅只是爬取这边的数字，162和125，还有后边的比例。分析先说点题外话，业界对数字的加密真是做的丧心病狂，返回假数据然后js重新计算修改都是简单的了，复杂的还有某移动端网页返回数字234，然而因为使用了特殊的字体显示123的，这边还有个更恶心的迷之加密。开...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-07-26 21:00:00 +0800" class="post-list__meta--date date">2017-07-26</time> &#8226; <span class="post-list__meta--tags tags">爬虫</span><a class="btn-border-small" href=/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/" title="link to PIL处理背景图">PIL处理背景图</a></h2>
+       <p class="excerpt">起因起因是这样的，最近做图片站，搬运了一个别人的站点布局以及css啥的，其中遇到了一个问题。有这么一个图片就是这个美女图，做为背景是极好的，网站有几千个tag，准备每个tag都搞一张独一无二的背景图，那么问题来了，这种周边虚化的效果怎么搞？.png首先有个问题，那种虚化的东西是什么？一般的.jpg图片有三种色彩空间，即RGB，而.png不同，它有一个alpha通道，即不透明度，如果一个像素的alpha通道数值为0%，那它就是完全透明的，100%则意味着完全不透明。而上面那么png，在某些地...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-07-24 21:00:00 +0800" class="post-list__meta--date date">2017-07-24</time> &#8226; <span class="post-list__meta--tags tags">PIL</span><a class="btn-border-small" href=/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/";
+        this.page.identifier = "/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

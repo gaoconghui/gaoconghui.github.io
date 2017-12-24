@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>python随笔之SocketServer</title>
+  <meta name="description" content="从SocketServer 讲起">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="python随笔之SocketServer">
+  <meta name="twitter:description" content="从SocketServer 讲起">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="python随笔之SocketServer">
+  <meta property="og:description" content="从SocketServer 讲起">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-08-29 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-08-29</time> &#8226; <span class="post-meta__tags tags">python随笔</span>
+    </div>
+    <h1 class="post-title">python随笔之SocketServer</h1>
+  </header>
+
+  <section class="post">
+    <h4 id="从socketserver-讲起">从SocketServer 讲起</h4>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    +------------+
+    | BaseServer |
+    +------------+
+          |
+          v
+    +-----------+        +------------------+
+    | TCPServer |-------&gt;| UnixStreamServer |
+    +-----------+        +------------------+
+          |
+          v
+    +-----------+        +--------------------+
+    | UDPServer |-------&gt;| UnixDatagramServer |
+    +-----------+        +--------------------+
+</code></pre>
+</div>
+
+<p>整个模块的结构大概是这样的，由BaseServer衍生出TCPServer，UDPServer，然后以此为基类，后续还有HTTPServer(SocketServer.TCPServer)，class WSGIServer(HTTPServer)，但入口都是接下去要说的SockerServer中的一些类。</p>
+
+<p>BaseServer 有以下的一些方法</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>Methods for the caller:
+
+    - __init__(server_address, RequestHandlerClass)
+    - serve_forever(poll_interval=0.5)
+    - shutdown()
+    - handle_request()  # if you do not use serve_forever()
+    - fileno() -&gt; int   # for select()
+
+    Methods that may be overridden:
+
+    - server_bind()
+    - server_activate()
+    - get_request() -&gt; request, client_address
+    - handle_timeout()
+    - verify_request(request, client_address)
+    - server_close()
+    - process_request(request, client_address)
+    - shutdown_request(request)
+    - close_request(request)
+    - handle_error()
+
+    Methods for derived classes:
+
+    - finish_request(request, client_address)
+
+    Class variables that may be overridden by derived classes or
+    instances:
+
+    - timeout
+    - address_family
+    - socket_type
+    - allow_reuse_address
+
+    Instance variables:
+
+    - RequestHandlerClass
+    - socket
+</code></pre>
+</div>
+
+<p>这其中有一系列钩子方法留着给子类复写以实现其特有的功能。其中实现具体处理逻辑的为_handle_request_noblock方法</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_handle_request_noblock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="s">"""Handle one request, without blocking.
+
+    I assume that select.select has returned that the socket is
+    readable before this function was called, so there should be
+    no risk of blocking in get_request().
+    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_request</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verify_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>get_request 需要子类来实现，获取request和address，而后由process_request 来处理，process_request 会依次调用finish_request 和shutdown_request,finish_request会调用RequestHandlerClass（需要传入，为具体处理的handler）。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span><span class="p">:</span>
+            <span class="c"># XXX: Consider using another file descriptor or</span>
+            <span class="c"># connecting to the socket to wake this up instead of</span>
+            <span class="c"># polling. Polling reduces our responsiveness to a</span>
+            <span class="c"># shutdown request and wastes cpu at all other times.</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">_eintr_retry</span><span class="p">(</span><span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span>
+                                   <span class="n">poll_interval</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_handle_request_noblock</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="nb">set</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<p>在serve_forever 中，会使用select 获取需要处理的内容，再调用上边的_handle_request_noblock。</p>
+
+<p>简单的流程是这样的，BaseServer中定义了一些处理流程方面的东西，并没有任何具体的处理，所有的处理流程，都留给了子类。另外还有些上述没提到的留给TCP 和UDPserver的方法，比如TCP的server_bind等不一一说了，具体看代码。</p>
+
+<h4 id="threading--forking">Threading , Forking</h4>
+<p>这个模块非常巧妙的使用mix-in class实现了Threading和Forking。</p>
+
+<p>通过上面的分析我们知道，核心的处理逻辑是process_request方法，以多线程为例，如果我们要实现多线程，其实只需要对这个方法做些改动即可。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">process_request_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="s">"""Same as in BaseServer but as a thread.
+    In addition, exception handling is done here.
+    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finish_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">process_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+    <span class="s">"""Start a new thread to process the request."""</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_request_thread</span><span class="p">,</span>
+                         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">))</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_threads</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
+</code></pre>
+</div>
+
+<p>就是这么简单的实现，同样的还有ForkingMixIn ， 这两个mix-in class在后续很多地方都还会使用到，简直是mix-in使用的完美范例。</p>
+
+<h4 id="handler">handler</h4>
+<p>handler的基类是BaseRequestHandler,非常的短。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span> <span class="o">=</span> <span class="n">client_address</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+</code></pre>
+</div>
+
+<p>而后还有两个具体的实现，StreamRequestHandler 和DatagramRequestHandler，分别用于TCP 和UDPServer中，也只是简单实现了setup和finish，核心handle方法留给子类实现。</p>
+
+<p>如BaseHttpServer中，有一个BaseHTTPRequestHandler，针对http协议做了一系列处理，当然，既然以base开头，也只是为后续实现提供方便。如werkzeug.serving中的WSGIRequestHandler，在继承BaseHTTPRequestHandler的基础上，做了一些修改，用于适配wsgi标准。如需要传入application，用于处理具体业务。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" title="link to mysql随笔之事务隔离级别">mysql随笔之事务隔离级别</a></h2>
+       <p class="excerpt">这是一个相当基础的问题  SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。  Read Uncommitted（读取未提交内容）在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。  Read Committed（读取提交内容）这是大多数数据库系统的默认...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-09-08 21:00:00 +0800" class="post-list__meta--date date">2017-09-08</time> &#8226; <span class="post-list__meta--tags tags">mysql随笔</span><a class="btn-border-small" href=/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/" title="link to python随笔之从__dict__说起">python随笔之从__dict__说起</a></h2>
+       <p class="excerpt">先上一段代码，来源是github。class Borg(object):    __shared_state = {}    def __init__(self):        self.__dict__ = self.__shared_state        self.state = 'Init'    def __str__(self):        return self.stateclass YourBorg(Borg):    passif __name__ == '__m...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-08-25 21:00:00 +0800" class="post-list__meta--date date">2017-08-25</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/";
+        this.page.identifier = "/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

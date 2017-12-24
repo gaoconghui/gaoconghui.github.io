@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>pyredis中ttl的坑</title>
+  <meta name="description" content="问题复现">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="pyredis中ttl的坑">
+  <meta name="twitter:description" content="问题复现">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="pyredis中ttl的坑">
+  <meta property="og:description" content="问题复现">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-11-13 20:07:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-11-13</time> &#8226; <span class="post-meta__tags tags">pyredis</span>
+    </div>
+    <h1 class="post-title">pyredis中ttl的坑</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="问题复现">问题复现</h3>
+
+<p>在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">()</span>
+<span class="n">lock_name</span> <span class="o">=</span> <span class="s">"test_lock"</span>
+<span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="n">lock_name</span><span class="p">,</span> <span class="s">"test"</span><span class="p">)</span>
+<span class="n">r</span><span class="o">.</span><span class="n">expire</span><span class="p">(</span><span class="n">lock_name</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">t1</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">t2</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="c"># 过期</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">ttl</span><span class="p">(</span><span class="n">lock_name</span><span class="p">):</span>
+        <span class="c"># 记录下第一次ttl返回None的时间</span>
+        <span class="k">if</span> <span class="n">t1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="c"># 记录键消失的时间</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lock_name</span><span class="p">):</span>
+            <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">break</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mo">01</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span>
+</code></pre>
+</div>
+
+<p>expire方法设置过期时间，ttl方法获取过期时间（不存在则为None），按理说过期之后，键就会消失，即t2 - t1 应该为0，但上面的case返回大约是0.5s。</p>
+
+<h3 id="解决方法">解决方法</h3>
+<ul>
+  <li>使用pttl（返回毫秒数）代替ttl</li>
+  <li>使用StrictRedis 代替Redis</li>
+</ul>
+
+<h3 id="原因">原因</h3>
+<p>首先要确认一点，这是redis-py的锅，人家redis在某个版本之后已经能在1毫秒以内干掉过期的键了。具体是啥锅，得好好理一理</p>
+
+<h5 id="redis-ttl正常的返回值">redis ttl正常的返回值</h5>
+<ul>
+  <li>当 key 不存在时，返回 -2 。</li>
+  <li>当 key 存在但没有设置剩余生存时间时，返回 -1 。</li>
+  <li>否则，以秒为单位，返回 key 的剩余生存时间。</li>
+  <li>注意 上边以秒为单位的生存时间，在我测试后发现是四舍五入后的，如果时间为0.4秒则会为0</li>
+</ul>
+
+<h5 id="strictredis-和redis-区别">StrictRedis 和Redis 区别</h5>
+<ul>
+  <li>
+    <p>Redis 是StrictRedis 的子类，覆写了几个方法，大多是参数位置变一变，据说是为了兼容之前的版本所做的。</p>
+  </li>
+  <li>
+    <p>Redis 中跟TTL 相关的是这样一句</p>
+
+    <blockquote>
+      <div class="highlighter-rouge"><pre class="highlight"><code># Overridden callbacks
+RESPONSE_CALLBACKS = dict_merge(
+    StrictRedis.RESPONSE_CALLBACKS,
+    {
+        'TTL': lambda r: r &gt;= 0 and r or None,
+        'PTTL': lambda r: r &gt;= 0 and r or None,
+    }
+)
+</code></pre>
+      </div>
+    </blockquote>
+
+    <p>这是一个解析redis返回的方法，StrictRedis 会直接返回值，而Redis会做一次包装。</p>
+  </li>
+</ul>
+
+<p>问题就出在Redis 对redis返回的值的包装上，<code class="highlighter-rouge">lambda r: r &gt;= 0 and r or None</code> 我猜测他本意应该是当对象存在ttl时返回ttl，不存在key或者没有设置expire时返回None（即返回值为-2 或者为-1 或者返回值就是None的时候），然而因为四舍五入的存在，0.4会变为0，<code class="highlighter-rouge">lambda r: r &gt;= 0 and r or None</code>返回值则为None。私以为这里变为<code class="highlighter-rouge">lambda r: r &gt;= 0 and r is not None or None</code>更为合适。</p>
+
+<p>综上。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/" title="link to mongodump 在数据量大的时候非常缓慢">mongodump 在数据量大的时候非常缓慢</a></h2>
+       <p class="excerpt">这边的解决方案是增加 --forceTableScan  –forceTableScan  Forces mongodump to scan the data store directly: typically, mongodump saves entries as they appear in the index of the _id field. Use –forceTableScan to skip the index and scan the data directly. Typi...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-11-28 21:10:00 +0800" class="post-list__meta--date date">2017-11-28</time> &#8226; <span class="post-list__meta--tags tags">mongo mongodump</span><a class="btn-border-small" href=/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/" title="link to LocalProxy作用的一点感悟">LocalProxy作用的一点感悟</a></h2>
+       <p class="excerpt">这里的LocalProxy是指 werkzeug.local中的一个类class werkzeug.local.LocalProxy(*local*, *name=None*)[]Acts as a proxy for a werkzeug local. Forwards all operations to a proxied object. The only operations not supported for forwarding are right handed operands...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-10-18 21:00:00 +0800" class="post-list__meta--date date">2017-10-18</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/";
+        this.page.identifier = "/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

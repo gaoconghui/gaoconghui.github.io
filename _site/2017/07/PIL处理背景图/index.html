@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>PIL处理背景图</title>
+  <meta name="description" content="起因起因是这样的，最近做图片站，搬运了一个别人的站点布局以及css啥的，其中遇到了一个问题。有这么一个图片就是这个美女图，做为背景是极好的，网站有几千个tag，准备每个tag都搞一张独一无二的背景图，那么问题来了，这种周边虚化的效果怎么搞？.png首先有个问题，那种虚化的东西是什么？一般的.jpg图片有三种色彩空...">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="PIL处理背景图">
+  <meta name="twitter:description" content="起因起因是这样的，最近做图片站，搬运了一个别人的站点布局以及css啥的，其中遇到了一个问题。有这么一个图片就是这个美女图，做为背景是极好的，网站有几千个tag，准备每个tag都搞一张独一无二的背景图，那么问题来了，这种周边虚化的效果怎么搞？.png首先有个问题，那种虚化的东西是什么？一般的.jpg图片有三种色彩空...">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="PIL处理背景图">
+  <meta property="og:description" content="起因起因是这样的，最近做图片站，搬运了一个别人的站点布局以及css啥的，其中遇到了一个问题。有这么一个图片就是这个美女图，做为背景是极好的，网站有几千个tag，准备每个tag都搞一张独一无二的背景图，那么问题来了，这种周边虚化的效果怎么搞？.png首先有个问题，那种虚化的东西是什么？一般的.jpg图片有三种色彩空...">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-07-24 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-07-24</time> &#8226; <span class="post-meta__tags tags">PIL</span>
+    </div>
+    <h1 class="post-title">PIL处理背景图</h1>
+  </header>
+
+  <section class="post">
+    <h4 id="起因">起因</h4>
+<p>起因是这样的，最近做图片站，搬运了一个别人的站点布局以及css啥的，其中遇到了一个问题。有这么一个图片
+<img src="http://upload-images.jianshu.io/upload_images/5574483-8c3b6c5eeb556923.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="ori.png" />
+就是这个美女图，做为背景是极好的，网站有几千个tag，准备每个tag都搞一张独一无二的背景图，那么问题来了，这种周边虚化的效果怎么搞？</p>
+<h4 id="png">.png</h4>
+<p>首先有个问题，那种虚化的东西是什么？一般的.jpg图片有三种色彩空间，即RGB，而.png不同，它有一个alpha通道，即<strong>不透明度</strong>，如果一个像素的alpha通道数值为0%，那它就是完全透明的，100%则意味着完全不透明。</p>
+
+<p>而上面那么png，在某些地方打开显示的是一张完整的图片，只有在以png图片打开的情况下才会是这种显示。显然，上面那个.png周边那一圈虚化的地方，alpha值在0-100%之间，我们看上去就是这种效果了。</p>
+
+<h4 id="pil">PIL</h4>
+<p>现在，我们需要一个脚本或者是什么的东西，来批处理一堆图片，我本身对python比较熟悉，想到的自然是python的PIL。PIL是python image library的简称，很有名，一搜一堆简介，不介绍了。简单的列下基础知识，更多更详细的就看http://pillow.readthedocs.io/en/4.2.x/</p>
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span> <span class="err">该方法不会真的打开，智慧读入头部信息，很快</span>
+<span class="n">im</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">//</span> <span class="n">size</span> <span class="o">-&gt;</span> <span class="nb">tuple</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="err">生成缩略图</span>
+<span class="n">box</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">400</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span> <span class="n">region</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">box</span><span class="p">)</span> <span class="n">crop</span><span class="err">一个</span><span class="mi">300</span><span class="o">*</span><span class="mi">300</span><span class="n">px</span><span class="err">的图像</span>
+<span class="o">*</span><span class="n">im</span><span class="o">.</span><span class="n">paste</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">box</span><span class="p">)</span> <span class="err">把</span><span class="n">region</span> <span class="err">复制到图像中</span>
+<span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>   <span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="s">"RGB"</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">r</span><span class="p">))</span><span class="err">分离通道和合并通道（这个很有意思</span>
+ <span class="n">new_im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="s">"RGB"</span><span class="p">,[</span><span class="n">r</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">b</span><span class="p">])</span> <span class="err">这个方法很重要，传入的是</span><span class="n">mode</span><span class="err">以及各个通道的值</span>
+<span class="n">im</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s">"L"</span><span class="p">)</span>  <span class="n">change</span> <span class="n">mode</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">ImageFilter</span><span class="o">.</span><span class="n">DETAIL</span><span class="p">)</span> <span class="err">过滤器</span> <span class="err">颜色增强，还有其他过滤器</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">point</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">*</span> <span class="mf">1.2</span><span class="p">)</span> <span class="err">对每个像素点进行操作</span>
+</code></pre>
+</div>
+
+<h4 id="实现">实现</h4>
+<p>我们要做的很简单，把上面那个.png的的A通道取出来，再把要加工图片的RGB三个通道取出来，merge一下就可以了。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># -*- coding: utf-8 -*-</span>
+<span class="s">"""
+生成tag page 的背景图
+"""</span>
+
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">template_image</span> <span class="o">=</span> <span class="s">"/tmp/ori.png"</span>
+<span class="n">template</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">template_image</span><span class="p">)</span>
+<span class="c"># 拿到A通道</span>
+<span class="n">a_band</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c"># 拿到图片的尺寸</span>
+<span class="n">template_size</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">size</span>
+
+
+<span class="k">def</span> <span class="nf">resize_and_crop</span><span class="p">(</span><span class="n">ori_image</span><span class="p">,</span> <span class="n">target_size</span><span class="p">):</span>
+    <span class="s">"""
+    这个方法写的巨乱，简单的说就是为了获取到和原始图片一样大小的一个图片，我采取的方法是先缩放，再截图。
+    输入的必须是宽图，切除target_size大小的图片，先resize，然后取中间。
+    :param ori_image: 需要处理的图片
+    :param target_size: 目标尺寸
+    :return: Image
+    """</span>
+    <span class="n">ori_width</span><span class="p">,</span> <span class="n">ori_height</span> <span class="o">=</span> <span class="n">ori_image</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">result_width</span> <span class="o">=</span> <span class="n">target_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">result_height</span> <span class="o">=</span> <span class="n">result_width</span> <span class="o">*</span> <span class="n">ori_height</span> <span class="o">/</span> <span class="n">ori_width</span>
+    <span class="n">crop_top</span> <span class="o">=</span> <span class="p">(</span><span class="n">result_height</span> <span class="o">-</span> <span class="n">target_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+    <span class="n">crop_bottom</span> <span class="o">=</span> <span class="n">crop_top</span> <span class="o">+</span> <span class="n">target_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">ori_image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">result_width</span><span class="p">,</span> <span class="n">result_height</span><span class="p">))</span><span class="o">.</span><span class="n">crop</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">crop_top</span><span class="p">,</span> <span class="n">result_width</span><span class="p">,</span> <span class="n">crop_bottom</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">append_band</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">band</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="s">"RGBA"</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">band</span><span class="p">,))</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="s">"/tmp/todo_image.jpg"</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">image_result</span> <span class="o">=</span> <span class="n">append_band</span><span class="p">(</span><span class="n">resize_and_crop</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">template_size</span><span class="p">),</span> <span class="n">a_band</span><span class="p">)</span>
+    <span class="n">image_result</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">"/tmp/result.png"</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>很简单的一个脚本，核心就是抽出A通道再加上去，代码最多的部分是那个巨丑的得到目标尺寸图片的方法，暂时也想不到其他更好的办法了，就先这么写着了。
+附一张处理完之后的图片
+  <img src="http://upload-images.jianshu.io/upload_images/5574483-e9088b5aaf954823.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png" /></p>
+
+<h4 id="后记">后记</h4>
+<p>这个东西大概耗费了我一天多的时间，主要是一开始想偏了，往ps那类的方向去想了，后来瞎看PIL的一些东西，看到通道的时候意识到这个根本就是一个一般的RGB的图片加了个透明度的通道嘛…简单的很，脚本半小时不到就啪啪啪打出来了，把线上图片捞了一波下来一跑（说的简单…又有几个坑…因为这个方法要求固定比例大小的比较好，找图片又花了一些时间），都还不错，很爽。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/" title="link to 较大规模图片phash去重">较大规模图片phash去重</a></h2>
+       <p class="excerpt">起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。什么样的图片属于相同图片呢？因为会存在一些有水印的图片（如下图），或者是略微变形的图片（如1024 * 720 与1020 * 720的图片）phashphash全称是感知哈希算法（Perceptual hash algorithm），使用这玩意儿可以对每个图片生成一个值，如上面两个图分别是2582314446007581403 与 25...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-07-25 21:00:00 +0800" class="post-list__meta--date date">2017-07-25</time> &#8226; <span class="post-list__meta--tags tags">phash</span><a class="btn-border-small" href=/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/>继续阅读</a></div>
+   </div>
+   
+   
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/";
+        this.page.identifier = "/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

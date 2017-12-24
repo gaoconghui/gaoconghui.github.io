@@ -114,13 +114,78 @@
       <hr class="post-list__divider" />
     </li>
     
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/" title="访问 mongodump 在数据量大的时候非常缓慢">mongodump 在数据量大的时候非常缓慢</a></h2>
+      <p class="excerpt">这边的解决方案是增加 --forceTableScan  –forceTableScan  Forces mongodump to scan the data store directly: typically, mongodump saves entries as they appear in the index of the _id field. Use –forceTableScan to skip the index and scan the data directly. Typi...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-11-28 21:10:00 +0800" class="post-list__meta--date date">2017-11-28</time> &#8226; <span class="post-list__meta--tags tags">mongo mongodump</span><a class="btn-border-small" href=/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" title="访问 pyredis中ttl的坑">pyredis中ttl的坑</a></h2>
+      <p class="excerpt">问题复现在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。r = redis.Redis()lock_name = "test_lock"r.set(lock_name, "test")r.expire(lock_name, 1)t1 = 0t2 = 0while True:    #...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-11-13 20:07:00 +0800" class="post-list__meta--date date">2017-11-13</time> &#8226; <span class="post-list__meta--tags tags">pyredis</span><a class="btn-border-small" href=/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/" title="访问 LocalProxy作用的一点感悟">LocalProxy作用的一点感悟</a></h2>
+      <p class="excerpt">这里的LocalProxy是指 werkzeug.local中的一个类class werkzeug.local.LocalProxy(*local*, *name=None*)[]Acts as a proxy for a werkzeug local. Forwards all operations to a proxied object. The only operations not supported for forwarding are right handed operands...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-10-18 21:00:00 +0800" class="post-list__meta--date date">2017-10-18</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" title="访问 python随笔--socket关闭之后端口占用的问题">python随笔--socket关闭之后端口占用的问题</a></h2>
+      <p class="excerpt">先上一段代码class MyHttpHandler(BaseHTTPRequestHandler):    def do_GET(self):        print "do get"        self.send_response(code=200)        self.end_headers()        self.wfile.write("hello world")if __name__ == '__main__':    serv = TCPServer(('', 2...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-09-11 21:00:00 +0800" class="post-list__meta--date date">2017-09-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 socket</span><a class="btn-border-small" href=/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" title="访问 mysql随笔之事务隔离级别">mysql随笔之事务隔离级别</a></h2>
+      <p class="excerpt">这是一个相当基础的问题  SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。  Read Uncommitted（读取未提交内容）在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。  Read Committed（读取提交内容）这是大多数数据库系统的默认...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-09-08 21:00:00 +0800" class="post-list__meta--date date">2017-09-08</time> &#8226; <span class="post-list__meta--tags tags">mysql随笔</span><a class="btn-border-small" href=/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/" title="访问 python随笔之SocketServer">python随笔之SocketServer</a></h2>
+      <p class="excerpt">从SocketServer 讲起    +------------+    | BaseServer |    +------------+          |          v    +-----------+        +------------------+    | TCPServer |-------&gt;| UnixStreamServer |    +-----------+        +------------------+          |      ...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-08-29 21:00:00 +0800" class="post-list__meta--date date">2017-08-29</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/" title="访问 python随笔之从__dict__说起">python随笔之从__dict__说起</a></h2>
+      <p class="excerpt">先上一段代码，来源是github。class Borg(object):    __shared_state = {}    def __init__(self):        self.__dict__ = self.__shared_state        self.state = 'Init'    def __str__(self):        return self.stateclass YourBorg(Borg):    passif __name__ == '__m...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-08-25 21:00:00 +0800" class="post-list__meta--date date">2017-08-25</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/" title="访问 爬虫之百度指数">爬虫之百度指数</a></h2>
+      <p class="excerpt">蛮早之前公司有个产品问我能不能爬百度指数，我随便瞄了眼，直接回了可以，然后…光速打脸…今儿个有空，研究研究这玩意儿。嫌长的可以直接拉到最后看后记。####目标先明确下要做什么，目标不是要写出一个可用的完整的爬虫，只是要个思路。我们的目标仅仅只是爬取这边的数字，162和125，还有后边的比例。分析先说点题外话，业界对数字的加密真是做的丧心病狂，返回假数据然后js重新计算修改都是简单的了，复杂的还有某移动端网页返回数字234，然而因为使用了特殊的字体显示123的，这边还有个更恶心的迷之加密。开...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-07-26 21:00:00 +0800" class="post-list__meta--date date">2017-07-26</time> &#8226; <span class="post-list__meta--tags tags">爬虫</span><a class="btn-border-small" href=/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/" title="访问 较大规模图片phash去重">较大规模图片phash去重</a></h2>
+      <p class="excerpt">起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。什么样的图片属于相同图片呢？因为会存在一些有水印的图片（如下图），或者是略微变形的图片（如1024 * 720 与1020 * 720的图片）phashphash全称是感知哈希算法（Perceptual hash algorithm），使用这玩意儿可以对每个图片生成一个值，如上面两个图分别是2582314446007581403 与 25...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-07-25 21:00:00 +0800" class="post-list__meta--date date">2017-07-25</time> &#8226; <span class="post-list__meta--tags tags">phash</span><a class="btn-border-small" href=/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
   </ol>
 
   <hr class="post-list__divider " />
 
 <nav class="pagination" role="navigation">
     
-    <span class="pagination__page-number">1 / 1</span>
+    <span class="pagination__page-number">1 / 2</span>
+    
+        <a class="older-posts pagination__older btn btn-small btn-tertiary" href="/page/2/#blog">更早 &rarr;</a>
     
 </nav>
 
@@ -130,7 +195,6 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-12-21 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
         <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
     </footer>
 </section>
