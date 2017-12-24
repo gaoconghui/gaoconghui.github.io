@@ -122,6 +122,13 @@
     </li>
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/" title="访问 python随笔之实现classmethod staticmethod">python随笔之实现classmethod staticmethod</a></h2>
+      <p class="excerpt">大概刚学python的时候就知道了classmethod和staticmethod的用法，后来看到描述器才知道描述器与他们之间千丝万缕的关系，是否能动手实现下这俩货嘞？这边先从bound和unbound method说起bound unbound看下面的例子class Cla():    def __init__(self,a):        self.a = a    def f(self):        print self,self.a        print Cla.f# &...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-11-20 21:00:00 +0800" class="post-list__meta--date date">2017-11-20</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" title="访问 pyredis中ttl的坑">pyredis中ttl的坑</a></h2>
       <p class="excerpt">问题复现在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。r = redis.Redis()lock_name = "test_lock"r.set(lock_name, "test")r.expire(lock_name, 1)t1 = 0t2 = 0while True:    #...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-11-13 20:07:00 +0800" class="post-list__meta--date date">2017-11-13</time> &#8226; <span class="post-list__meta--tags tags">pyredis</span><a class="btn-border-small" href=/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/>继续阅读</a></div>
@@ -164,16 +171,9 @@
     </li>
     
     <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/" title="访问 爬虫之百度指数">爬虫之百度指数</a></h2>
-      <p class="excerpt">蛮早之前公司有个产品问我能不能爬百度指数，我随便瞄了眼，直接回了可以，然后…光速打脸…今儿个有空，研究研究这玩意儿。嫌长的可以直接拉到最后看后记。####目标先明确下要做什么，目标不是要写出一个可用的完整的爬虫，只是要个思路。我们的目标仅仅只是爬取这边的数字，162和125，还有后边的比例。分析先说点题外话，业界对数字的加密真是做的丧心病狂，返回假数据然后js重新计算修改都是简单的了，复杂的还有某移动端网页返回数字234，然而因为使用了特殊的字体显示123的，这边还有个更恶心的迷之加密。开...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-07-26 21:00:00 +0800" class="post-list__meta--date date">2017-07-26</time> &#8226; <span class="post-list__meta--tags tags">爬虫</span><a class="btn-border-small" href=/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/" title="访问 较大规模图片phash去重">较大规模图片phash去重</a></h2>
-      <p class="excerpt">起因先说下为什么要做这个事。做的图片站的图片来源为很多美女图片站，自然地，会有很多重复的图片，而我的目标就是要把重复的图片找出来，剔除掉或者是做其他处理。什么样的图片属于相同图片呢？因为会存在一些有水印的图片（如下图），或者是略微变形的图片（如1024 * 720 与1020 * 720的图片）phashphash全称是感知哈希算法（Perceptual hash algorithm），使用这玩意儿可以对每个图片生成一个值，如上面两个图分别是2582314446007581403 与 25...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-07-25 21:00:00 +0800" class="post-list__meta--date date">2017-07-25</time> &#8226; <span class="post-list__meta--tags tags">phash</span><a class="btn-border-small" href=/2017/07/%E8%BE%83%E5%A4%A7%E8%A7%84%E6%A8%A1%E5%9B%BE%E7%89%87phash%E5%8E%BB%E9%87%8D/>继续阅读</a></div>
+      <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/" title="访问 python随笔之瞎看看flask">python随笔之瞎看看flask</a></h2>
+      <p class="excerpt">wsgi在看flask之前，必须要看的是wsgi。wsgi 更像是一个为了让服务器和应用程序一起工作的标准，遵循标准的application(如flask)可以运行在遵循标准的server（uwsgi等）之上。这里有一篇实现标准的wsgi server的博客自己写一个 wsgi 服务器运行 Django 、Tornado 等框架应用flaskapp = Flask(__name__)app.run()上述代码发生了什么？#flaskdef run(self, host='localhost...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-08-11 21:00:00 +0800" class="post-list__meta--date date">2017-08-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 flask</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
