@@ -108,6 +108,20 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/" title="访问 python随笔之从__dict__说起">python随笔之从__dict__说起</a></h2>
+      <p class="excerpt">先上一段代码，来源是github。class Borg(object):    __shared_state = {}    def __init__(self):        self.__dict__ = self.__shared_state        self.state = 'Init'    def __str__(self):        return self.stateclass YourBorg(Borg):    passif __name__ == '__m...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-08-25 21:00:00 +0800" class="post-list__meta--date date">2017-08-25</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/" title="访问 python随笔之瞎看看flask">python随笔之瞎看看flask</a></h2>
+      <p class="excerpt">wsgi在看flask之前，必须要看的是wsgi。wsgi 更像是一个为了让服务器和应用程序一起工作的标准，遵循标准的application(如flask)可以运行在遵循标准的server（uwsgi等）之上。这里有一篇实现标准的wsgi server的博客自己写一个 wsgi 服务器运行 Django 、Tornado 等框架应用flaskapp = Flask(__name__)app.run()上述代码发生了什么？#flaskdef run(self, host='localhost...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-08-11 21:00:00 +0800" class="post-list__meta--date date">2017-08-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 flask</span><a class="btn-border-small" href=/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/" title="访问 爬虫之百度指数">爬虫之百度指数</a></h2>
       <p class="excerpt">蛮早之前公司有个产品问我能不能爬百度指数，我随便瞄了眼，直接回了可以，然后…光速打脸…今儿个有空，研究研究这玩意儿。嫌长的可以直接拉到最后看后记。####目标先明确下要做什么，目标不是要写出一个可用的完整的爬虫，只是要个思路。我们的目标仅仅只是爬取这边的数字，162和125，还有后边的比例。分析先说点题外话，业界对数字的加密真是做的丧心病狂，返回假数据然后js重新计算修改都是简单的了，复杂的还有某移动端网页返回数字234，然而因为使用了特殊的字体显示123的，这边还有个更恶心的迷之加密。开...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-07-26 21:00:00 +0800" class="post-list__meta--date date">2017-07-26</time> &#8226; <span class="post-list__meta--tags tags">爬虫</span><a class="btn-border-small" href=/2017/07/%E7%88%AC%E8%99%AB%E4%B9%8B%E7%99%BE%E5%BA%A6%E6%8C%87%E6%95%B0/>继续阅读</a></div>

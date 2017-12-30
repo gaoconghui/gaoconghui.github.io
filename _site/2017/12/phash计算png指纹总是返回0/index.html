@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>phash计算png图片指纹返回总为0</title>
+  <meta name="description" content="今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="phash计算png图片指纹返回总为0">
+  <meta name="twitter:description" content="今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="phash计算png图片指纹返回总为0">
+  <meta property="og:description" content="今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-12-28 20:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-12-28</time> &#8226; <span class="post-meta__tags tags">phash</span>
+    </div>
+    <h1 class="post-title">phash计算png图片指纹返回总为0</h1>
+  </header>
+
+  <section class="post">
+    <p>今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>In [214]: lib = ctypes.CDLL(find_library('pHash'), use_errno=True)
+
+In [215]: phash = ctypes.c_uint64()
+
+In [216]: lib.ph_dct_imagehash("/tmp/new3.png", ctypes.pointer(phash))
+Out[216]: 0
+
+In [217]: phash
+Out[217]: c_ulong(0L)
+</code></pre>
+</div>
+
+<p>而后在mac上直接编译使用，结果同上，也是总为0。很有意思，一开始一直在检查自己的代码，直到简化成只剩几行了，还是有问题。一直没敢怀疑phash.org上已经放出来好几年的代码，毕竟那一套东西2013年之后就没变过了，应该没啥太大问题。</p>
+
+<p>04.23.2013 pHash 0.9.6 released. Fix some compilation errors and warnings, as well as updates to the automake files to support building on Gentoo.</p>
+
+<p>而后开始对源码进行修改，采用print大法来debug，才发现真的是phash写的有些问题。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>CImg&lt;float&gt; img;
+if (src.spectrum() == 3){
+        img = src.RGBtoYCbCr().channel(0).get_convolve(meanfilter);
+    } else if (src.spectrum() == 4){
+	int width = img.width();
+        int height = img.height();
+        int depth = img.depth();
+	img = src.crop(0,0,0,0,width-1,height-1,depth-1,2).RGBtoYCbCr().channel(0).get_convolve(meanfilter);
+    } else {
+	img = src.channel(0).get_convolve(meanfilter);
+    }
+img.resize(32,32);
+</code></pre>
+</div>
+
+<p>这段代码来源于ph_dct_imagehash方法，就是算phash的核心方法，这边用Cimg对图像做了一些处理，src是输入的原始图片，img应该是处理完之后的，生成一个32*32的图片。src.spectrum()方法获取图片通道，png图片有RGBA四个通道，问题就出在这，这块应该是想获取图片的宽高信息，而后做截图处理。然而img还没初始化，返回的都只能是0，导致后边各种计算返回一片0，修改为src后即可。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>else if (src.spectrum() == 4){
+	int width = src.width();
+        int height = src.height();
+        int depth = src.depth();
+	img = src.crop(0,0,0,0,width-1,height-1,depth-1,2).RGBtoYCbCr().channel(0).get_convolve(meanfilter);
+    }
+</code></pre>
+</div>
+
+<p>#####小记</p>
+
+<p>说实话，这是我第一次对权威的代码（这应该算权威吧？）动手，只能说，代码总是人写的，总是会有bug的。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/" title="link to chrome抓包websocket frame为空">chrome抓包websocket frame为空</a></h2>
+       <p class="excerpt">尝试抓websocket的包，遇上一个奇葩的问题，分享下。测试网站如下http://websocket.org/echo.htmlchrome抓websocket的包很简单  打开http://websocket.org/echo.html  connect ，send，可以在前端看到输出  打开chrome开发者工具，可以看到已经有websocket的连接然而…啥都没有…很迷，看了许久，搜了很多地方，换了电脑，升级了最新版本，依旧啥都没有…终于，在StackOverflow 上找到了靠谱...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-12-28 20:00:00 +0800" class="post-list__meta--date date">2017-12-28</time> &#8226; <span class="post-list__meta--tags tags">phash</span><a class="btn-border-small" href=/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/" title="link to python实现redis三种cas操作">python实现redis三种cas操作</a></h2>
+       <p class="excerpt">cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:# 初始化r = redis.Redis()if not r.exists("key_test"):    r.set("key_test", 0)def inc():    count = int(r.get('key_tes...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-12-08 21:10:00 +0800" class="post-list__meta--date date">2017-12-08</time> &#8226; <span class="post-list__meta--tags tags">redis python</span><a class="btn-border-small" href=/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/";
+        this.page.identifier = "/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
