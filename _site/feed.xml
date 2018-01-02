@@ -3,10 +3,10 @@
   <channel>
     <title>Gao Conghui</title>
     <description>一点资讯，视频爬虫，视频处理。</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sat, 30 Dec 2017 19:34:41 +0800</pubDate>
-    <lastBuildDate>Sat, 30 Dec 2017 19:34:41 +0800</lastBuildDate>
+    <link>http://gaoconghui.github.io/</link>
+    <atom:link href="http://gaoconghui.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 02 Jan 2018 18:00:43 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Jan 2018 18:00:43 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
     
       <item>
@@ -35,9 +35,9 @@ chrome抓websocket的包很简单&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/5574483-d3bd935302ce4bd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;呵呵呵&quot; /&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 28 Dec 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
+        <pubDate>Sat, 30 Dec 2017 20:00:00 +0800</pubDate>
+        <link>http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
         
         <category>websocket</category>
         
@@ -97,8 +97,8 @@ img.resize(32,32);
 &lt;p&gt;说实话，这是我第一次对权威的代码（这应该算权威吧？）动手，只能说，代码总是人写的，总是会有bug的。&lt;/p&gt;
 </description>
         <pubDate>Thu, 28 Dec 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</guid>
+        <link>http://gaoconghui.github.io/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</guid>
         
         <category>phash</category>
         
@@ -270,8 +270,8 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434&lt;/p&gt;
 &lt;p&gt;以上。&lt;/p&gt;
 </description>
         <pubDate>Fri, 08 Dec 2017 21:10:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/</guid>
+        <link>http://gaoconghui.github.io/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/</guid>
         
         <category>redis</category>
         
@@ -303,8 +303,8 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434&lt;/p&gt;
 &lt;p&gt;mongodump默认使用snapshot，会通过扫描_id 索引，然后去读取实际的文档。TableScan会按照mongodb的&lt;strong&gt;物理存储顺序&lt;/strong&gt;进行扫描，没有读取index的过程。但是tablescan潜在的问题是，如果一个文档在dump的过程中移动了（物理上），有可能会最终输出两次。&lt;/p&gt;
 </description>
         <pubDate>Tue, 28 Nov 2017 21:10:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/</guid>
+        <link>http://gaoconghui.github.io/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/</guid>
         
         <category>mongo</category>
         
@@ -415,8 +415,8 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 20 Nov 2017 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/</guid>
+        <link>http://gaoconghui.github.io/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/</guid>
         
         <category>python随笔</category>
         
@@ -499,8 +499,8 @@ RESPONSE_CALLBACKS = dict_merge(
 &lt;p&gt;综上。&lt;/p&gt;
 </description>
         <pubDate>Mon, 13 Nov 2017 20:07:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/</guid>
+        <link>http://gaoconghui.github.io/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/</guid>
         
         <category>pyredis</category>
         
@@ -533,8 +533,8 @@ Acts as a proxy for a werkzeug local. Forwards all operations to a proxied objec
 &lt;p&gt;思考许久，才发现自己想到了误区里边。这个包本身就是给协程中使用的，本身的local对象也是每个协程拥有各自的local。返回localproxy，每次调用都会是在该协程的local对象中寻找，如果直接返回对象，则失去了其本身的意义。&lt;/p&gt;
 </description>
         <pubDate>Wed, 18 Oct 2017 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid>
+        <link>http://gaoconghui.github.io/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/</guid>
         
         <category>python</category>
         
@@ -572,8 +572,8 @@ Acts as a proxy for a werkzeug local. Forwards all operations to a proxied objec
 &lt;p&gt;而SO_REUSEADDR可以指明应用程序能够使用一些网络客户端之前的连接正在关闭的端口。&lt;/p&gt;
 </description>
         <pubDate>Mon, 11 Sep 2017 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
+        <link>http://gaoconghui.github.io/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/</guid>
         
         <category>python随笔</category>
         
@@ -639,8 +639,8 @@ Acts as a proxy for a werkzeug local. Forwards all operations to a proxied objec
 &lt;/blockquote&gt;
 </description>
         <pubDate>Fri, 08 Sep 2017 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</guid>
+        <link>http://gaoconghui.github.io/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</guid>
         
         <category>mysql随笔</category>
         
@@ -817,8 +817,8 @@ Acts as a proxy for a werkzeug local. Forwards all operations to a proxied objec
 &lt;p&gt;如BaseHttpServer中，有一个BaseHTTPRequestHandler，针对http协议做了一系列处理，当然，既然以base开头，也只是为后续实现提供方便。如werkzeug.serving中的WSGIRequestHandler，在继承BaseHTTPRequestHandler的基础上，做了一些修改，用于适配wsgi标准。如需要传入application，用于处理具体业务。&lt;/p&gt;
 </description>
         <pubDate>Tue, 29 Aug 2017 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</guid>
+        <link>http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</guid>
         
         <category>python随笔</category>
         
