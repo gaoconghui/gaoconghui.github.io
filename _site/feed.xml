@@ -5,9 +5,285 @@
     <description>一点资讯，视频爬虫，视频处理。</description>
     <link>http://gaoconghui.github.io/</link>
     <atom:link href="http://gaoconghui.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 02 Jan 2018 18:35:33 +0800</pubDate>
-    <lastBuildDate>Tue, 02 Jan 2018 18:35:33 +0800</lastBuildDate>
+    <pubDate>Wed, 10 Jan 2018 15:59:29 +0800</pubDate>
+    <lastBuildDate>Wed, 10 Jan 2018 15:59:29 +0800</lastBuildDate>
     <generator>Jekyll v3.4.0</generator>
+    
+      <item>
+        <title>python随笔 Mock vs MagicMock</title>
+        <description>&lt;p&gt;首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;_mock&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__iter__&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# error&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__iter__&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#&amp;lt;MagicMock name='mock.__iter__' id='4458398224'&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'assert_any_call'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'assert_called'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'assert_called_once'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;iter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listiterator&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;at&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x10e32e290&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;dir&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_magicmock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'__iter__'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'assert_any_call'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'assert_called'&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;很神奇。&lt;/p&gt;
+
+&lt;p&gt;所以在使用上，除了那种需要调用魔术方法报错的（如不允许迭代）都可以使用MagicMock。如果保守点，可以都使用Mock，其实也都够用来着。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;下边进入正题，在看MagicMock中看到的有意思的东西。下边会回答MagicMock对魔术方法的懒加载是如何实现的。&lt;/p&gt;
+
+&lt;p&gt;首先，magicmock是mock的一个子类。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Mock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;很明显，实现设置magic方法的在MagicMixin中。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MagicMixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_mock_set_magics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# make magic work for kwargs in init&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;_safe_super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMixin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_mock_set_magics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;  &lt;span class=&quot;c&quot;&gt;# fix magic broken by upper level init&lt;/span&gt;
+
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;_mock_set_magics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_magics&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;getattr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;_mock_methods&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;is&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_magics&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;intersection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_mock_methods&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;remove_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;remove_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt;
+
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;remove_magics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__dict__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+                    &lt;span class=&quot;c&quot;&gt;# remove unneeded magic methods&lt;/span&gt;
+                    &lt;span class=&quot;nb&quot;&gt;delattr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;c&quot;&gt;# don't overwrite existing attributes if called a second time&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__dict__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;_type&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;these_magics&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;nb&quot;&gt;setattr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MagicProxy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;entry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;这段代码也不长，直接贴上来了。&lt;/p&gt;
+
+&lt;p&gt;可以看到，通过一串东西，找到了所有需要添加的魔术方法，然后给这个类赋予了一个MagicProxy。这个proxy会在第一次调用的时候创建魔术方法。&lt;/p&gt;
+
+&lt;p&gt;这边有个问题，直接获取type赋值，为啥不会影响其他的mock嘞？很简单，每个magicmock的type都不一样。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mock&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MagicMock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
+&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;直觉告诉我，是什么地方有修改&lt;code class=&quot;highlighter-rouge&quot;&gt;__new__&lt;/code&gt;的地方。果然，在很上层的父类，NonCallableMock中找到了这么个东西。&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__new__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kw&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# every instance has its own class&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# so we can create magic methods on the&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;# class without stomping on other mocks&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cls&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__name__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'__doc__'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cls&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__doc__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__new__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;instance&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;看注释也很清楚了，就是为了magic方法才做的这个事，在创建的时候做了些手脚。&lt;/p&gt;
+
+&lt;h5 id=&quot;结论&quot;&gt;结论&lt;/h5&gt;
+
+&lt;p&gt;把上面的过程顺起来说一遍。&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在创建的时候，修改了&lt;code class=&quot;highlighter-rouge&quot;&gt;__new__&lt;/code&gt;方法，每个实例都有自己独一无二的实例。&lt;/li&gt;
+  &lt;li&gt;在MagicMock初始化的过程中，在类中增加各magic方法的代理。&lt;/li&gt;
+  &lt;li&gt;实例调用magic方法的时候，会在第一次调用proxy的时候创建魔术方法。&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Mon, 08 Jan 2018 21:00:00 +0800</pubDate>
+        <link>http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</guid>
+        
+        <category>python</category>
+        
+        <category>mock</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>timelion一些基本表达式</title>
+        <description>&lt;p&gt;一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Timelion is a time series data visualizer that enables you to combine totally independent data sources within a single visualization. It’s driven by a simple expression language you use to retrieve time series data, perform calculations to tease out the answers to complex questions, and visualize the results.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;timelion可以聚合完全独立的完全不同的数据源的数据，糅合到同一个图里边，进行一些展示以及分析。（kibana一般都只展现es的某一个index的）&lt;/p&gt;
+
+&lt;p&gt;如下一些问题是kibana不能处理，而timelion可以的&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;在一张图里边看这个月每天爬取量与上个月每天爬取量&lt;/li&gt;
+  &lt;li&gt;这个月爬取数量的累积和&lt;/li&gt;
+  &lt;li&gt;相比较上个月爬取量而言，这个月增长的幅度&lt;/li&gt;
+  &lt;li&gt;展现股票的30分均线图&lt;/li&gt;
+  &lt;li&gt;…&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;timelion表达式以.开头，中间会跟上一堆参数。timelion表达式支持链式调用，如es(q=site:yd).lable(yd)&lt;/p&gt;
+
+&lt;p&gt;也可以在一个图中画多条曲线，用来对比，用逗号分隔。这个博客主要记录下一些常用的方法以及他们的参数。&lt;/p&gt;
+
+&lt;h4 id=&quot;es-elasticsearc相同&quot;&gt;.es (.elasticsearc相同)&lt;/h4&gt;
+
+&lt;p&gt;一般都会从.es开始，会从es中拉取需要展示的数据&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;q  query参数，lucene语法&lt;/li&gt;
+  &lt;li&gt;index 可以指定索引，如logstash-*&lt;/li&gt;
+  &lt;li&gt;timefield 可以指定时间轴采用的字段，默认@timestamp&lt;/li&gt;
+  &lt;li&gt;split 按某字段分隔 如 split=source:4 按source字段进行划分，取数量前四的展现。一个表达式可以有多个split&lt;/li&gt;
+  &lt;li&gt;metric 聚类，如metric=sum:bytes，y轴即为bytes的和。一个表达式可以有多个metric&lt;/li&gt;
+  &lt;li&gt;offset偏移值 如-1w即为显示一个礼拜之前的数据。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;static&quot;&gt;.static&lt;/h4&gt;
+
+&lt;p&gt;一条水平的直线&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;value  y轴值&lt;/li&gt;
+  &lt;li&gt;label 标签&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;lines&quot;&gt;.lines&lt;/h4&gt;
+
+&lt;p&gt;一个表达式默认展现出来会是一条线&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;width 线条的粗细&lt;/li&gt;
+  &lt;li&gt;fill 取值0-10 会填充曲线与x轴之间的区域，fill值代表类似透明度的东西&lt;/li&gt;
+  &lt;li&gt;show boolean 是否显示&lt;/li&gt;
+  &lt;li&gt;step boolean 是否显示为一种类似阶梯的形式&lt;/li&gt;
+  &lt;li&gt;stack 如果有fill的，当两条线拥有共同填充区域时，是否选择堆叠。默认true&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;bars&quot;&gt;.bars&lt;/h4&gt;
+
+&lt;p&gt;展现为柱状图&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;width 柱状图的粗细&lt;/li&gt;
+  &lt;li&gt;stack 当有两个曲线都是bars，拥有共同的区域时，是否选择堆叠。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;points&quot;&gt;.points&lt;/h4&gt;
+
+&lt;p&gt;展现为一个个点&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;radius 点的半径&lt;/li&gt;
+  &lt;li&gt;weight 点的线的粗细&lt;/li&gt;
+  &lt;li&gt;fill 取值0-10 填充区域的填充度&lt;/li&gt;
+  &lt;li&gt;fillColor 填充颜色&lt;/li&gt;
+  &lt;li&gt;symbol 形状，默认为圆形，可取值为cross(叉叉)，circle，triangle，square,diamond(菱形)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;color&quot;&gt;.color&lt;/h4&gt;
+
+&lt;p&gt;颜色，可填red,blue这种，也可以是#c6c6c6这样的&lt;/p&gt;
+
+&lt;h4 id=&quot;label&quot;&gt;.label&lt;/h4&gt;
+
+&lt;p&gt;修改标签，如.es(*).label(test)&lt;/p&gt;
+
+&lt;h4 id=&quot;range&quot;&gt;.range&lt;/h4&gt;
+
+&lt;p&gt;y轴取值，如range(0,10)代表着y轴按比例缩小到0-10的范围内&lt;/p&gt;
+
+&lt;h4 id=&quot;yaxis&quot;&gt;.yaxis&lt;/h4&gt;
+
+&lt;p&gt;对y轴的一些设置&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;min y轴最小值&lt;/li&gt;
+  &lt;li&gt;max y轴最大值&lt;/li&gt;
+  &lt;li&gt;position 取值left right，y轴显示位置&lt;/li&gt;
+  &lt;li&gt;label y轴标签&lt;/li&gt;
+  &lt;li&gt;color 标签的颜色&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;scale_interval&quot;&gt;.scale_interval&lt;/h4&gt;
+
+&lt;p&gt;有时候需要画多条线，但是对x轴精度要求不同，可以使用scale_interval来改变统计的间隔。&lt;/p&gt;
+
+&lt;h4 id=&quot;abs&quot;&gt;.abs&lt;/h4&gt;
+
+&lt;p&gt;取绝对值&lt;/p&gt;
+
+&lt;h4 id=&quot;cusum&quot;&gt;.cusum&lt;/h4&gt;
+
+&lt;p&gt;累加和&lt;/p&gt;
+
+&lt;h4 id=&quot;divide--multiply--add-subtract&quot;&gt;.divide  .multiply  .add .subtract&lt;/h4&gt;
+
+&lt;p&gt;显示的值除/乘…以某个值，也可以除以某个表达式(即两次查询结果做相应操作)&lt;/p&gt;
+
+&lt;h4 id=&quot;min-max&quot;&gt;.min .max&lt;/h4&gt;
+
+&lt;p&gt;最大值最小值操作，可以比较两个不同的表达式&lt;/p&gt;
+
+&lt;p&gt;这边官网提供了一个很有意思的用法 &lt;code class=&quot;highlighter-rouge&quot;&gt;.es().bars(stack=false).color(#F44336), .min(.es(), 25).bars(stack=false).color(#8BC34A)&lt;/code&gt; 会把一个柱状图中 超过25的区域都改为另一种颜色&lt;/p&gt;
+
+&lt;h4 id=&quot;derivative&quot;&gt;.derivative&lt;/h4&gt;
+
+&lt;p&gt;求导&lt;/p&gt;
+
+&lt;h4 id=&quot;mvavg&quot;&gt;.mvavg&lt;/h4&gt;
+
+&lt;p&gt;move avg 顾名思义，移动平均值。类似K线图中的五分钟均价&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;window 取均值的窗口范围&lt;/li&gt;
+  &lt;li&gt;position 取值的位置。可为left right center(默认)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;if-condition相同&quot;&gt;.if (.condition相同)&lt;/h4&gt;
+
+&lt;p&gt;if表达式&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;operator 有lt,lte,eq,gt,gte五种，分别代表小于 小于等于…&lt;/li&gt;
+  &lt;li&gt;if 比较的值。可以是一个值或者是一个新的es搜索表达式。&lt;/li&gt;
+  &lt;li&gt;then 如果上边的if匹配到了，则取值为then的值。可以是一个值或者是一个表达式。如.es().if(lt, 500, null)，即为如果小于500，则不显示&lt;/li&gt;
+  &lt;li&gt;else 如果不满足if则会为else。.es().if(lt, 500, 0，1)表示如果小于500，显示0，否则显示1&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 02 Jan 2018 20:00:00 +0800</pubDate>
+        <link>http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</guid>
+        
+        <category>kibana</category>
+        
+        <category>timelion</category>
+        
+        
+      </item>
     
       <item>
         <title>chrome抓包websocket frame为空</title>
@@ -165,6 +441,8 @@ img.resize(32,32);
 &lt;blockquote&gt;
   &lt;p&gt;此处应该有个推倒出redis悲观锁的过程，不过太麻烦了…直接丢个链接吧…
 https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434&lt;/p&gt;
+
+  &lt;p&gt;另外，redis-py中好像也有Lock的实现.. 详见redis.Lock&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;p&gt;ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。&lt;/p&gt;
@@ -578,249 +856,6 @@ Acts as a proxy for a werkzeug local. Forwards all operations to a proxied objec
         <category>python随笔</category>
         
         <category>socket</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>mysql随笔之事务隔离级别</title>
-        <description>&lt;p&gt;这是一个相当基础的问题&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。&lt;/p&gt;
-
-  &lt;p&gt;Read Uncommitted（读取未提交内容）
-在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。&lt;/p&gt;
-
-  &lt;p&gt;Read Committed（读取提交内容）
-这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别 也支持所谓的不可重复读（Nonrepeatable Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。&lt;/p&gt;
-
-  &lt;p&gt;Repeatable Read（可重读）
-这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读 （Phantom Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影” 行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency Control）机制解决了该问题。&lt;/p&gt;
-
-  &lt;p&gt;Serializable（可串行化）
-这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;这几行看了不知道多少次了，感觉理解总还是有问题，遂写一下。&lt;/p&gt;
-
-&lt;p&gt;理解有障碍的在于Repeatable Read 级别所解决的问题以及幻读的成因。这个级别解决了__nonrepatable read__的问题。事务A执行期间，事务B的__修改__操作将不会对A造成影响，因为他会保证在事务中多次读取的__同样的记录__结果是一致的。&lt;/p&gt;
-
-&lt;p&gt;那幻读是什么呢？ 幻读是事务A期间，事务B __insert__了一些记录，事务A在query一个范围内记录的时候恰巧包含了刚插入的记录，导致前后query的结果不一样。&lt;/p&gt;
-
-&lt;p&gt;综上，我理解的是可重复读这个级别，其他事务update操作不会对这个事务的query造成影响，但是insert或delete还是会有影响的。&lt;/p&gt;
-
-&lt;p&gt;另外，mysql默认的是可重复读的级别，他解决幻读的方式是MVCC。&lt;/p&gt;
-
-&lt;p&gt;innoDB的MVCC是通过在每行记录后面保存两个隐藏的列来实现的，这两列，一个保存了行的创建时间，一个保存了过期时间（此处时间不是真的时间，而是版本号）。每个事务，版本号都会递增。下边是可重复读级别下的具体行为&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;SELECT&lt;/p&gt;
-
-  &lt;p&gt;Innodb检查每行数据，确保他们符合两个标准：&lt;/p&gt;
-
-  &lt;p&gt;1、InnoDB只查找版本早于当前事务版本的数据行(也就是数据行的版本必须小于等于事务的版本)，这确保当前事务读取的行都是事务之前已经存在的，或者是由当前事务创建或修改的行&lt;/p&gt;
-
-  &lt;p&gt;2、行的删除操作的版本一定是未定义的或者大于当前事务的版本号，确定了当前事务开始之前，行没有被删除&lt;/p&gt;
-
-  &lt;p&gt;符合了以上两点则返回查询结果。&lt;/p&gt;
-
-  &lt;p&gt;INSERT&lt;/p&gt;
-
-  &lt;p&gt;InnoDB为每个新增行记录当前系统版本号作为创建ID。&lt;/p&gt;
-
-  &lt;p&gt;DELETE&lt;/p&gt;
-
-  &lt;p&gt;InnoDB为每个删除行的记录当前系统版本号作为行的删除ID。&lt;/p&gt;
-
-  &lt;p&gt;UPDATE&lt;/p&gt;
-
-  &lt;p&gt;InnoDB复制了一行。这个新行的版本号使用了系统版本号。它也把系统版本号作为了删除行的版本。&lt;/p&gt;
-&lt;/blockquote&gt;
-</description>
-        <pubDate>Fri, 08 Sep 2017 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/</guid>
-        
-        <category>mysql随笔</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>python随笔之SocketServer</title>
-        <description>&lt;h4 id=&quot;从socketserver-讲起&quot;&gt;从SocketServer 讲起&lt;/h4&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    +------------+
-    | BaseServer |
-    +------------+
-          |
-          v
-    +-----------+        +------------------+
-    | TCPServer |-------&amp;gt;| UnixStreamServer |
-    +-----------+        +------------------+
-          |
-          v
-    +-----------+        +--------------------+
-    | UDPServer |-------&amp;gt;| UnixDatagramServer |
-    +-----------+        +--------------------+
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;整个模块的结构大概是这样的，由BaseServer衍生出TCPServer，UDPServer，然后以此为基类，后续还有HTTPServer(SocketServer.TCPServer)，class WSGIServer(HTTPServer)，但入口都是接下去要说的SockerServer中的一些类。&lt;/p&gt;
-
-&lt;p&gt;BaseServer 有以下的一些方法&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Methods for the caller:
-
-    - __init__(server_address, RequestHandlerClass)
-    - serve_forever(poll_interval=0.5)
-    - shutdown()
-    - handle_request()  # if you do not use serve_forever()
-    - fileno() -&amp;gt; int   # for select()
-
-    Methods that may be overridden:
-
-    - server_bind()
-    - server_activate()
-    - get_request() -&amp;gt; request, client_address
-    - handle_timeout()
-    - verify_request(request, client_address)
-    - server_close()
-    - process_request(request, client_address)
-    - shutdown_request(request)
-    - close_request(request)
-    - handle_error()
-
-    Methods for derived classes:
-
-    - finish_request(request, client_address)
-
-    Class variables that may be overridden by derived classes or
-    instances:
-
-    - timeout
-    - address_family
-    - socket_type
-    - allow_reuse_address
-
-    Instance variables:
-
-    - RequestHandlerClass
-    - socket
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;这其中有一系列钩子方法留着给子类复写以实现其特有的功能。其中实现具体处理逻辑的为_handle_request_noblock方法&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;_handle_request_noblock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;Handle one request, without blocking.
-
-    I assume that select.select has returned that the socket is
-    readable before this function was called, so there should be
-    no risk of blocking in get_request().
-    &quot;&quot;&quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verify_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;process_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shutdown_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;get_request 需要子类来实现，获取request和address，而后由process_request 来处理，process_request 会依次调用finish_request 和shutdown_request,finish_request会调用RequestHandlerClass（需要传入，为具体处理的handler）。&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;serve_forever&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;poll_interval&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__is_shut_down&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__shutdown_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;c&quot;&gt;# XXX: Consider using another file descriptor or&lt;/span&gt;
-            &lt;span class=&quot;c&quot;&gt;# connecting to the socket to wake this up instead of&lt;/span&gt;
-            &lt;span class=&quot;c&quot;&gt;# polling. Polling reduces our responsiveness to a&lt;/span&gt;
-            &lt;span class=&quot;c&quot;&gt;# shutdown request and wastes cpu at all other times.&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_eintr_retry&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[],&lt;/span&gt;
-                                   &lt;span class=&quot;n&quot;&gt;poll_interval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-                &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_handle_request_noblock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__shutdown_request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__is_shut_down&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;在serve_forever 中，会使用select 获取需要处理的内容，再调用上边的_handle_request_noblock。&lt;/p&gt;
-
-&lt;p&gt;简单的流程是这样的，BaseServer中定义了一些处理流程方面的东西，并没有任何具体的处理，所有的处理流程，都留给了子类。另外还有些上述没提到的留给TCP 和UDPserver的方法，比如TCP的server_bind等不一一说了，具体看代码。&lt;/p&gt;
-
-&lt;h4 id=&quot;threading--forking&quot;&gt;Threading , Forking&lt;/h4&gt;
-&lt;p&gt;这个模块非常巧妙的使用mix-in class实现了Threading和Forking。&lt;/p&gt;
-
-&lt;p&gt;通过上面的分析我们知道，核心的处理逻辑是process_request方法，以多线程为例，如果我们要实现多线程，其实只需要对这个方法做些改动即可。&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;process_request_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;Same as in BaseServer but as a thread.
-    In addition, exception handling is done here.
-    &quot;&quot;&quot;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;finish_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shutdown_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;except&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shutdown_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;process_request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;&quot;&quot;&quot;Start a new thread to process the request.&quot;&quot;&quot;&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threading&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;target&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;process_request_thread&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                         &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;daemon_threads&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;就是这么简单的实现，同样的还有ForkingMixIn ， 这两个mix-in class在后续很多地方都还会使用到，简直是mix-in使用的完美范例。&lt;/p&gt;
-
-&lt;h4 id=&quot;handler&quot;&gt;handler&lt;/h4&gt;
-&lt;p&gt;handler的基类是BaseRequestHandler,非常的短。&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;
-    &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;client_address&lt;/span&gt;
-    &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;
-    &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;finish&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setup&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;pass&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;pass&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;finish&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;pass&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;而后还有两个具体的实现，StreamRequestHandler 和DatagramRequestHandler，分别用于TCP 和UDPServer中，也只是简单实现了setup和finish，核心handle方法留给子类实现。&lt;/p&gt;
-
-&lt;p&gt;如BaseHttpServer中，有一个BaseHTTPRequestHandler，针对http协议做了一系列处理，当然，既然以base开头，也只是为后续实现提供方便。如werkzeug.serving中的WSGIRequestHandler，在继承BaseHTTPRequestHandler的基础上，做了一些修改，用于适配wsgi标准。如需要传入application，用于处理具体业务。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 29 Aug 2017 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8BSocketServer/</guid>
-        
-        <category>python随笔</category>
         
         
       </item>

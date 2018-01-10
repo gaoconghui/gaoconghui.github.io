@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>timelion一些基本表达式</title>
+  <meta name="description" content="一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="timelion一些基本表达式">
+  <meta name="twitter:description" content="一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="timelion一些基本表达式">
+  <meta property="og:description" content="一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-01-02 20:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-01-02</time> &#8226; <span class="post-meta__tags tags">kibana timelion</span>
+    </div>
+    <h1 class="post-title">timelion一些基本表达式</h1>
+  </header>
+
+  <section class="post">
+    <p>一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？</p>
+
+<blockquote>
+  <p>Timelion is a time series data visualizer that enables you to combine totally independent data sources within a single visualization. It’s driven by a simple expression language you use to retrieve time series data, perform calculations to tease out the answers to complex questions, and visualize the results.</p>
+</blockquote>
+
+<p>timelion可以聚合完全独立的完全不同的数据源的数据，糅合到同一个图里边，进行一些展示以及分析。（kibana一般都只展现es的某一个index的）</p>
+
+<p>如下一些问题是kibana不能处理，而timelion可以的</p>
+
+<ul>
+  <li>在一张图里边看这个月每天爬取量与上个月每天爬取量</li>
+  <li>这个月爬取数量的累积和</li>
+  <li>相比较上个月爬取量而言，这个月增长的幅度</li>
+  <li>展现股票的30分均线图</li>
+  <li>…</li>
+</ul>
+
+<p>timelion表达式以.开头，中间会跟上一堆参数。timelion表达式支持链式调用，如es(q=site:yd).lable(yd)</p>
+
+<p>也可以在一个图中画多条曲线，用来对比，用逗号分隔。这个博客主要记录下一些常用的方法以及他们的参数。</p>
+
+<h4 id="es-elasticsearc相同">.es (.elasticsearc相同)</h4>
+
+<p>一般都会从.es开始，会从es中拉取需要展示的数据</p>
+
+<ul>
+  <li>q  query参数，lucene语法</li>
+  <li>index 可以指定索引，如logstash-*</li>
+  <li>timefield 可以指定时间轴采用的字段，默认@timestamp</li>
+  <li>split 按某字段分隔 如 split=source:4 按source字段进行划分，取数量前四的展现。一个表达式可以有多个split</li>
+  <li>metric 聚类，如metric=sum:bytes，y轴即为bytes的和。一个表达式可以有多个metric</li>
+  <li>offset偏移值 如-1w即为显示一个礼拜之前的数据。</li>
+</ul>
+
+<h4 id="static">.static</h4>
+
+<p>一条水平的直线</p>
+
+<ul>
+  <li>value  y轴值</li>
+  <li>label 标签</li>
+</ul>
+
+<h4 id="lines">.lines</h4>
+
+<p>一个表达式默认展现出来会是一条线</p>
+
+<ul>
+  <li>width 线条的粗细</li>
+  <li>fill 取值0-10 会填充曲线与x轴之间的区域，fill值代表类似透明度的东西</li>
+  <li>show boolean 是否显示</li>
+  <li>step boolean 是否显示为一种类似阶梯的形式</li>
+  <li>stack 如果有fill的，当两条线拥有共同填充区域时，是否选择堆叠。默认true</li>
+</ul>
+
+<h4 id="bars">.bars</h4>
+
+<p>展现为柱状图</p>
+
+<ul>
+  <li>width 柱状图的粗细</li>
+  <li>stack 当有两个曲线都是bars，拥有共同的区域时，是否选择堆叠。</li>
+</ul>
+
+<h4 id="points">.points</h4>
+
+<p>展现为一个个点</p>
+
+<ul>
+  <li>radius 点的半径</li>
+  <li>weight 点的线的粗细</li>
+  <li>fill 取值0-10 填充区域的填充度</li>
+  <li>fillColor 填充颜色</li>
+  <li>symbol 形状，默认为圆形，可取值为cross(叉叉)，circle，triangle，square,diamond(菱形)</li>
+</ul>
+
+<h4 id="color">.color</h4>
+
+<p>颜色，可填red,blue这种，也可以是#c6c6c6这样的</p>
+
+<h4 id="label">.label</h4>
+
+<p>修改标签，如.es(*).label(test)</p>
+
+<h4 id="range">.range</h4>
+
+<p>y轴取值，如range(0,10)代表着y轴按比例缩小到0-10的范围内</p>
+
+<h4 id="yaxis">.yaxis</h4>
+
+<p>对y轴的一些设置</p>
+
+<ul>
+  <li>min y轴最小值</li>
+  <li>max y轴最大值</li>
+  <li>position 取值left right，y轴显示位置</li>
+  <li>label y轴标签</li>
+  <li>color 标签的颜色</li>
+</ul>
+
+<h4 id="scale_interval">.scale_interval</h4>
+
+<p>有时候需要画多条线，但是对x轴精度要求不同，可以使用scale_interval来改变统计的间隔。</p>
+
+<h4 id="abs">.abs</h4>
+
+<p>取绝对值</p>
+
+<h4 id="cusum">.cusum</h4>
+
+<p>累加和</p>
+
+<h4 id="divide--multiply--add-subtract">.divide  .multiply  .add .subtract</h4>
+
+<p>显示的值除/乘…以某个值，也可以除以某个表达式(即两次查询结果做相应操作)</p>
+
+<h4 id="min-max">.min .max</h4>
+
+<p>最大值最小值操作，可以比较两个不同的表达式</p>
+
+<p>这边官网提供了一个很有意思的用法 <code class="highlighter-rouge">.es().bars(stack=false).color(#F44336), .min(.es(), 25).bars(stack=false).color(#8BC34A)</code> 会把一个柱状图中 超过25的区域都改为另一种颜色</p>
+
+<h4 id="derivative">.derivative</h4>
+
+<p>求导</p>
+
+<h4 id="mvavg">.mvavg</h4>
+
+<p>move avg 顾名思义，移动平均值。类似K线图中的五分钟均价</p>
+
+<ul>
+  <li>window 取均值的窗口范围</li>
+  <li>position 取值的位置。可为left right center(默认)</li>
+</ul>
+
+<h4 id="if-condition相同">.if (.condition相同)</h4>
+
+<p>if表达式</p>
+
+<ul>
+  <li>operator 有lt,lte,eq,gt,gte五种，分别代表小于 小于等于…</li>
+  <li>if 比较的值。可以是一个值或者是一个新的es搜索表达式。</li>
+  <li>then 如果上边的if匹配到了，则取值为then的值。可以是一个值或者是一个表达式。如.es().if(lt, 500, null)，即为如果小于500，则不显示</li>
+  <li>else 如果不满足if则会为else。.es().if(lt, 500, 0，1)表示如果小于500，显示0，否则显示1</li>
+</ul>
+
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/" title="link to python随笔 Mock vs MagicMock">python随笔 Mock vs MagicMock</a></h2>
+       <p class="excerpt">首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。_mock = mock.Mock()_magicmock = mock.MagicMock()mock.__iter__ # error_magicmock.__iter__ #&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。&gt;&gt;&gt;...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-01-08 21:00:00 +0800" class="post-list__meta--date date">2018-01-08</time> &#8226; <span class="post-list__meta--tags tags">python mock</span><a class="btn-border-small" href=/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/" title="link to chrome抓包websocket frame为空">chrome抓包websocket frame为空</a></h2>
+       <p class="excerpt">尝试抓websocket的包，遇上一个奇葩的问题，分享下。测试网站如下http://websocket.org/echo.htmlchrome抓websocket的包很简单  打开http://websocket.org/echo.html  connect ，send，可以在前端看到输出  打开chrome开发者工具，可以看到已经有websocket的连接然而…啥都没有…很迷，看了许久，搜了很多地方，换了电脑，升级了最新版本，依旧啥都没有…终于，在StackOverflow 上找到了靠谱...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-12-30 20:00:00 +0800" class="post-list__meta--date date">2017-12-30</time> &#8226; <span class="post-list__meta--tags tags">websocket</span><a class="btn-border-small" href=/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/";
+        this.page.identifier = "/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

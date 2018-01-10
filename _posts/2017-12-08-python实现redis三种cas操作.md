@@ -65,6 +65,8 @@ class CasNormal(object):
 
 >此处应该有个推倒出redis悲观锁的过程，不过太麻烦了...直接丢个链接吧...
 >https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434
+>
+>另外，redis-py中好像也有Lock的实现.. 详见redis.Lock
 
 ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。
 

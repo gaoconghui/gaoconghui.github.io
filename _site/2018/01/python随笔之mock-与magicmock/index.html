@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>python随笔 Mock vs MagicMock</title>
+  <meta name="description" content="首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="python随笔 Mock vs MagicMock">
+  <meta name="twitter:description" content="首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="python随笔 Mock vs MagicMock">
+  <meta property="og:description" content="首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-01-08 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-01-08</time> &#8226; <span class="post-meta__tags tags">python mock</span>
+    </div>
+    <h1 class="post-title">python随笔 Mock vs MagicMock</h1>
+  </header>
+
+  <section class="post">
+    <p>首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+<span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+<span class="n">mock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c"># error</span>
+<span class="n">_magicmock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c">#&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;</span>
+</code></pre>
+</div>
+
+<p>而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
+<span class="p">[</span><span class="s">'assert_any_call'</span><span class="p">,</span> <span class="s">'assert_called'</span><span class="p">,</span> <span class="s">'assert_called_once'</span><span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">iter</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">listiterator</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x10e32e290</span><span class="o">&gt;</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
+<span class="p">[</span><span class="s">'__iter__'</span><span class="p">,</span> <span class="s">'assert_any_call'</span><span class="p">,</span> <span class="s">'assert_called'</span><span class="o">...</span>
+</code></pre>
+</div>
+
+<p>很神奇。</p>
+
+<p>所以在使用上，除了那种需要调用魔术方法报错的（如不允许迭代）都可以使用MagicMock。如果保守点，可以都使用Mock，其实也都够用来着。</p>
+
+<hr />
+
+<p>下边进入正题，在看MagicMock中看到的有意思的东西。下边会回答MagicMock对魔术方法的懒加载是如何实现的。</p>
+
+<p>首先，magicmock是mock的一个子类。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMock</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="n">Mock</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p>很明显，实现设置magic方法的在MagicMixin中。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c"># make magic work for kwargs in init</span>
+        <span class="n">_safe_super</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c"># fix magic broken by upper level init</span>
+
+
+    <span class="k">def</span> <span class="nf">_mock_set_magics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">these_magics</span> <span class="o">=</span> <span class="n">_magics</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">"_mock_methods"</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">these_magics</span> <span class="o">=</span> <span class="n">_magics</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mock_methods</span><span class="p">)</span>
+
+            <span class="n">remove_magics</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="n">remove_magics</span> <span class="o">=</span> <span class="n">_magics</span> <span class="o">-</span> <span class="n">these_magics</span>
+
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">remove_magics</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
+                    <span class="c"># remove unneeded magic methods</span>
+                    <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+
+        <span class="c"># don't overwrite existing attributes if called a second time</span>
+        <span class="n">these_magics</span> <span class="o">=</span> <span class="n">these_magics</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+        <span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">these_magics</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">MagicProxy</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+</code></pre>
+</div>
+
+<p>这段代码也不长，直接贴上来了。</p>
+
+<p>可以看到，通过一串东西，找到了所有需要添加的魔术方法，然后给这个类赋予了一个MagicProxy。这个proxy会在第一次调用的时候创建魔术方法。</p>
+
+<p>这边有个问题，直接获取type赋值，为啥不会影响其他的mock嘞？很简单，每个magicmock的type都不一样。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span>
+<span class="bp">False</span>
+</code></pre>
+</div>
+
+<p>直觉告诉我，是什么地方有修改<code class="highlighter-rouge">__new__</code>的地方。果然，在很上层的父类，NonCallableMock中找到了这么个东西。</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="c"># every instance has its own class</span>
+        <span class="c"># so we can create magic methods on the</span>
+        <span class="c"># class without stomping on other mocks</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls</span><span class="p">,),</span> <span class="p">{</span><span class="s">'__doc__'</span><span class="p">:</span> <span class="n">cls</span><span class="o">.</span><span class="n">__doc__</span><span class="p">})</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span>
+</code></pre>
+</div>
+
+<p>看注释也很清楚了，就是为了magic方法才做的这个事，在创建的时候做了些手脚。</p>
+
+<h5 id="结论">结论</h5>
+
+<p>把上面的过程顺起来说一遍。</p>
+
+<ul>
+  <li>在创建的时候，修改了<code class="highlighter-rouge">__new__</code>方法，每个实例都有自己独一无二的实例。</li>
+  <li>在MagicMock初始化的过程中，在类中增加各magic方法的代理。</li>
+  <li>实例调用magic方法的时候，会在第一次调用proxy的时候创建魔术方法。</li>
+</ul>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/" title="link to timelion一些基本表达式">timelion一些基本表达式</a></h2>
+       <p class="excerpt">一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？  Timelion is a time series data visualizer that enables you to combine totally independent data sources within a single visualization. It’s driven by a simple expre...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-01-02 20:00:00 +0800" class="post-list__meta--date date">2018-01-02</time> &#8226; <span class="post-list__meta--tags tags">kibana timelion</span><a class="btn-border-small" href=/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/";
+        this.page.identifier = "/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
