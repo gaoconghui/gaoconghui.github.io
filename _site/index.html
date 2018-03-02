@@ -108,6 +108,27 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/" title="访问 优雅关闭以及机器kubernetes pods">优雅关闭以及机器kubernetes pods</a></h2>
+      <p class="excerpt">优雅启动很常见的一个场景，一个服务刚启动，可能会有一堆东西要加载（比如我这边需要读数据库中一堆东西）需要一些时间，而这段时间里，我不希望kubernetes 把请求打到这些还没初始化的pod上。kubernetes提供了一个叫探针的东西，可以用来检测pod是否就绪，只有就绪的情况才会把请求打过来，如果非就绪状态，这些pod会从service的load balancer中暂时移除。探针可以是一个command或者是一个HTTP的请求，这边使用的是一个HTTP请求的形式。需要保证程序在正常情况...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-02-26 21:00:00 +0800" class="post-list__meta--date date">2018-02-26</time> &#8226; <span class="post-list__meta--tags tags">kubernetes</span><a class="btn-border-small" href=/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/" title="访问 一种神奇的批量创建类的方法--参照namedtuple">一种神奇的批量创建类的方法--参照namedtuple</a></h2>
+      <p class="excerpt">def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.namedtuple是一个很神奇的东西，在看kafka-python的时候看到了很多地方用到了这玩意。用法也非常简单from collections import namedtuplePeople = namedtuple(typename="peo...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python</span><a class="btn-border-small" href=/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/" title="访问 kafka-python 获取topic lag值">kafka-python 获取topic lag值</a></h2>
+      <p class="excerpt">说真，这个问题看上去很简单，但“得益”与kafka-python神奇的文档，真的不算简单，反正我是搜了半天还看了半天源码。直接上代码吧from kafka import SimpleClient, KafkaConsumerfrom kafka.common import OffsetRequestPayload, TopicPartitiondef get_topic_offset(brokers, topic):    """    获取一个topic的offset值的和    """...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python kafka</span><a class="btn-border-small" href=/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/" title="访问 python随笔 Mock vs MagicMock">python随笔 Mock vs MagicMock</a></h2>
       <p class="excerpt">首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。_mock = mock.Mock()_magicmock = mock.MagicMock()mock.__iter__ # error_magicmock.__iter__ #&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。&gt;&gt;&gt;...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-01-08 21:00:00 +0800" class="post-list__meta--date date">2018-01-08</time> &#8226; <span class="post-list__meta--tags tags">python mock</span><a class="btn-border-small" href=/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/>继续阅读</a></div>
@@ -153,27 +174,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/" title="访问 python随笔之实现classmethod staticmethod">python随笔之实现classmethod staticmethod</a></h2>
       <p class="excerpt">大概刚学python的时候就知道了classmethod和staticmethod的用法，后来看到描述器才知道描述器与他们之间千丝万缕的关系，是否能动手实现下这俩货嘞？这边先从bound和unbound method说起bound unbound看下面的例子class Cla():    def __init__(self,a):        self.a = a    def f(self):        print self,self.a        print Cla.f# &...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-11-20 21:00:00 +0800" class="post-list__meta--date date">2017-11-20</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" title="访问 pyredis中ttl的坑">pyredis中ttl的坑</a></h2>
-      <p class="excerpt">问题复现在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。r = redis.Redis()lock_name = "test_lock"r.set(lock_name, "test")r.expire(lock_name, 1)t1 = 0t2 = 0while True:    #...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-11-13 20:07:00 +0800" class="post-list__meta--date date">2017-11-13</time> &#8226; <span class="post-list__meta--tags tags">pyredis</span><a class="btn-border-small" href=/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/" title="访问 LocalProxy作用的一点感悟">LocalProxy作用的一点感悟</a></h2>
-      <p class="excerpt">这里的LocalProxy是指 werkzeug.local中的一个类class werkzeug.local.LocalProxy(*local*, *name=None*)[]Acts as a proxy for a werkzeug local. Forwards all operations to a proxied object. The only operations not supported for forwarding are right handed operands...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-10-18 21:00:00 +0800" class="post-list__meta--date date">2017-10-18</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" title="访问 python随笔--socket关闭之后端口占用的问题">python随笔--socket关闭之后端口占用的问题</a></h2>
-      <p class="excerpt">先上一段代码class MyHttpHandler(BaseHTTPRequestHandler):    def do_GET(self):        print "do get"        self.send_response(code=200)        self.end_headers()        self.wfile.write("hello world")if __name__ == '__main__':    serv = TCPServer(('', 2...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-09-11 21:00:00 +0800" class="post-list__meta--date date">2017-09-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 socket</span><a class="btn-border-small" href=/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

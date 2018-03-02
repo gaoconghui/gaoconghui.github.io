@@ -114,24 +114,22 @@
   <section class="post">
     <p>首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
 <span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 <span class="n">mock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c"># error</span>
 <span class="n">_magicmock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c">#&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
 <span class="p">[</span><span class="s">'assert_any_call'</span><span class="p">,</span> <span class="s">'assert_called'</span><span class="p">,</span> <span class="s">'assert_called_once'</span><span class="o">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">iter</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
 <span class="o">&lt;</span><span class="n">listiterator</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x10e32e290</span><span class="o">&gt;</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_magicmock</span><span class="p">)</span>
 <span class="p">[</span><span class="s">'__iter__'</span><span class="p">,</span> <span class="s">'assert_any_call'</span><span class="p">,</span> <span class="s">'assert_called'</span><span class="o">...</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>很神奇。</p>
 
@@ -143,13 +141,12 @@
 
 <p>首先，magicmock是mock的一个子类。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMock</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="n">Mock</span><span class="p">)</span>
-</code></pre>
-</div>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMock</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="n">Mock</span><span class="p">)</span>
+</code></pre></div></div>
 
 <p>很明显，实现设置magic方法的在MagicMixin中。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c"># make magic work for kwargs in init</span>
         <span class="n">_safe_super</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
@@ -176,8 +173,7 @@
         <span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">these_magics</span><span class="p">:</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="n">_type</span><span class="p">,</span> <span class="n">entry</span><span class="p">,</span> <span class="n">MagicProxy</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这段代码也不长，直接贴上来了。</p>
 
@@ -185,22 +181,20 @@
 
 <p>这边有个问题，直接获取type赋值，为啥不会影响其他的mock嘞？很简单，每个magicmock的type都不一样。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">())</span>
 <span class="bp">False</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>直觉告诉我，是什么地方有修改<code class="highlighter-rouge">__new__</code>的地方。果然，在很上层的父类，NonCallableMock中找到了这么个东西。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
         <span class="c"># every instance has its own class</span>
         <span class="c"># so we can create magic methods on the</span>
         <span class="c"># class without stomping on other mocks</span>
         <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls</span><span class="p">,),</span> <span class="p">{</span><span class="s">'__doc__'</span><span class="p">:</span> <span class="n">cls</span><span class="o">.</span><span class="n">__doc__</span><span class="p">})</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>看注释也很清楚了，就是为了magic方法才做的这个事，在创建的时候做了些手脚。</p>
 
@@ -218,6 +212,14 @@
 </article>
 
 <section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/" title="link to kafka-python 获取topic lag值">kafka-python 获取topic lag值</a></h2>
+       <p class="excerpt">说真，这个问题看上去很简单，但“得益”与kafka-python神奇的文档，真的不算简单，反正我是搜了半天还看了半天源码。直接上代码吧from kafka import SimpleClient, KafkaConsumerfrom kafka.common import OffsetRequestPayload, TopicPartitiondef get_topic_offset(brokers, topic):    """    获取一个topic的offset值的和    """...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python kafka</span><a class="btn-border-small" href=/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/>继续阅读</a></div>
+   </div>
    
    
    

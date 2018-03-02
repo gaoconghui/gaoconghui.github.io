@@ -114,7 +114,7 @@
   <section class="post">
     <h4 id="从socketserver-讲起">从SocketServer 讲起</h4>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>    +------------+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    +------------+
     | BaseServer |
     +------------+
           |
@@ -127,14 +127,13 @@
     +-----------+        +--------------------+
     | UDPServer |-------&gt;| UnixDatagramServer |
     +-----------+        +--------------------+
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>整个模块的结构大概是这样的，由BaseServer衍生出TCPServer，UDPServer，然后以此为基类，后续还有HTTPServer(SocketServer.TCPServer)，class WSGIServer(HTTPServer)，但入口都是接下去要说的SockerServer中的一些类。</p>
 
 <p>BaseServer 有以下的一些方法</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>Methods for the caller:
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Methods for the caller:
 
     - __init__(server_address, RequestHandlerClass)
     - serve_forever(poll_interval=0.5)
@@ -171,12 +170,11 @@
 
     - RequestHandlerClass
     - socket
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这其中有一系列钩子方法留着给子类复写以实现其特有的功能。其中实现具体处理逻辑的为_handle_request_noblock方法</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_handle_request_noblock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_handle_request_noblock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="s">"""Handle one request, without blocking.
 
     I assume that select.select has returned that the socket is
@@ -193,12 +191,11 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">handle_error</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>get_request 需要子类来实现，获取request和address，而后由process_request 来处理，process_request 会依次调用finish_request 和shutdown_request,finish_request会调用RequestHandlerClass（需要传入，为具体处理的handler）。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poll_interval</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span><span class="p">:</span>
@@ -213,8 +210,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__shutdown_request</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__is_shut_down</span><span class="o">.</span><span class="nb">set</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>在serve_forever 中，会使用select 获取需要处理的内容，再调用上边的_handle_request_noblock。</p>
 
@@ -225,7 +221,7 @@
 
 <p>通过上面的分析我们知道，核心的处理逻辑是process_request方法，以多线程为例，如果我们要实现多线程，其实只需要对这个方法做些改动即可。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">process_request_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">process_request_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
     <span class="s">"""Same as in BaseServer but as a thread.
     In addition, exception handling is done here.
     """</span>
@@ -242,19 +238,17 @@
                          <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">))</span>
     <span class="n">t</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon_threads</span>
     <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
-</code></pre>
-</div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
+</code></pre></div></div>
 
 <p>就是这么简单的实现，同样的还有ForkingMixIn ， 这两个mix-in class在后续很多地方都还会使用到，简直是mix-in使用的完美范例。</p>
 
 <h4 id="handler">handler</h4>
 <p>handler的基类是BaseRequestHandler,非常的短。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">client_address</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">client_address</span> <span class="o">=</span> <span class="n">client_address</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
@@ -272,8 +266,7 @@
 
 <span class="k">def</span> <span class="nf">finish</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">pass</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而后还有两个具体的实现，StreamRequestHandler 和DatagramRequestHandler，分别用于TCP 和UDPServer中，也只是简单实现了setup和finish，核心handle方法留给子类实现。</p>
 

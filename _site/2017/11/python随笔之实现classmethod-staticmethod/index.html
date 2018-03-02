@@ -118,7 +118,7 @@
 
 <p>看下面的例子</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Cla</span><span class="p">():</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Cla</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">a</span>
     <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -129,16 +129,14 @@
 <span class="k">print</span> <span class="n">Cla</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f</span>
 <span class="c"># &lt;bound method Cla.f of &lt;__main__.Cla instance at 0x103f3fb00&gt;&gt;</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这个非常好理解，bound指的是是否和具体实例绑定，我们知道，调用实例的方法，第一个参数是self，需要给第一个参数传入一个对象。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">print</span> <span class="n">Cla</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">print</span> <span class="n">Cla</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f</span><span class="p">()</span>
 <span class="k">print</span> <span class="n">Cla</span><span class="o">.</span><span class="n">f</span><span class="p">()</span>
 <span class="k">print</span> <span class="n">Cla</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">Cla</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>第一个和第三个能成功执行，第二个会报错。报错为<code class="highlighter-rouge">unbound method f() must be called with Cla instance as first argument (got nothing instead)</code></p>
 
@@ -152,7 +150,7 @@
 
 <p>大致相当于下面，但并不准确，只是大概实现。需要注意的是，下边全部都是新式类，经典类会表现的不太一样。（不太想研究经典类这种过时的东西了…）</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UnboundMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">UnboundMethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">own</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">f</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">own</span> <span class="o">=</span> <span class="n">own</span>
@@ -186,14 +184,13 @@
             <span class="k">return</span> <span class="n">BoundMethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">UnboundMethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h4 id="staticmethod-classmethod">staticmethod classmethod</h4>
 
 <p>已经理解了上面的bound和unbound的描述器实现，那么staticmethod和classmethod就很好理解了</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">my_classmethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">my_classmethod</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
 
@@ -207,8 +204,7 @@
 
     <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 
   </section>

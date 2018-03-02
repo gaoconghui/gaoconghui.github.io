@@ -114,7 +114,7 @@
   <section class="post">
     <p>先上一段代码，来源是<a href="https://github.com/faif/python-patterns/blob/master/creational/borg.py">github</a>。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Borg</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Borg</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">__shared_state</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -161,14 +161,13 @@
 <span class="c"># rm1: Init</span>
 <span class="c"># rm2: Init</span>
 <span class="c"># rm3: Init</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>上面这一段代码，乍看挺神奇的，Borg 的各个实例共享了state。实现起来也很巧妙，利用了__dict__。 我们知道，python中__dict__存储了该对象的一些属性。类和实例分别拥有自己的__dict__，且实例会共享类的__dict__。</p>
 
 <p>这里有一个我一直以来都搞混的知识点，在__init__ 中声明的变量 ，以及在方法体之外声明的变量分别是在哪里。很简单的测试就能得到，在__init__中，self.xxx = xxx会把变量存在实例的__dict__中，仅会在该实例中能获取到，而在方法体外声明的，会在class的__dict__中。下面的简单的测试。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>class MyclassA():
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class MyclassA():
 
     in_class = {}
 
@@ -181,23 +180,21 @@ a = MyclassA()
 print MyclassA.__dict__  # {'in_class': {}, '__module__': '__main__', '__doc__': None, '__init__': &lt;function __init__ at 0x10eb040c8&gt;}
 print a.__dict__ # {'in_func': {}}
 
-</code></pre>
-</div>
+</code></pre></div></div>
 <hr />
 <p>有个有意思的问题，调用obj.key的搜索顺序是咋样的？</p>
 <h4 id="attr的搜索顺序">attr的搜索顺序</h4>
 <p>这个很有意思，比我想象的要复杂很多，因为涉及到了descriptor，不仅仅只是查询实例或者是类的__dict__这么简单，直接上个结论</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>1.如果attr是一个Python自动产生的属性，找到！(优先级非常高！)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1.如果attr是一个Python自动产生的属性，找到！(优先级非常高！)
 2.查找obj.__class__.__dict__，如果attr存在并且是data descriptor，返回data descriptor的__get__方法的结果，如果没有继续在obj.__class__的父类以及祖先类中寻找data descriptor
 3.在obj.__dict__中查找，这一步分两种情况，第一种情况是obj是一个普通实例，找到就直接返回，找不到进行下一步。第二种情况是obj是一个类，依次在obj和它的父类、祖先类的__dict__中查找，如果找到一个descriptor就返回descriptor的__get__方法的结果，否则直接返回attr。如果没有找到，进行下一步。
 4.在obj.__class__.__dict__中查找，如果找到了一个descriptor(插一句：这里的descriptor一定是non-data descriptor，如果它是data descriptor，第二步就找到它了)descriptor的__get__方法的结果。如果找到一个普通属性，直接返回属性值。如果没找到，进行下一步。
 5.很不幸，Python终于受不了。在这一步，它raise AttributeError
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>用代码解释上面的过程(这其中包含了descriptor相关概念)</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="err">作者：刘缙</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">作者：刘缙</span>
 <span class="err">链接：</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">zhihu</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">question</span><span class="o">/</span><span class="mi">25391709</span><span class="o">/</span><span class="n">answer</span><span class="o">/</span><span class="mi">30634637</span>
 <span class="err">来源：知乎</span>
 <span class="err">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</span>
@@ -236,12 +233,11 @@ print a.__dict__ # {'in_func': {}}
      <span class="c"># not found </span>
      <span class="k">return</span> <span class="bp">None</span>
 
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>经常看到有人说obj.key = val 等价于obj.__dict__[key] = val，其实根据我们上面的那个搜索顺序，在有descriptor的情况下，会不太一样。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DataDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">DataDescriptor</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">init_value</span>
 
@@ -268,8 +264,7 @@ print a.__dict__ # {'in_func': {}}
     <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_normal"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
     <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c"># DataDescriptor __get__has change</span>
     <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c">#change again</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>重点是最后两行行，要修改的是一个descriptor 的话，obj.key = val 的方式是而已修改成功的，会调用descriptor 的__set__ 方法，而直接修改__dict__的方式则会有问题，因为在搜索attr的时候会先查找class的descriptor（对，即便<code class="highlighter-rouge">a.__dict__["val_descriptor"] = DataDescriptor("change again")</code>这样子也是没用的）。</p>
 

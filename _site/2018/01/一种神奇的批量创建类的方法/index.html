@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>一种神奇的批量创建类的方法--参照namedtuple</title>
+  <meta name="description" content="def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="一种神奇的批量创建类的方法--参照namedtuple">
+  <meta name="twitter:description" content="def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="一种神奇的批量创建类的方法--参照namedtuple">
+  <meta property="og:description" content="def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-01-10 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-01-10</time> &#8226; <span class="post-meta__tags tags">python</span>
+    </div>
+    <h1 class="post-title">一种神奇的批量创建类的方法--参照namedtuple</h1>
+  </header>
+
+  <section class="post">
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">namedtuple</span><span class="p">(</span><span class="n">typename</span><span class="p">,</span> <span class="n">field_names</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">rename</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+  <span class="s">"""Returns a new subclass of tuple with named fields.
+</span></code></pre></div></div>
+
+<p>namedtuple是一个很神奇的东西，在看kafka-python的时候看到了很多地方用到了这玩意。用法也非常简单</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+
+<span class="n">People</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="n">typename</span><span class="o">=</span><span class="s">"people"</span><span class="p">,</span><span class="n">field_names</span><span class="o">=</span><span class="p">[</span><span class="s">"sex"</span><span class="p">,</span><span class="s">"name"</span><span class="p">],</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">People</span><span class="p">(</span><span class="n">sex</span><span class="o">=</span><span class="s">"f"</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s">"abc"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>很方便的创建一个父类为tuple的类，且可以用kv对的方式创建对象。</p>
+
+<p>怎么实现的嘞？我能最快想到的方法大概是使用type直接创建一个类。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">_cls</span><span class="p">,</span> <span class="p">(</span><span class="n">sex</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+
+<span class="n">People2</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s">"People2"</span><span class="p">,(</span><span class="nb">tuple</span><span class="p">,),</span><span class="nb">dict</span><span class="p">(</span><span class="n">__new__</span><span class="o">=</span><span class="n">__new__</span><span class="p">))</span>
+<span class="k">print</span> <span class="n">People2</span><span class="p">(</span><span class="n">sex</span><span class="o">=</span><span class="s">"f"</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="s">"abc"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>大概是这样的，但是还有一些问题，比如打印出来的样子啦 之类的，虽然麻烦点，总归是能做的。</p>
+
+<p>又或者是使用metaclass搞个类工厂，会比type方便不少。</p>
+
+<p>带着疑问，点开了namedtuple的源码。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">class_definition</span> <span class="o">=</span> <span class="n">_class_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">typename</span> <span class="o">=</span> <span class="n">typename</span><span class="p">,</span>
+    <span class="n">field_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">field_names</span><span class="p">),</span>
+    <span class="n">num_fields</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_names</span><span class="p">),</span>
+    <span class="n">arg_list</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">field_names</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">"'"</span><span class="p">,</span> <span class="s">""</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">repr_fmt</span> <span class="o">=</span> <span class="s">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_repr_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">),</span>
+    <span class="n">field_defs</span> <span class="o">=</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_field_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+                           <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_names</span><span class="p">))</span>
+<span class="p">)</span>
+
+<span class="c"># Execute the template string in a temporary namespace and support</span>
+<span class="c"># tracing utilities by setting a value for frame.f_globals['__name__']</span>
+<span class="n">namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_itemgetter</span><span class="o">=</span><span class="n">_itemgetter</span><span class="p">,</span> <span class="n">__name__</span><span class="o">=</span><span class="s">'namedtuple_</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">typename</span><span class="p">,</span>
+                 <span class="n">OrderedDict</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">_property</span><span class="o">=</span><span class="nb">property</span><span class="p">,</span> <span class="n">_tuple</span><span class="o">=</span><span class="nb">tuple</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">exec</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="n">namespace</span>
+<span class="k">except</span> <span class="nb">SyntaxError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="nb">SyntaxError</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s">':</span><span class="se">\n</span><span class="s">'</span> <span class="o">+</span> <span class="n">class_definition</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">namespace</span><span class="p">[</span><span class="n">typename</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>感觉画风有点不太对了…_class_template是个啥玩意，咋还用exec嘞？</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_class_template</span> <span class="o">=</span> <span class="s">'''</span><span class="se">\
+</span><span class="s">class {typename}(tuple):
+    '{typename}({arg_list})'
+
+    __slots__ = ()
+
+    _fields = {field_names!r}
+
+    def __new__(_cls, {arg_list}):
+        'Create new instance of {typename}({arg_list})'
+        return _tuple.__new__(_cls, ({arg_list}))
+
+    @classmethod
+    def _make(cls, iterable, new=tuple.__new__, len=len):
+        'Make a new {typename} object from a sequence or iterable'
+        result = new(cls, iterable)
+        if len(result) != {num_fields:d}:
+            raise TypeError('Expected {num_fields:d} arguments, got </span><span class="si">%</span><span class="s">d' </span><span class="si">% </span><span class="s">len(result))
+        return result
+
+    def __repr__(self):
+        'Return a nicely formatted representation string'
+        return '{typename}({repr_fmt})' </span><span class="si">% </span><span class="s">self
+
+    def _asdict(self):
+        'Return a new OrderedDict which maps field names to their values'
+        return OrderedDict(zip(self._fields, self))
+
+    def _replace(_self, **kwds):
+        'Return a new {typename} object replacing specified fields with new values'
+        result = _self._make(map(kwds.pop, {field_names!r}, _self))
+        if kwds:
+            raise ValueError('Got unexpected field names: </span><span class="si">%</span><span class="s">r' </span><span class="si">% </span><span class="s">kwds.keys())
+        return result
+
+    def __getnewargs__(self):
+        'Return self as a plain tuple.  Used by copy and pickle.'
+        return tuple(self)
+
+    __dict__ = _property(_asdict)
+
+    def __getstate__(self):
+        'Exclude the OrderedDict from pickling'
+        pass
+
+{field_defs}
+'''</span>
+</code></pre></div></div>
+
+<p>哦。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/" title="link to 优雅关闭以及机器kubernetes pods">优雅关闭以及机器kubernetes pods</a></h2>
+       <p class="excerpt">优雅启动很常见的一个场景，一个服务刚启动，可能会有一堆东西要加载（比如我这边需要读数据库中一堆东西）需要一些时间，而这段时间里，我不希望kubernetes 把请求打到这些还没初始化的pod上。kubernetes提供了一个叫探针的东西，可以用来检测pod是否就绪，只有就绪的情况才会把请求打过来，如果非就绪状态，这些pod会从service的load balancer中暂时移除。探针可以是一个command或者是一个HTTP的请求，这边使用的是一个HTTP请求的形式。需要保证程序在正常情况...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-02-26 21:00:00 +0800" class="post-list__meta--date date">2018-02-26</time> &#8226; <span class="post-list__meta--tags tags">kubernetes</span><a class="btn-border-small" href=/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/" title="link to kafka-python 获取topic lag值">kafka-python 获取topic lag值</a></h2>
+       <p class="excerpt">说真，这个问题看上去很简单，但“得益”与kafka-python神奇的文档，真的不算简单，反正我是搜了半天还看了半天源码。直接上代码吧from kafka import SimpleClient, KafkaConsumerfrom kafka.common import OffsetRequestPayload, TopicPartitiondef get_topic_offset(brokers, topic):    """    获取一个topic的offset值的和    """...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python kafka</span><a class="btn-border-small" href=/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/";
+        this.page.identifier = "/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

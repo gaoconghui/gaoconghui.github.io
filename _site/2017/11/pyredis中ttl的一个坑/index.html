@@ -116,7 +116,7 @@
 
 <p>在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">()</span>
 <span class="n">lock_name</span> <span class="o">=</span> <span class="s">"test_lock"</span>
 <span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="n">lock_name</span><span class="p">,</span> <span class="s">"test"</span><span class="p">)</span>
 <span class="n">r</span><span class="o">.</span><span class="n">expire</span><span class="p">(</span><span class="n">lock_name</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -134,8 +134,7 @@
             <span class="k">break</span>
     <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mo">01</span><span class="p">)</span>
 <span class="k">print</span> <span class="n">t2</span> <span class="o">-</span> <span class="n">t1</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>expire方法设置过期时间，ttl方法获取过期时间（不存在则为None），按理说过期之后，键就会消失，即t2 - t1 应该为0，但上面的case返回大约是0.5s。</p>
 
@@ -165,7 +164,7 @@
     <p>Redis 中跟TTL 相关的是这样一句</p>
 
     <blockquote>
-      <div class="highlighter-rouge"><pre class="highlight"><code># Overridden callbacks
+      <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Overridden callbacks
 RESPONSE_CALLBACKS = dict_merge(
     StrictRedis.RESPONSE_CALLBACKS,
     {
@@ -173,8 +172,7 @@ RESPONSE_CALLBACKS = dict_merge(
         'PTTL': lambda r: r &gt;= 0 and r or None,
     }
 )
-</code></pre>
-      </div>
+</code></pre></div>      </div>
     </blockquote>
 
     <p>这是一个解析redis返回的方法，StrictRedis 会直接返回值，而Redis会做一次包装。</p>

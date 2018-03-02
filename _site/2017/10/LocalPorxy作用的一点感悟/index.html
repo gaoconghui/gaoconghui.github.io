@@ -114,20 +114,18 @@
   <section class="post">
     <p>这里的LocalProxy是指 werkzeug.local中的一个类</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>class werkzeug.local.LocalProxy(*local*, *name=None*)[]
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class werkzeug.local.LocalProxy(*local*, *name=None*)[]
 Acts as a proxy for a werkzeug local. Forwards all operations to a proxied object. The only operations not supported for forwarding are right handed operands and any kind of assignment.
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>用法如下</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>from werkzeug.local import Local
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from werkzeug.local import Local
         l = Local()
 
         # these are proxies
         request = l('request')
         user = l('user')
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>然后就可以像操作一般的对象一般操作代理了。一般的代理模式会做一些小改动，而此处不同，几乎所有的操作会直接作用在代理的对象上。</p>
 

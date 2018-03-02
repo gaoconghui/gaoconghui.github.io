@@ -115,7 +115,7 @@
     <p>cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：
 维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># 初始化</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 初始化</span>
 <span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">()</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">r</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s">"key_test"</span><span class="p">):</span>
     <span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="s">"key_test"</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -126,8 +126,7 @@
     <span class="n">count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span> <span class="c">#2</span>
     <span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="s">'key_test'</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="c">#3</span>
     <span class="k">return</span> <span class="n">count</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>很简单的一段代码，在单线程环境下可以跑的很欢，但显然，是无法移植到多线程或者是多进程环境的（进程A和B同时运行到#1，获取了相同的count值，然后运行#2#3，会导致count值总共只增加了30）。而为了能在多进程环境下运行，我们需要引入一些其他的东西。</p>
 <h3 id="py-redis本身自带的事务操作">py-redis本身自带的事务操作</h3>
@@ -135,7 +134,7 @@
 
 <p>下边是使用redis本身的事务解决cas问题的代码。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasNormal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasNormal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
@@ -159,8 +158,7 @@
                     <span class="k">continue</span>
                 <span class="k">finally</span><span class="p">:</span>
                     <span class="n">pipe</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>代码也不复杂，引入了之前说到的multi,exec,watch，如果对事务操作比较熟悉的同学，可以很容易看出来，这是一个乐观锁的操作（咱们假设没人竞争来着，每次去拿数据的时候都不会上锁，真有人来改了再说。）乐观锁在高并发的情况下会显得很无力，文末的性能对比会显示这个问题。</p>
 
@@ -176,7 +174,7 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
 
 <p>ok，咱们现在有悲观锁了，做起事来也有底气了，根据上边的代码，咱们只要加上@ synchronized注释就能保证同一时间只有一个进程在执行。下边是基于悲观锁的解决方案。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">lock_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">lock_conn</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="s">"localhost"</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">CasLock</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
@@ -192,8 +190,7 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
             <span class="n">next_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">next_count</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">next_count</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>代码看上去少多了（因为引入了synchronized…）</p>
 
 <h3 id="基于lua脚本实现">基于lua脚本实现</h3>
@@ -201,7 +198,7 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
 
 <p>我们知道，redis本身的一系列操作，都是原子操作，且redis会按顺序执行所有收到的命令。先看代码</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasLua</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CasLua</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
@@ -219,8 +216,7 @@ https://gist.github.com/gaoconghui/61e878c725952c134a1193d560df7434</p>
 
     <span class="k">def</span> <span class="nf">inc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lua</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())]))</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>这里先注册了这个脚本，后边可以直接去使用他。关于redis lua脚本的文章有不少，感兴趣的可以去搜搜看，这边就不赘述了。</p>
 

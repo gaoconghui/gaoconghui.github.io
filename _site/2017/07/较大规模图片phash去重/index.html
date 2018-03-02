@@ -136,11 +136,11 @@
 python 版本的实现</li>
 </ul>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># -*- coding: utf-8 -*-</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -*- coding: utf-8 -*-</span>
 
 <span class="kn">from</span> <span class="nn">compiler.ast</span> <span class="kn">import</span> <span class="n">flatten</span>
 <span class="kn">import</span> <span class="nn">cv2</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
 
 <span class="k">def</span> <span class="nf">pHash</span><span class="p">(</span><span class="n">imgfile</span><span class="p">):</span>
     <span class="c"># 加载并调整图片为32x32灰度图片</span>
@@ -166,13 +166,12 @@ python 版本的实现</li>
 
     <span class="c"># 得到哈希值</span>
     <span class="k">return</span> <span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">'</span><span class="si">%</span><span class="s">x'</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">avg_list</span><span class="p">[</span><span class="n">x</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>这段代码是网上找来做测试用的，当时有个坑，他没有<code class="highlighter-rouge">vis1 = vis1[0:8,0:8]</code>这一步，然后出来的结果就很奇葩，而且指纹长的可怕（32 * 32位），准确率和召回率都低的惊人。这段代码也很简单，几乎和白话一样，就是把上面phash的流程给翻译了一遍。</p>
 
 <p>然鹅，我并没有使用上面的python版的，出于两个原因，一是我上边说的坑，当时并没有发现，二是毕竟是python，虽说大部分计算的部分是用c写的（opencv），但还是觉得会慢。找到的是一个纯c的，来自 <a href="http://phash.org/">phash.org</a> (没错，就是这么官方)。安装啥的网站里边都有，附上一个python调用的脚本。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">pHash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">pHash</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lib</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="s">'/opt/local/lib/libpHash.dylib'</span><span class="p">,</span> <span class="n">use_errno</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
@@ -190,8 +189,7 @@ python 版本的实现</li>
     <span class="k">def</span> <span class="nf">hamming_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hash1</span><span class="p">,</span> <span class="n">hash2</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lib</span><span class="o">.</span><span class="n">ph_hamming_distance</span><span class="p">(</span>
             <span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint64</span><span class="p">,</span> <span class="p">[</span><span class="n">hash1</span><span class="p">,</span> <span class="n">hash2</span><span class="p">]))</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>非常贴心的还附赠了海明距的计算。
 因为我的图片都是存在云端，为了速度更快，我会直接用云端图像处理把图片先缩小，压缩后再处理。我本机测试的结果是一千张图生成phash耗时1.5s，相当快了。（有个很惊悚的发现，上头那个python版本千张耗时0.7s…惊呆了…可能实现不太一样吧…）</p>
 
@@ -206,7 +204,7 @@ python 版本的实现</li>
 <p>这边我采用的是一种内存换速度的方式，64位的的hash值，分为八组，每组八位。建立八个dict，每个dict代表一组，以每组的值作为key，value是一个list，存放key相同的hash值。查找的时候，把hash值分成八个，分别在八个map里边查找，如果有key相同的，取出key相同的所有hash值进行遍历。</p>
 
 <p>说的相当的乱，下边是代码。</p>
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">split_count</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c"># 每个64位的phash值分为八段，每段8位</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">split_count</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c"># 每个64位的phash值分为八段，每段8位</span>
 
 <span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">split_count</span><span class="p">):</span>
     <span class="n">pre_length</span> <span class="o">=</span> <span class="mi">64</span> <span class="o">/</span> <span class="n">split_count</span>
@@ -242,8 +240,7 @@ python 版本的实现</li>
         <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">True</span><span class="p">,</span><span class="nb">list</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">False</span><span class="p">,[]</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
   </section>
 </article>

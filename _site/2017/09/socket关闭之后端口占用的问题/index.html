@@ -114,7 +114,7 @@
   <section class="post">
     <p>先上一段代码</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyHttpHandler</span><span class="p">(</span><span class="n">BaseHTTPRequestHandler</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MyHttpHandler</span><span class="p">(</span><span class="n">BaseHTTPRequestHandler</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">do_GET</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">print</span> <span class="s">"do get"</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
@@ -124,8 +124,7 @@
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
     <span class="n">serv</span> <span class="o">=</span> <span class="n">TCPServer</span><span class="p">((</span><span class="s">''</span><span class="p">,</span> <span class="mi">20001</span><span class="p">),</span> <span class="n">MyHttpHandler</span><span class="p">)</span>
     <span class="n">serv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 <p>上面这段代码，运行，client访问多次后关闭，再启动，会报一个<code class="highlighter-rouge">socket.error: [Errno 48] Address already in use</code>的错。<code class="highlighter-rouge">lsof -i:20001</code> 没能找到任何进程占用端口，一个乍一看很迷的错误，记录下，怕以后忘掉。</p>
 
 <p>解决方案很简单，增加<code class="highlighter-rouge">TCPServer.allow_reuse_address = True</code>。具体起作用的为<code class="highlighter-rouge">socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)</code>这。</p>

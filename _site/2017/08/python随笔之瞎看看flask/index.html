@@ -124,14 +124,13 @@
 
 <h3 id="flask">flask</h3>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>app = Flask(__name__)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app = Flask(__name__)
 app.run()
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h5 id="上述代码发生了什么">上述代码发生了什么？</h5>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c">#flask</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#flask</span>
 <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
     <span class="s">"""Runs the application on a local development server"""</span>
     <span class="kn">from</span> <span class="nn">werkzeug</span> <span class="kn">import</span> <span class="n">run_simple</span>
@@ -144,43 +143,39 @@ app.run()
     <span class="n">options</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">'use_reloader'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
     <span class="n">options</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">'use_debugger'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">run_simple</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>run 是一个只有在测试的时候才会使用的方法，从werkzeug中import了run_simple ， run_simple 可以认为会运行一个wsgi的server，其中接受的第三个参数即时application。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># werkzeug.serving</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># werkzeug.serving</span>
 <span class="k">def</span> <span class="nf">run_simple</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                <span class="n">use_debugger</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">use_evalex</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                <span class="n">extra_files</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reloader_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                <span class="n">reloader_type</span><span class="o">=</span><span class="s">'auto'</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                <span class="n">processes</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">request_handler</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">static_files</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
                <span class="n">passthrough_errors</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>application会接收两个参数</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>def application(environ, start_response)
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>def application(environ, start_response)
 environ:          一个包含请求信息及环境信息的字典，server 端会详细说明
 start_response:   一个接受两个参数`status, response_headers`的方法:
 status:           返回状态码，如http 200、404等
 response_headers: 返回信息头部列表
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而上述传入run_simple中的application即为Flask的实例本身，自身作为application，在__call__中接收了这两个参数。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># flask</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># flask</span>
 <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="s">"""Shortcut for :attr:`wsgi_app`"""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>终于，我们找到了核心的方法，wsgi_app，flask处理一个request的流程也能在这比较清晰的看到。flask的具体解析也会在这开始展开。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># flask</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># flask</span>
 <span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="s">"""The actual WSGI application.  This is not implemented in
     `__call__` so that middlewares can be applied:
@@ -197,62 +192,56 @@ response_headers: 返回信息头部列表
         <span class="k">return</span> <span class="n">response</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <h3 id="flask具体解析">flask具体解析</h3>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>_request_ctx_stack.push(_RequestContext(self, environ))
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_request_ctx_stack.push(_RequestContext(self, environ))
 ...
 _request_ctx_stack.pop()
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>乍一看这两行很迷，但却非常有用。用过flask的都知道，在具体写业务的时候，可以直接import request进来，request中会包含当前请求的一些属性。这个实现就是靠的这两行。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># context locals</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># context locals</span>
 <span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
 <span class="n">current_app</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">g</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>可以看到，_request_ctx_stack就是一个LocalStack对象，LocalStack是werkzeug中的一个对象，可以简单的认为每一个线程，或者是每一个协程在localStack中存储的对象都会相互独立。具体关于LocalStack相关可以看http://python.jobbole.com/87738/。
 对于每个请求，flask都会将其压入栈顶，方便后边使用，全部处理结束后再弹出。</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>rv = self.preprocess_request()
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rv = self.preprocess_request()
 if rv is None:
     rv = self.dispatch_request()
 response = self.make_response(rv)
 response = self.process_response(response)
 return response(environ, start_response)
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>再看中间的几行，看上去像是几行非常简单的模板方法模式，先preprocess，然后dispatch，再生成response，最后再处理一下response。
 preprocess_request 和process_response两个方法非常的相似，都是类似责任链的实现，以preprocess_request为例</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_init_funcs</span><span class="p">:</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_init_funcs</span><span class="p">:</span>
     <span class="n">rv</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">rv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">rv</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>request_init_funcs是一个list，会通过request_init这个装饰器添加</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">request_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">request_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
     <span class="s">"""Registers a function to run before each request."""</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">request_init_funcs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">f</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>接着看dispatch_request</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">dispatch_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_request</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">endpoint</span><span class="p">](</span><span class="o">**</span><span class="n">values</span><span class="p">)</span>
@@ -266,19 +255,17 @@ preprocess_request 和process_response两个方法非常的相似，都是类似
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="ow">or</span> <span class="n">handler</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">return</span> <span class="n">handler</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>顺便列出match_request 以及_RequestContext</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">match_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">match_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">rv</span> <span class="o">=</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">url_adapter</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
     <span class="n">request</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">view_args</span> <span class="o">=</span> <span class="n">rv</span>
     <span class="k">return</span> <span class="n">rv</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">class</span> <span class="nc">_RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">_RequestContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url_adapter</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">url_map</span><span class="o">.</span><span class="n">bind_to_environ</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
@@ -286,12 +273,11 @@ preprocess_request 和process_response两个方法非常的相似，都是类似
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">open_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">g</span> <span class="o">=</span> <span class="n">_RequestGlobals</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flashes</span> <span class="o">=</span> <span class="bp">None</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>dispatch_request 调用match_request, match_request调用urladapter, urladapter是由app.url_map生成的，url_map 是个Map对象（在Flask __init__中申明），而这个Map对象是werkzeug.routing中的对象，也就是说，flask的route部分由werkzeug实现。这部分比较复杂，之后单独写一个文章来讲werkzeug.routing模块，这边先略过，只用知道通过route装饰器会将rule跟具体方法做一个映射，并且在需要的时候能通过match_request方法找到即可。</p>
 
-<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
     <span class="s">"""A decorator that is used to register a view function for a
     given URL rule.  Example::
 
@@ -306,8 +292,7 @@ preprocess_request 和process_response两个方法非常的相似，都是类似
         <span class="bp">self</span><span class="o">.</span><span class="n">view_functions</span><span class="p">[</span><span class="n">options</span><span class="p">[</span><span class="s">'endpoint'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">f</span>
         <span class="k">return</span> <span class="n">f</span>
     <span class="k">return</span> <span class="n">decorator</span>
-</code></pre>
-</div>
+</code></pre></div></div>
 
 <p>而后会对业务代码返回的response用make_response包装，返回一个response 对象（没错，又是一个werkzeug中的对象)。</p>
 
