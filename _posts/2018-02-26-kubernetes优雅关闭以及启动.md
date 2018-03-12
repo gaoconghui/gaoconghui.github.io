@@ -20,7 +20,7 @@ readinessProbe:
   httpGet:
     path: /heartbeat
     port: 8001
-    schema: HTTP
+    scheme: HTTP
   initialDelaySeconds: 30
   timeoutSeconds: 1
   periodSeconds: 30
