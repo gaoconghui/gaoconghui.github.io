@@ -15,7 +15,7 @@ tags:
 * 直接使用kubernetes作为集群管理器(Cluster Manager)，类似与mesos和yarn，使用方式可以看[running-on-kubernetes](https://apache-spark-on-k8s.github.io/userdocs/running-on-kubernetes.html)。但是这个部署方式，一是还不成熟，不推荐在生产环境使用。第二是要求k8s版本大于1.6，但我这边版本1.5.1，线上在用，不太想升级，而spark只是想搭起来玩玩...
 * 第二种方式是standalone的方式，即便是不用集群也能很方便的用sbin下的脚本来部署，不过使用k8s有几个好处，一个是提高机器使用率。这边的k8s集群大部分是在白天使用，晚上空闲，刚好能拿来跑数据。二是方便一键扩容，一键升级，能复用本身在k8s集群上做好的监控以及日志收集
 
-####在k8s上部署standalone集群
+#### 在k8s上部署standalone集群
 
 以下内容主要依据[github 上k8s example中spark的例子](https://github.com/kubernetes/examples/blob/master/staging/spark/README.md)。做了一些适应版本的修改。
 
