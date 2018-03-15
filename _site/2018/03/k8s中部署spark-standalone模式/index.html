@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>kubernetes中部署spark集群</title>
+  <meta name="description" content="在写这个的时候，spark版本为2.2.1。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="kubernetes中部署spark集群">
+  <meta name="twitter:description" content="在写这个的时候，spark版本为2.2.1。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="kubernetes中部署spark集群">
+  <meta property="og:description" content="在写这个的时候，spark版本为2.2.1。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-03-02 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-03-02</time> &#8226; <span class="post-meta__tags tags">kubernetes spark</span>
+    </div>
+    <h1 class="post-title">kubernetes中部署spark集群</h1>
+  </header>
+
+  <section class="post">
+    <p>在写这个的时候，spark版本为2.2.1。</p>
+
+<h4 id="基于kubernetes部署的两种方式">基于kubernetes部署的两种方式</h4>
+
+<ul>
+  <li>直接使用kubernetes作为集群管理器(Cluster Manager)，类似与mesos和yarn，使用方式可以看<a href="https://apache-spark-on-k8s.github.io/userdocs/running-on-kubernetes.html">running-on-kubernetes</a>。但是这个部署方式，一是还不成熟，不推荐在生产环境使用。第二是要求k8s版本大于1.6，但我这边版本1.5.1，线上在用，不太想升级，而spark只是想搭起来玩玩…</li>
+  <li>第二种方式是standalone的方式，即便是不用集群也能很方便的用sbin下的脚本来部署，不过使用k8s有几个好处，一个是提高机器使用率。这边的k8s集群大部分是在白天使用，晚上空闲，刚好能拿来跑数据。二是方便一键扩容，一键升级，能复用本身在k8s集群上做好的监控以及日志收集</li>
+</ul>
+
+<p>####在k8s上部署standalone集群</p>
+
+<p>以下内容主要依据<a href="https://github.com/kubernetes/examples/blob/master/staging/spark/README.md">github 上k8s example中spark的例子</a>。做了一些适应版本的修改。</p>
+
+<p>首先我们需要一个有spark以及其依赖的的docker镜像，这边我就很简单的下载了<a href="https://mirrors.tuna.tsinghua.edu.cn/apache/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz">spark-2.2.1-bin-hadoop2.7</a>并放在了/opt目录下，打包的dockerfile就不发了，docker store上也有很多做好的镜像。另外，k8s需要有dns（现在似乎默认带的）。</p>
+
+<h5 id="namespace">namespace</h5>
+
+<p>为了方便管理，还是新建一个namespace，将所有的相关的都放在这个namespace下，方便资源管理。</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Namespace</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">spark-cluster"</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">spark-cluster"</span>
+</code></pre></div></div>
+
+<p>kubectl create -f namespace-spark-cluster.yaml  新建一个名为spark-cluster的namespace。</p>
+
+<h5 id="master">master</h5>
+
+<p>master分为两个部分，一个是类型为rc的主体，命名为spark-master-controller.yaml，另一部分为一个service，暴露master的端口给slaver使用。</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">ReplicationController</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">spark-master-controller</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="s">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">component</span><span class="pi">:</span> <span class="s">spk-master</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">component</span><span class="pi">:</span> <span class="s">spk-master</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">spk-master</span>
+          <span class="na">image</span><span class="pi">:</span> <span class="s">spark:2.2.1.1</span>
+          <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/sh"</span><span class="pi">]</span>
+          <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span><span class="s2">"</span><span class="s">sh</span><span class="nv"> </span><span class="s">/opt/spark-2.2.0-bin-hadoop2.7/sbin/start-master.sh</span><span class="nv"> </span><span class="s">&amp;&amp;</span><span class="nv"> </span><span class="s">tail</span><span class="nv"> </span><span class="s">-f</span><span class="nv"> </span><span class="s">/opt/spark-2.2.0-bin-hadoop2.7/logs/spark--org.apache.spark.deploy.master.Master-1-*"</span><span class="pi">]</span>
+          <span class="na">ports</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="s">7077</span>
+            <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="s">8080</span>
+</code></pre></div></div>
+
+<p>以上为controller，直接使用spark的start-master脚本启动，但是启动后他会退到后台，导致k8s启动不了pod，所以还加了个tail -f一个master输出的log，顺便也方便查看log。</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">spk-master</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">7077</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">7077</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">spark</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">8080</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">8080</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">component</span><span class="pi">:</span> <span class="s">spk-master</span>
+</code></pre></div></div>
+
+<p>一个service，把7077端口和8080端口暴露出来给集群，方便slaver直接用spk-master:8080这样的方式进行访问。注意，只是暴露给集群，外部访问的方式最后会说。</p>
+
+<p>kubectl create -f spark-master-controller.yaml —namespace=spark-cluster</p>
+
+<p>kubectl create -f spark-master-service.yaml —namespace=spark-cluster</p>
+
+<p><strong>这里有个坑，start-master这个启动脚本中会用到SPARK_MASTER_PORT这个参数，而上边这个service如果名字为spark-master的话刚好冲突了，会把SPARK_MASTER_PORT设置为 host:port的形式，导致脚本启动失败。所以我一股脑把所有的spark-master改成spk-master了</strong></p>
+
+<h5 id="worker">worker</h5>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">ReplicationController</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">spark-worker-controller</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="s">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">component</span><span class="pi">:</span> <span class="s">spark-worker</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">component</span><span class="pi">:</span> <span class="s">spark-worker</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">spark-worker</span>
+          <span class="na">image</span><span class="pi">:</span> <span class="s">spark:2.2.1.1</span>
+          <span class="na">command</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">/bin/sh"</span><span class="pi">]</span>
+          <span class="na">args</span><span class="pi">:</span> <span class="pi">[</span><span class="s2">"</span><span class="s">-c"</span><span class="pi">,</span><span class="s2">"</span><span class="s">sh</span><span class="nv"> </span><span class="s">/opt/spark-2.2.0-bin-hadoop2.7/sbin/start-slave.sh</span><span class="nv"> </span><span class="s">spark://spk-master.spark-cluster:7077;tail</span><span class="nv"> </span><span class="s">-f</span><span class="nv"> </span><span class="s">/opt/spark-2.2.0-bin-hadoop2.7/logs/spark--org.apache.spark.deploy.worker.Worker*"</span><span class="pi">]</span>
+          <span class="na">ports</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="s">8081</span>
+          <span class="na">resources</span><span class="pi">:</span>
+            <span class="na">requests</span><span class="pi">:</span>
+              <span class="na">cpu</span><span class="pi">:</span> <span class="s2">"</span><span class="s">1"</span>
+              <span class="na">memory</span><span class="pi">:</span> <span class="s2">"</span><span class="s">10Gi"</span>
+            <span class="na">limits</span><span class="pi">:</span>
+              <span class="na">cpu</span><span class="pi">:</span> <span class="s2">"</span><span class="s">2"</span>
+              <span class="na">memory</span><span class="pi">:</span> <span class="s2">"</span><span class="s">12Gi"</span>
+</code></pre></div></div>
+
+<p>kubectl create -f spark-worker-controller.yaml —namespace=spark-cluster</p>
+
+<p>启动worker脚本中需要传入master的地址，因为有dns且设置了service的缘故，可以通过spk-master.spark-cluster访问。把replicas设置为N即可启动N个worker。另外，我还在worker上加了资源的限制，限制最多使用2个cpu以及12g内存。</p>
+
+<h5 id="proxy">proxy</h5>
+
+<p>image为elsonrodriguez/spark-ui-proxy:1.0 这玩意在一般启动standalone集群的时候是没有的，但是在k8s集群里边，则必不可缺。</p>
+
+<p>设想一下，如果只是简单的暴露master的8080端口出来，我们只能看到master的管理页面，但是进一步从master访问worker的ui则变得不太现实（每个worker都有自己的ui地址，且ip分配很随机，这些ip只能在集群内部访问）。所以我们需要一个代理服务，从内部访问完我们需要的页面后，返回给我们，这样我们只需要暴露一个代理的地址即可。</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">ReplicationController</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">spark-ui-proxy-controller</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="s">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">component</span><span class="pi">:</span> <span class="s">spark-ui-proxy</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">component</span><span class="pi">:</span> <span class="s">spark-ui-proxy</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">spark-ui-proxy</span>
+          <span class="na">image</span><span class="pi">:</span> <span class="s">elsonrodriguez/spark-ui-proxy:1.0</span>
+          <span class="na">ports</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="s">80</span>
+          <span class="na">resources</span><span class="pi">:</span>
+            <span class="na">requests</span><span class="pi">:</span>
+              <span class="na">cpu</span><span class="pi">:</span> <span class="s">100m</span>
+          <span class="na">args</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="s">spk-master:8080</span>
+          <span class="na">livenessProbe</span><span class="pi">:</span>
+              <span class="na">httpGet</span><span class="pi">:</span>
+                <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+                <span class="na">port</span><span class="pi">:</span> <span class="s">80</span>
+              <span class="na">initialDelaySeconds</span><span class="pi">:</span> <span class="s">120</span>
+              <span class="na">timeoutSeconds</span><span class="pi">:</span> <span class="s">5</span>
+</code></pre></div></div>
+
+<p>kubectl create -f spark-ui-proxy-controller.yaml —namespace=spark-cluster</p>
+
+<p>并且暴露proxy的80端口</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">spark-ui-proxy</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">NodePort</span>
+  <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="s">80</span>
+      <span class="na">targetPort</span><span class="pi">:</span> <span class="s">80</span>
+      <span class="na">nodePort</span><span class="pi">:</span> <span class="s">32180</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">component</span><span class="pi">:</span> <span class="s">spark-ui-proxy</span>
+</code></pre></div></div>
+
+<p>kubectl create -f spark-ui-proxy-service.yaml —namespace=spark-cluster</p>
+
+<p>至此，集群搭建完毕。可以通过集群的32180端口访问管理页面。</p>
+
+<p>​				
+​			
+​		
+​</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/" title="link to 优雅关闭以及机器kubernetes pods">优雅关闭以及机器kubernetes pods</a></h2>
+       <p class="excerpt">优雅启动很常见的一个场景，一个服务刚启动，可能会有一堆东西要加载（比如我这边需要读数据库中一堆东西）需要一些时间，而这段时间里，我不希望kubernetes 把请求打到这些还没初始化的pod上。kubernetes提供了一个叫探针的东西，可以用来检测pod是否就绪，只有就绪的情况才会把请求打过来，如果非就绪状态，这些pod会从service的load balancer中暂时移除。探针可以是一个command或者是一个HTTP的请求，这边使用的是一个HTTP请求的形式。需要保证程序在正常情况...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-02-26 21:00:00 +0800" class="post-list__meta--date date">2018-02-26</time> &#8226; <span class="post-list__meta--tags tags">kubernetes</span><a class="btn-border-small" href=/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/";
+        this.page.identifier = "/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
