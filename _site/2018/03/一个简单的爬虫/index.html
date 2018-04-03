@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>基于asyncio实现的异步协程爬虫</title>
+  <meta name="description" content="前言">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="基于asyncio实现的异步协程爬虫">
+  <meta name="twitter:description" content="前言">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="基于asyncio实现的异步协程爬虫">
+  <meta property="og:description" content="前言">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-03-15 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-03-15</time> &#8226; <span class="post-meta__tags tags">python asyncio</span>
+    </div>
+    <h1 class="post-title">基于asyncio实现的异步协程爬虫</h1>
+  </header>
+
+  <section class="post">
+    <h6 id="前言">前言</h6>
+
+<p>以下内容是看500 lines or less中 <a href="http://aosabook.org/en/500L/a-web-crawler-with-asyncio-coroutines.html">A Web Crawler With asyncio Coroutines</a>这个章节后做的一些记录。</p>
+
+<h4 id="一个最简单的爬虫">一个最简单的爬虫</h4>
+
+<p>一个非常简单的get请求，爬取获取xkcd.com，</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">socket</span>
+
+
+<span class="k">def</span> <span class="nf">crawl</span><span class="p">():</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+    <span class="n">request</span> <span class="o">=</span> <span class="s">'GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">b</span><span class="s">''</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">chunk</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">+=</span> <span class="n">chunk</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>一个很简单的小的获取页面的方法，甚至说不上是爬虫。在单线程的情况下，这个方法一次只能爬取一个页面，因为socket的connect 和recv两个方法都是阻塞的。一般再配合上多线程使用，多线程再配合上线程池，爬取速度也不慢。</p>
+
+<p>但是，这就满足了吗？线程这玩意还是蛮昂贵的，多线程搞爬虫总不算那么回事。</p>
+
+<h4 id="异步爬虫">异步爬虫</h4>
+
+<h5 id="简单的event-loop">简单的Event loop</h5>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+<span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>  <span class="c"># nonblocking的情况下，会抛出这个异常，无视掉就好</span>
+    <span class="k">pass</span>
+<span class="n">request</span> <span class="o">=</span> <span class="s">'GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span>
+<span class="n">encoded</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">)</span>
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c"># 尝试去发送，如果连接还没连接就会抛错，直到连接成功并发送成功，再break出去</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="k">break</span>  <span class="c"># Done.</span>
+    <span class="k">except</span> <span class="nb">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+</code></pre></div></div>
+
+<p>这边我们使用了非阻塞的socket。在C里边，socket会使用<code class="highlighter-rouge">errno</code>和<code class="highlighter-rouge">EINPROGRESS</code>来判断连接是否完成，但是python呢，我们只能用while True去一遍遍的查看，直到发送成功了再退出。</p>
+
+<p>上边的方法完全就是扯淡，因为需要不停的遍历，跟最开始阻塞的没啥区别。因此我们引入了Python3.4的<code class="highlighter-rouge">DefaultSelector</code>。它提供了select相关的api，可以注册相应的IO事件，在事件完成之后回调。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">selectors</span> <span class="kn">import</span> <span class="n">DefaultSelector</span><span class="p">,</span> <span class="n">EVENT_WRITE</span>
+
+<span class="n">selector</span> <span class="o">=</span> <span class="n">DefaultSelector</span><span class="p">()</span>
+
+<span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+<span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+<span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>  <span class="c"># nonblocking的情况下，会抛出这个异常，无视掉就好</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">connected</span><span class="p">():</span>
+    <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"connected"</span><span class="p">)</span>
+
+
+<span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">EVENT_WRITE</span><span class="p">,</span> <span class="n">connected</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>上边例子就是注册了EVENT_WRITE事件，selector.register方法告诉selector我们在等待EVENT_WRITE的状态。并把connected方法作为data传了进去。</p>
+
+<p>为了在socket达到预定的状态时，回调connected方法，我们需要一个循环来获取。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">loop</span><span class="p">():</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">event_key</span><span class="p">,</span> <span class="n">event_mask</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">event_key</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">callback</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>可以理解为，在socket变为可写状态后，会自动加到一个队列里边去，而我们需要做的，就是不断从队列里边读取出来，并做相应的处理。</p>
+
+<p>至此，我们完成了一个简单的事件循环。可以想象，如要要爬取多个页面，只需要不停的注册到selector里边，再配合loop方法，可以高效率的处理网络请求。</p>
+
+<h5 id="配以回调的异步爬虫">配以回调的异步爬虫</h5>
+
+<p>首先，我们需要两个set，分别保存需要爬取的url以及一个已经见过的url（用来去重）</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">urls_todo</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">"/"</span><span class="p">])</span>
+<span class="n">seen_urls</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s">"/"</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>在爬取的过程中，会涉及到很多回调。在连接完成时，我们要回调connected方法，然后发送一个GET请求过去。然后开始等待响应，同样的，这里也需要注册一个回调。为了更方便的管理回调，我们设计一个Fetcher类。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fetcher</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">b</span><span class="s">''</span>  <span class="c"># Empty array of bytes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="bp">None</span>
+</code></pre></div></div>
+
+<p>这个类传入一个url，并调用fetch方法启动，完成后，响应会写在response中。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c"># Method on Fetcher class.</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c"># Register next callback.</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
+                          <span class="n">EVENT_WRITE</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>首先，建立一个非阻塞的socket，注册下connected方法。然后，会有一个event loop去处理并回调。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetcher</span><span class="p">(</span><span class="s">'/1/'</span><span class="p">)</span>
+<span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">event_key</span><span class="p">,</span> <span class="n">event_mask</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="n">callback</span> <span class="o">=</span> <span class="n">event_key</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">callback</span><span class="p">(</span><span class="n">event_key</span><span class="p">,</span> <span class="n">event_mask</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>如上，在连接建立后，便能从selector.select()中获取到已经连接的socket，获取其回调，并执行。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method on Fetcher class.</span>
+    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'connected!'</span><span class="p">)</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="s">'GET {} HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+
+        <span class="c"># Register the next callback.</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span>
+                          <span class="n">EVENT_READ</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">read_response</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>一般我们在send之前要先检查请求体的大小，看看是否可以一次性发送。但我们这发送的内容确实少，就免了这步了。在最后，注册<code class="highlighter-rouge">EVENT_READ</code>，event loop会在socket可读或者已经关闭的时候调用read_response方法。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method on Fetcher class.</span>
+    <span class="k">def</span> <span class="nf">read_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">stopped</span>
+
+        <span class="n">chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>  <span class="c"># 4k chunk size.</span>
+        <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">+=</span> <span class="n">chunk</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>  <span class="c"># Done reading.</span>
+            <span class="n">links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">()</span>
+
+            <span class="c"># Python set-logic:</span>
+            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">seen_urls</span><span class="p">):</span>
+                <span class="n">urls_todo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
+                <span class="n">Fetcher</span><span class="p">(</span><span class="n">link</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>  <span class="c"># &lt;- New Fetcher.</span>
+
+            <span class="n">seen_urls</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">links</span><span class="p">)</span>
+            <span class="n">urls_todo</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">urls_todo</span><span class="p">:</span>
+                <span class="n">stopped</span> <span class="o">=</span> <span class="bp">True</span>
+</code></pre></div></div>
+
+<p>这里我们做了两件事，如果socket中还有没读取完的数据，就读出来加到response中，然后控制权交回给event loop，当然，这种情况下socket依旧是可读状态，会再次调用该回调方法。另外，如果对方已经发送完毕，socket被关闭了，且socket.recv方法已经读不出新的数据了（已经读取完毕），我们便可以对已经保存下来的response做一些处理了。这边做的就是简单的去了个重，然后挨个建立新的fetcher并开始抓取。</p>
+
+<p>另外，我们加了个全局变量stopped来控制event loop。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">stopped</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="k">def</span> <span class="nf">loop</span><span class="p">():</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">stopped</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">event_key</span><span class="p">,</span> <span class="n">event_mask</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">event_key</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">callback</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>整个程序会在所有页面爬取完成后结束。</p>
+
+<p>简单的回调异步爬虫到这似乎告一段落了，但是似乎还有哪里不太好。基于回调的方式一直是比较反人类，不友好的。设想一下，如果我们的异步爬虫在parse部分报了错</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"loop-with-callbacks.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">111</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">loop</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s">"loop-with-callbacks.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">106</span><span class="p">,</span> <span class="ow">in</span> <span class="n">loop</span>
+    <span class="n">callback</span><span class="p">(</span><span class="n">event_key</span><span class="p">,</span> <span class="n">event_mask</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s">"loop-with-callbacks.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">51</span><span class="p">,</span> <span class="ow">in</span> <span class="n">read_response</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">()</span>
+  <span class="n">File</span> <span class="s">"loop-with-callbacks.py"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">67</span><span class="p">,</span> <span class="ow">in</span> <span class="n">parse_links</span>
+    <span class="k">raise</span> <span class="nb">Exception</span><span class="p">(</span><span class="s">'parse error'</span><span class="p">)</span>
+<span class="nb">Exception</span><span class="p">:</span> <span class="n">parse</span> <span class="n">error</span>
+</code></pre></div></div>
+
+<p>光看这个error trace，谁能直接看出来是哪个页面出了错呢？基于回调的方式实现的异步爬虫有一个致命的缺点，那就是非常难debug，非常难以理解。</p>
+
+<h5 id="coroutines">Coroutines</h5>
+
+<p>Python 3.4引入了一个叫asyncio，以及一个<code class="highlighter-rouge">aiohttp</code>的包，我们可以很简洁的重构之前的代码。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>coroutine是这么一个概念，它就是一个子程序，在执行的过程中，可以在子程序内部终端，然后转而去执行别的子程序，在适当的时候再接回来执行。python中有很多可以做协程的包。在Python3.4的时候引入了一个基于generators、Future以及yield from语法实现的标准协程库，叫asyncio，</p>
+
+<p>为了更好的理解，接下来将会手把手用generator实现一个协程。</p>
+
+<h4 id="python-generators是如何工作的">python generators是如何工作的</h4>
+
+<p>在讨论生成器之前，先看下一般的python方法是如何工作的。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="o">...</span>     <span class="n">bar</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+<span class="o">...</span>     <span class="k">pass</span>
+</code></pre></div></div>
+
+<p>一般的，python解释器（一个C的程序）会调用<code class="highlighter-rouge">PyEval_EvalFrameEx</code>去逐帧执行。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">dis</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">dis</span><span class="o">.</span><span class="n">dis</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+  <span class="mi">2</span>           <span class="mi">0</span> <span class="n">LOAD_GLOBAL</span>              <span class="mi">0</span> <span class="p">(</span><span class="n">bar</span><span class="p">)</span>
+              <span class="mi">3</span> <span class="n">CALL_FUNCTION</span>            <span class="mi">0</span> <span class="p">(</span><span class="mi">0</span> <span class="n">positional</span><span class="p">,</span> <span class="mi">0</span> <span class="n">keyword</span> <span class="n">pair</span><span class="p">)</span>
+              <span class="mi">6</span> <span class="n">POP_TOP</span>
+              <span class="mi">7</span> <span class="n">LOAD_CONST</span>               <span class="mi">0</span> <span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+             <span class="mi">10</span> <span class="n">RETURN_VALUE</span>
+</code></pre></div></div>
+
+<p>这是foo方法的字节码，foo把bar方法加载到栈中，并调用，而后pop出值，加载None到栈中，最后返回None。</p>
+
+<p>当<code class="highlighter-rouge">PyEval_EvalFrameEx</code>遇到<code class="highlighter-rouge">CALL_FUNCTION</code>时，他会创建一个新的Python stack frame，然后<code class="highlighter-rouge">PyEval_EvalFrameEx</code>递归的去调用新的frame。</p>
+
+<p>这边有个很有意思的点，python帧栈是分配在堆内存中的，这个帧栈也是指一个很普通的栈结构，这意味着我们可以在方法之外去操作这个栈，在方法之外，我们也可以很方便的去操作其中的某一帧。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">inspect</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">frame</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="o">...</span>     <span class="n">bar</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+<span class="o">...</span>     <span class="k">global</span> <span class="n">frame</span>
+<span class="o">...</span>     <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c"># The frame was executing the code for 'bar'.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+<span class="s">'bar'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c"># Its back pointer refers to the frame for 'foo'.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">caller_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">caller_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+<span class="s">'foo'</span>
+</code></pre></div></div>
+
+<p>接下来我们来看生成器方法。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">gen_fn</span><span class="p">():</span>
+<span class="o">...</span>     <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">1</span>
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of yield: {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+<span class="o">...</span>     <span class="n">result2</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">2</span>
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of 2nd yield: {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result2</span><span class="p">))</span>
+<span class="o">...</span>     <span class="k">return</span> <span class="s">'done'</span>
+<span class="o">...</span>     
+</code></pre></div></div>
+
+<p>当解释器看到<code class="highlighter-rouge">yield</code>时，它会知道<code class="highlighter-rouge">gen_fn</code>方法是一个生成器方法，然后会给他打一个标记</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="c"># The generator flag is bit position 5.</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">generator_bit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">bool</span><span class="p">(</span><span class="n">gen_fn</span><span class="o">.</span><span class="n">__code__</span><span class="o">.</span><span class="n">co_flags</span> <span class="o">&amp;</span> <span class="n">generator_bit</span><span class="p">)</span>
+<span class="bp">True</span>
+</code></pre></div></div>
+
+<p>然后，在调用生成器方法时，解释器通过这个标记发现这不是一个普通的方法，于是乎，创建了一个生成器。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span> <span class="o">=</span> <span class="n">gen_fn</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">type</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="k">class</span> <span class="err">'</span><span class="nc">generator</span><span class="s">'&gt;</span><span class="err">
+</span></code></pre></div></div>
+
+<p>每个生成器对象都指向同样额代码，但是分别拥有自己的帧。这个帧并不在任何真正的栈上，二十在堆内存中等待被使用。</p>
+
+<p>这个帧有个“最后个指令”的指针，指向他最近一次执行的命令。最一开始，这个指针的值是-1，意味着生成器没有开始。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">gi_frame</span><span class="o">.</span><span class="n">f_lasti</span>
+<span class="o">-</span><span class="mi">1</span>
+</code></pre></div></div>
+
+<p>当我们调用了send后，生成器首次执行到yield，然后暂停，返回一个</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+<span class="mi">1</span>
+</code></pre></div></div>
+
+<p>现在生成器对象的指令指针的位置离已开有隔了3字节，完成了编译好的56字节python代码的一部分。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">gi_frame</span><span class="o">.</span><span class="n">f_lasti</span>
+<span class="mi">3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">gen</span><span class="o">.</span><span class="n">gi_code</span><span class="o">.</span><span class="n">co_code</span><span class="p">)</span>
+<span class="mi">56</span>
+</code></pre></div></div>
+
+<p>生成器能在任何时候被唤醒，因为它的帧并不在栈中，而是在堆上。它在调用层级中的位置并不固定，不需要执行先入后出的顺序。</p>
+
+<p>接着我们发送一个hello过去，hello就成了yield表达式的值。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'hello'</span><span class="p">)</span>
+<span class="n">result</span> <span class="n">of</span> <span class="k">yield</span><span class="p">:</span> <span class="n">hello</span>
+<span class="mi">2</span>
+</code></pre></div></div>
+
+<p>这时候，在这个帧中包含了本地变量result</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">gi_frame</span><span class="o">.</span><span class="n">f_locals</span>
+<span class="p">{</span><span class="s">'result'</span><span class="p">:</span> <span class="s">'hello'</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>其他由<code class="highlighter-rouge">gen_fn</code>产生的生成器也拥有自己的栈帧以及自己的本地变量。</p>
+
+<p>当再一次调用send方法，生成器到达第二个<code class="highlighter-rouge">yield</code>，并抛出<code class="highlighter-rouge">StopIteration</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'goodbye'</span><span class="p">)</span>
+<span class="n">result</span> <span class="n">of</span> <span class="mi">2</span><span class="n">nd</span> <span class="k">yield</span><span class="p">:</span> <span class="n">goodbye</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s">"&lt;input&gt;"</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="nb">StopIteration</span><span class="p">:</span> <span class="n">done</span>
+</code></pre></div></div>
+
+<h4 id="基于生成器的协程">基于生成器的协程</h4>
+
+<p>如我们上边说的，一个生成器可以暂停，然后在任何我们想要的地方继续执行，并接受一个值，返回一个值，用来做协程再好不过。</p>
+
+<p>接下来，我们要建立一个简易版的“asyncio”。</p>
+
+<p>首先需要一个future对象，我们希望的future是这么一个存在：一个生成器在暂停的时候yield一个future，然后在future获取到值（set_result）的时候继续这个生成器。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Future</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">:</span>
+            <span class="n">fn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>future初始化时会是一个”pending”状态，在调用了set_result方法后继续执行生成器。</p>
+
+<p>接下来我们要用future来改造fetch方法。原本的方法如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fetcher</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
+                          <span class="n">EVENT_WRITE</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'connected!'</span><span class="p">)</span>
+        <span class="c"># And so on....</span>
+</code></pre></div></div>
+
+<p>原本的方法会先创建连接，注册一个connected的回调，然后会在连接创建后回调。我们用future和生成器对其改造。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">on_connected</span><span class="p">():</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
+                          <span class="n">EVENT_WRITE</span><span class="p">,</span>
+                          <span class="n">on_connected</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">f</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">'connected!'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>因为包含了yield，该fetch方法是一个生成器。另外我们创建了一个future，并把它yield出来。我们希望这个生成器暂停，一直到连接创建成功后再继续，那么谁来做继续生成器的操作呢？我们引入了Task对象。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Task</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coro</span> <span class="o">=</span> <span class="n">coro</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">future</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">next_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">except</span> <span class="nb">StopIteration</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">next_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+
+<span class="c"># Begin fetching http://xkcd.com/353/</span>
+<span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetcher</span><span class="p">(</span><span class="s">'/353/'</span><span class="p">)</span>
+<span class="n">Task</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">())</span>
+
+<span class="n">loop</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>在给fetch生成的生成器发送None后，fetch生成器启动，然后yield一个future，也就是Task中的next_future。当socket连接创建成功后，事件循环会调用on_connected方法，然后触发future中的回调，也就是step方法，从而继续fetch生成器。</p>
+
+<h4 id="用yield-from来重构协程">用yield from来重构协程</h4>
+
+<p>在socket连接王城后，我们可以继续发送get请求以及获取响应，这些都可以在同一个生成器方法中实现。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># ... connection logic from above, then:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+
+            <span class="k">def</span> <span class="nf">on_readable</span><span class="p">():</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">))</span>
+
+            <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
+                              <span class="n">EVENT_READ</span><span class="p">,</span>
+                              <span class="n">on_readable</span><span class="p">)</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">f</span>
+            <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">+=</span> <span class="n">chunk</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Done reading.</span>
+                <span class="k">break</span>
+</code></pre></div></div>
+
+<p>这个方法显得很长，因为我们把发的过程，分段收的过程都放在同一个方法中了，显得很乱，用yield from语法可以让方法看上去美观很多。</p>
+
+<p>这边我们廷议两个常用的方法，一个是read方法，可以获取一定大小的数据，另一个是read_all方法，可以获取全部数据。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_readable</span><span class="p">():</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">))</span>
+
+    <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">EVENT_READ</span><span class="p">,</span> <span class="n">on_readable</span><span class="p">)</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">f</span>  <span class="c"># Read one chunk.</span>
+    <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">chunk</span>
+    
+
+<span class="k">def</span> <span class="nf">read_all</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c"># Read whole response.</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">chunk</span><span class="p">:</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">b</span><span class="s">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>以及使用这两个方法重构fetch</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fetcher</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+         <span class="c"># ... connection logic from above, then:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read_all</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>总结一下，我们上边实现了最最最简单版本的future和task，并且也知道了为什么asyncio在并发I/O上会比多线程版本有更好的性能，以及比回调版本更加清晰易懂。当然，这只是最简单的基础版，真正标准库中的asyncio实现了更多的东西，也更容易去写。</p>
+
+<p>对于一个熟悉asyncio的人来说，实现上边的功能会更加简单。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>接下来，真正回到主题，实现一个异步的爬虫。</p>
+
+<h4 id="爬虫">爬虫</h4>
+
+<p>接下来我们要用asyncio来实现一个异步的爬虫。</p>
+
+<p>首先描述下这个爬虫会做哪些事。首先爬虫爬取第一个页面，并解析其中的链接，加入到队列中，再继续爬取队列中的链接。另外还需要考虑以下几点：限制并发数量，让服务器和客户端压力不至于太大；在爬取完一个页面后，立马从队列中获取下个要爬去的页面；但队列中剩余url数量小于并发数量时，一部分worker需要先暂停，等到有足够数量url后继续；在全部爬取完成后退出。</p>
+
+<p>想象下，如果是一个多线程爬虫，我们会如何去做？可能我们会使用一个标准库的队列，然后把url都丢到队列中去，然后记录下任务的数量；当线程完成爬取后，调用<code class="highlighter-rouge">task_done</code>方法。主线程使用Queue.join()方法阻塞，直到所有的worker都结束。</p>
+
+<p>协程爬虫也是类似的，使用的是asyncio中的queue</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">JoinableQueue</span> <span class="k">as</span> <span class="n">Queue</span>
+<span class="k">except</span> <span class="nb">ImportError</span><span class="p">:</span>
+    <span class="c"># In Python 3.5, asyncio.JoinableQueue is</span>
+    <span class="c"># merged into Queue.</span>
+    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Queue</span>
+</code></pre></div></div>
+
+<p>另外，我们会有一个crawler的类，并有crawl方法，然后在事件驱动中启动crawl</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+
+<span class="n">crawler</span> <span class="o">=</span> <span class="n">crawling</span><span class="o">.</span><span class="n">Crawler</span><span class="p">(</span><span class="s">'http://xkcd.com'</span><span class="p">,</span>
+                           <span class="n">max_redirect</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">crawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>爬虫最开始输入起始url和最大重定向数，以元祖的方式存在，并放到队列中</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Crawler</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_tasks</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span> <span class="o">=</span> <span class="n">max_redirect</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="c"># aiohttp's ClientSession does connection pooling and</span>
+        <span class="c"># HTTP keep-alives for us.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+
+        <span class="c"># Put (URL, max_redirect) in the queue.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">root_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>现在在队列中未完成的任务数只有一个，我们用事件驱动方式启动</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">crawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">crawl</code>方法会启动workers，类似与多线程中的主线程，会用join方法阻塞，直到所有任务完成。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">crawl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""Run the crawler until all work is done."""</span>
+        <span class="n">workers</span> <span class="o">=</span> <span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work</span><span class="p">())</span>
+                   <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_tasks</span><span class="p">)]</span>
+
+        <span class="c"># When all work is done, exit.</span>
+        <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>worker会从队列中获取url，爬取，解析。每个worker都会运行worker方法。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+            <span class="c"># Download page and add new links to self.q.</span>
+            <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>python看到work方法包含yield from，会返回一个生成器。所以在crawl方法中，调用self.work方法诗词，并没有真正执行方法，而是创建了十个生成器。并且每个生成器都包装为一个Task。一个Task会获取生成器yield出的future，并用send的方式驱动生成器，以及触发future（和我们之前的future类似）。</p>
+
+<p>worker用以下方式去从队列中获取url</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>queue的get方法本身也是一个协程：如果队列为空会暂停，直到有新的任务进入队列。</p>
+
+<p>每当一个任务完成，都会调用task_done方法，该方法会把queue内部的未完成任务数减一。当所有的页面都爬取完毕，队列中任务为零，join方法继续执行，crawl方法也会继续，然后关闭所有的worker。</p>
+
+<p>接下来说说重定向。重定向可能导致A页面指向B，又重定向到C的情况，形成一条链 A—&gt;B —&gt;C，而这个B或者C可能使我们曾经访问过的。aiohttp会自动重定向，这样我们可能爬到重复的页面。因此，我们需要禁止自动重定向，并手动重定向并去重。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">):</span>
+        <span class="c"># Handle redirects ourselves.</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_redirect</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">max_redirect</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">next_url</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'location'</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">next_url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="p">:</span>
+                        <span class="c"># We have been down this path before.</span>
+                        <span class="k">return</span>
+
+                    <span class="c"># Remember we have seen this URL.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">next_url</span><span class="p">)</span>
+
+                    <span class="c"># Follow the redirect. One less redirect remains.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">((</span><span class="n">next_url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+             <span class="k">else</span><span class="p">:</span>
+                 <span class="n">links</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                 <span class="c"># Python set-logic:</span>
+                 <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">((</span><span class="n">link</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">links</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c"># Return connection to pool.</span>
+            <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>如果是多线程版本，上述代码会变得异常复杂，需要考虑线程安全的问题：A线程判断url没爬过，不在seen_urls中，正准备把url插入seen_urls中，B线程也刚好爬到了相同链接，同样判断url没爬过，也加入到seen_urls中，导致一个url出现了两次，解决这个问题可能需要引入锁之类的，而协程代码就简单许多，无需考虑线程安全的问题。</p>
+
+<p>当fetch方法发现了新的链接，加入到seen_urls中，并加入到queue中，queue会把其内部维护的未完成任务数加一，然后继续执行主协程，join方法也会因为还有任务没完成会继续阻塞。如果没有新的链接，且queue也已经为空，最后一次调用task_done后，队列内部维护的计数器变为零，join方法不再阻塞。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Queue</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c"># ... other initialization ...</span>
+
+    <span class="k">def</span> <span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c"># ... store the item ...</span>
+
+    <span class="k">def</span> <span class="nf">task_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="nd">@asyncio.coroutine</span>
+    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span>
+</code></pre></div></div>
+
+<p>之前被join阻塞的主协程继续执行，并最终结束。</p>
+
+<p>整个协程起始于crawl</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crawler</span><span class="o">.</span><span class="n">crawl</span><span class="p">())</span>
+</code></pre></div></div>
+
+<p>crawl是个生成器，为了驱动这个生成器，asyncio用task来包装了一下</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">EventLoop</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">run_until_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coro</span><span class="p">):</span>
+        <span class="s">"""Run until the coroutine is done."""</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">Task</span><span class="p">(</span><span class="n">coro</span><span class="p">)</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">stop_callback</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">StopError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">StopError</span><span class="p">(</span><span class="nb">BaseException</span><span class="p">):</span>
+    <span class="s">"""Raised to stop the event loop."""</span>
+
+<span class="k">def</span> <span class="nf">stop_callback</span><span class="p">(</span><span class="n">future</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="n">StopError</span>
+</code></pre></div></div>
+
+<p>当一个task完成，会抛出<code class="highlighter-rouge">StopError</code>，作为event loop的一个退出信号。</p>
+
+<p>那么，具体什么是task呢？看add_done_callback方法有点像我们之前说的future。确实，它就是future的子类。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Task</span><span class="p">(</span><span class="n">Future</span><span class="p">):</span>
+    <span class="s">"""A coroutine wrapped in a Future."""</span>
+</code></pre></div></div>
+
+<p>一般情况下，future会在被调用set_result的时候被激活，而task会在协程退出的时候激活。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method of class Task.</span>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">future</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">next_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CancelledError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cancelled</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span>
+        <span class="k">except</span> <span class="nb">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+
+            <span class="c"># Task resolves itself with coro's return</span>
+            <span class="c"># value.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">next_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">task.add_done_callback(stop_callback)</code>就意味着将会在task完成的时候调用stop_callback，抛出StopError，致使整个循环结束。</p>
+
+<h4 id="结论">结论</h4>
+
+<p>其实讲了那么多，感觉跟爬虫确实没什么关系，大多是跟作者走了一遍asyncio协程的一些思想。仔细读了好几遍，结果写下来还是不伦不类的，既不像翻译也不像是总结，自己水平还是次了点。</p>
+
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/04/pyspider%E7%AE%80%E6%9E%90/" title="link to 简析pyspider">简析pyspider</a></h2>
+       <p class="excerpt">pyspider优势所在pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。scheduler了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是t...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-04-03 21:00:00 +0800" class="post-list__meta--date date">2018-04-03</time> &#8226; <span class="post-list__meta--tags tags">python pyspider</span><a class="btn-border-small" href=/2018/04/pyspider%E7%AE%80%E6%9E%90/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/" title="link to kubernetes中部署spark集群">kubernetes中部署spark集群</a></h2>
+       <p class="excerpt">在写这个的时候，spark版本为2.2.1。基于kubernetes部署的两种方式  直接使用kubernetes作为集群管理器(Cluster Manager)，类似与mesos和yarn，使用方式可以看running-on-kubernetes。但是这个部署方式，一是还不成熟，不推荐在生产环境使用。第二是要求k8s版本大于1.6，但我这边版本1.5.1，线上在用，不太想升级，而spark只是想搭起来玩玩…  第二种方式是standalone的方式，即便是不用集群也能很方便的用sbin下...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-03-02 21:00:00 +0800" class="post-list__meta--date date">2018-03-02</time> &#8226; <span class="post-list__meta--tags tags">kubernetes spark</span><a class="btn-border-small" href=/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/";
+        this.page.identifier = "/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

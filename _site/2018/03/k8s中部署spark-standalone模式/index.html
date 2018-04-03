@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -129,7 +129,7 @@
   <li>第二种方式是standalone的方式，即便是不用集群也能很方便的用sbin下的脚本来部署，不过使用k8s有几个好处，一个是提高机器使用率。这边的k8s集群大部分是在白天使用，晚上空闲，刚好能拿来跑数据。二是方便一键扩容，一键升级，能复用本身在k8s集群上做好的监控以及日志收集</li>
 </ul>
 
-<p>####在k8s上部署standalone集群</p>
+<h4 id="在k8s上部署standalone集群">在k8s上部署standalone集群</h4>
 
 <p>以下内容主要依据<a href="https://github.com/kubernetes/examples/blob/master/staging/spark/README.md">github 上k8s example中spark的例子</a>。做了一些适应版本的修改。</p>
 
@@ -307,6 +307,14 @@
 <section class="read-more">
    
    
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/" title="link to 基于asyncio实现的异步协程爬虫">基于asyncio实现的异步协程爬虫</a></h2>
+       <p class="excerpt">前言以下内容是看500 lines or less中 A Web Crawler With asyncio Coroutines这个章节后做的一些记录。一个最简单的爬虫一个非常简单的get请求，爬取获取xkcd.com，import socketdef crawl():    sock = socket.socket()    sock.connect(('xkcd.com', 80))    request = 'GET / HTTP/1.0\r\nHost: xkcd.com\r\n\...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-03-15 21:00:00 +0800" class="post-list__meta--date date">2018-03-15</time> &#8226; <span class="post-list__meta--tags tags">python asyncio</span><a class="btn-border-small" href=/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/>继续阅读</a></div>
+   </div>
+   
+   
    
    
    <div class="read-more-item">
@@ -324,7 +332,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/";
+        this.page.url = "http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/";
         this.page.identifier = "/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/";
     };
 

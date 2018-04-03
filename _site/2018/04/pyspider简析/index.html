@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>简析pyspider</title>
+  <meta name="description" content="pyspider优势所在">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="简析pyspider">
+  <meta name="twitter:description" content="pyspider优势所在">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="简析pyspider">
+  <meta property="og:description" content="pyspider优势所在">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-04-03 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-04-03</time> &#8226; <span class="post-meta__tags tags">python pyspider</span>
+    </div>
+    <h1 class="post-title">简析pyspider</h1>
+  </header>
+
+  <section class="post">
+    <h5 id="pyspider优势所在">pyspider优势所在</h5>
+
+<p>pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。</p>
+
+<h5 id="scheduler">scheduler</h5>
+
+<p>了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是task，代表一个爬取任务，如爬取百度首页，爬取某一个新闻业，都是一个task。</p>
+
+<p>与scheduler相关的队列有三个</p>
+
+<ul>
+  <li>scheduler2fetcher 也就是scheduler中的out queue，用于发送task给fetcher</li>
+  <li>status_queue  用于从processor中获取已经爬取的task的状态并做相应处理</li>
+  <li>newtask_queue  新产生的task</li>
+</ul>
+
+<p>scheduler负责调度，与scrapy或者其他的爬虫框架类似，调度器负责调度需要爬取的内容，决定哪些内容在哪些时候进行爬取。我们从代码入手看下pyspider的调度器做了啥。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+	<span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quit</span><span class="p">:</span>
+  		<span class="bp">self</span><span class="o">.</span><span class="n">run_once</span><span class="p">()</span>
+        
+<span class="k">def</span> <span class="nf">run_once</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_update_projects</span><span class="p">()</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_check_task_done</span><span class="p">()</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_check_request</span><span class="p">()</span>
+  	<span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_cronjob</span><span class="p">():</span>
+    	<span class="k">pass</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_check_select</span><span class="p">()</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_check_delete</span><span class="p">()</span>
+  	<span class="bp">self</span><span class="o">.</span><span class="n">_try_dump_cnt</span><span class="p">()</span>
+
+</code></pre></div></div>
+
+<p>入口为<code class="highlighter-rouge">run</code>函数，真正有用的是<code class="highlighter-rouge">run_once</code>函数。我们可以看到，每一轮调度都会依次调用几个方法。</p>
+
+<h6 id="_update_projects">_update_projects</h6>
+
+<blockquote>
+  <p>该方法会从projectdb中读取是有有新的project更新，如果更新了就得处理这个project</p>
+</blockquote>
+
+<h6 id="_check_task_done-">_check_task_done ?</h6>
+
+<blockquote>
+  <p>该方法会消费status queue，爬取失败的task，检查下要不要重新爬，标记一下，存起来。爬取成功的task，看下是否要再爬一次，标记一下，存起来。</p>
+</blockquote>
+
+<h6 id="_check_request">_check_request</h6>
+
+<blockquote>
+  <p>消费newtask_queue，该队列为待爬取的队列，任务取出来，处理处理，标记一下，存起来。</p>
+</blockquote>
+
+<h6 id="_check_cronjob">_check_cronjob</h6>
+
+<blockquote>
+  <p>看下有没有什么定时任务触发了，有的话，丢到out queue（scheduler2fetcher）给fetcher爬去。</p>
+</blockquote>
+
+<h6 id="_check_select">_check_select</h6>
+
+<blockquote>
+  <p>之前不是标记并存了好多要爬取的任务咩，取出来，丢给out queue给fetcher爬去。</p>
+</blockquote>
+
+<h6 id="_check_delete">_check_delete</h6>
+
+<blockquote>
+  <p>处理一些被标记为删除的project</p>
+</blockquote>
+
+<h6 id="_try_dump_cnt">_try_dump_cnt</h6>
+
+<blockquote>
+  <p>本轮结束，记个数。</p>
+</blockquote>
+
+<p>scheduler逻辑相当清晰，分工也很明确：找到需要爬取的任务给fetcher。</p>
+
+<h5 id="fetcher">fetcher</h5>
+
+<p>fetcher的职责更为清晰：下载。</p>
+
+<p>与他相关的有两个队列</p>
+
+<ul>
+  <li>scheduler2fetcher 也是fetcher中的inqueue，调度器传给fetcher的任务</li>
+  <li>fetcher2processor 也是fetcher中的outqueue，fetcher传给processor的任务</li>
+</ul>
+
+<p>fetcher的入口也是<code class="highlighter-rouge">run</code>方法，会从inqueue中读取任务去爬取。整个fetcher是基于tornado实现的（说真，tornado在py3 async的时代看起来显得好丑..）并提供了几种爬取的方式。这部分代码很简单，不细说了，就是下载下来，爬取结束之后发送到outqueue中。</p>
+
+<h5 id="processor">processor</h5>
+
+<p>涉及到四个队列</p>
+
+<ul>
+  <li>fetcher2processor  也是inqueue，为fetcher的输入</li>
+  <li>status_queue  把fetcher爬到的内容输出给scheduler</li>
+  <li>newtask_queue  新任务队列，一个task可能会产生多个新的task，传递给scheduler</li>
+  <li>processor2result  也是result_queue，输出获取到的需要的数据，为最终的输出</li>
+</ul>
+
+<p>程序的入口同样为<code class="highlighter-rouge">run</code>，核心方法只有一个，就是<code class="highlighter-rouge">on_task</code>，处理唯一的输入inqueue中获取到的task，主要做了这么几件事</p>
+
+<ul>
+  <li>
+    <p>处理下task，该找外链的找外链，该获取格式化数据的获取数据，并发送到result_queue中。（这部分在ProjectManager这个类的on_result方法中完成）</p>
+  </li>
+  <li>把task的内容做一些处理，形成一个新的dict，包含爬取状态，时间等信息，发到status_queue</li>
+  <li>处理找到的外链（如果有需要的话，即在回调中有调用<code class="highlighter-rouge">self.crawl</code>）包装一下，发送给newtask_queue</li>
+</ul>
+
+<h5 id="result-worker">result worker</h5>
+
+<p>result worker只涉及到一个队列，就是processor中输出的result queue。</p>
+
+<p>这部分我觉得是pyspider比较弱的一部分，类似于scrapy中的Pipeline，对输出的数据进行一些处理，如保存数据库等。需要继承实现一个<code class="highlighter-rouge">ResultWorker</code>类。默认的这个类会把数据保存到resultdb中，但我们实际需要的肯定不止如此，可以重写<code class="highlighter-rouge">on_result</code>方法做一些处理。</p>
+
+<p>不过因为所有的输出都在一个队列，所以result worker也只能有一类（并不是一个，可以做分布式处理），处理一个类似的逻辑，比如统统都保存到mongo。或者在一个result worker中写判断语句，进行不同的逻辑处理。但这样就不够优雅了。</p>
+
+<h5 id="总结">总结</h5>
+
+<p>pyspider应该算是一个相当不错的框架，代码很清晰，很适合去读。不过适合的场景还是比较有限，着重于调度，分布式爬取，弱化了对数据的处理部分（当然，这部分也可以很方便的扩展）。</p>
+
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/" title="link to 基于asyncio实现的异步协程爬虫">基于asyncio实现的异步协程爬虫</a></h2>
+       <p class="excerpt">前言以下内容是看500 lines or less中 A Web Crawler With asyncio Coroutines这个章节后做的一些记录。一个最简单的爬虫一个非常简单的get请求，爬取获取xkcd.com，import socketdef crawl():    sock = socket.socket()    sock.connect(('xkcd.com', 80))    request = 'GET / HTTP/1.0\r\nHost: xkcd.com\r\n\...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-03-15 21:00:00 +0800" class="post-list__meta--date date">2018-03-15</time> &#8226; <span class="post-list__meta--tags tags">python asyncio</span><a class="btn-border-small" href=/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/";
+        this.page.identifier = "/2018/04/pyspider%E7%AE%80%E6%9E%90/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
