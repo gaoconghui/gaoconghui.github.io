@@ -120,11 +120,11 @@
   </header>
 
   <section class="post">
-    <h5 id="pyspider优势所在">pyspider优势所在</h5>
+    <h4 id="pyspider优势所在">pyspider优势所在</h4>
 
 <p>pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。</p>
 
-<h5 id="scheduler">scheduler</h5>
+<h4 id="scheduler">scheduler</h4>
 
 <p>了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是task，代表一个爬取任务，如爬取百度首页，爬取某一个新闻业，都是一个task。</p>
 
@@ -151,7 +151,6 @@
   	<span class="bp">self</span><span class="o">.</span><span class="n">_check_select</span><span class="p">()</span>
   	<span class="bp">self</span><span class="o">.</span><span class="n">_check_delete</span><span class="p">()</span>
   	<span class="bp">self</span><span class="o">.</span><span class="n">_try_dump_cnt</span><span class="p">()</span>
-
 </code></pre></div></div>
 
 <p>入口为<code class="highlighter-rouge">run</code>函数，真正有用的是<code class="highlighter-rouge">run_once</code>函数。我们可以看到，每一轮调度都会依次调用几个方法。</p>
@@ -200,7 +199,7 @@
 
 <p>scheduler逻辑相当清晰，分工也很明确：找到需要爬取的任务给fetcher。</p>
 
-<h5 id="fetcher">fetcher</h5>
+<h4 id="fetcher">fetcher</h4>
 
 <p>fetcher的职责更为清晰：下载。</p>
 
@@ -213,7 +212,7 @@
 
 <p>fetcher的入口也是<code class="highlighter-rouge">run</code>方法，会从inqueue中读取任务去爬取。整个fetcher是基于tornado实现的（说真，tornado在py3 async的时代看起来显得好丑..）并提供了几种爬取的方式。这部分代码很简单，不细说了，就是下载下来，爬取结束之后发送到outqueue中。</p>
 
-<h5 id="processor">processor</h5>
+<h4 id="processor">processor</h4>
 
 <p>涉及到四个队列</p>
 
@@ -234,7 +233,7 @@
   <li>处理找到的外链（如果有需要的话，即在回调中有调用<code class="highlighter-rouge">self.crawl</code>）包装一下，发送给newtask_queue</li>
 </ul>
 
-<h5 id="result-worker">result worker</h5>
+<h4 id="result-worker">result worker</h4>
 
 <p>result worker只涉及到一个队列，就是processor中输出的result queue。</p>
 
@@ -242,7 +241,7 @@
 
 <p>不过因为所有的输出都在一个队列，所以result worker也只能有一类（并不是一个，可以做分布式处理），处理一个类似的逻辑，比如统统都保存到mongo。或者在一个result worker中写判断语句，进行不同的逻辑处理。但这样就不够优雅了。</p>
 
-<h5 id="总结">总结</h5>
+<h4 id="总结">总结</h4>
 
 <p>pyspider应该算是一个相当不错的框架，代码很清晰，很适合去读。不过适合的场景还是比较有限，着重于调度，分布式爬取，弱化了对数据的处理部分（当然，这部分也可以很方便的扩展）。</p>
 

@@ -5,17 +5,17 @@
     <description>一点资讯，视频爬虫，视频处理。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 03 Apr 2018 21:12:53 +0800</pubDate>
-    <lastBuildDate>Tue, 03 Apr 2018 21:12:53 +0800</lastBuildDate>
+    <pubDate>Tue, 03 Apr 2018 21:17:52 +0800</pubDate>
+    <lastBuildDate>Tue, 03 Apr 2018 21:17:52 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
         <title>简析pyspider</title>
-        <description>&lt;h5 id=&quot;pyspider优势所在&quot;&gt;pyspider优势所在&lt;/h5&gt;
+        <description>&lt;h4 id=&quot;pyspider优势所在&quot;&gt;pyspider优势所在&lt;/h4&gt;
 
 &lt;p&gt;pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。&lt;/p&gt;
 
-&lt;h5 id=&quot;scheduler&quot;&gt;scheduler&lt;/h5&gt;
+&lt;h4 id=&quot;scheduler&quot;&gt;scheduler&lt;/h4&gt;
 
 &lt;p&gt;了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是task，代表一个爬取任务，如爬取百度首页，爬取某一个新闻业，都是一个task。&lt;/p&gt;
 
@@ -42,7 +42,6 @@
   	&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_check_select&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
   	&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_check_delete&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
   	&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_try_dump_cnt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 &lt;p&gt;入口为&lt;code class=&quot;highlighter-rouge&quot;&gt;run&lt;/code&gt;函数，真正有用的是&lt;code class=&quot;highlighter-rouge&quot;&gt;run_once&lt;/code&gt;函数。我们可以看到，每一轮调度都会依次调用几个方法。&lt;/p&gt;
@@ -91,7 +90,7 @@
 
 &lt;p&gt;scheduler逻辑相当清晰，分工也很明确：找到需要爬取的任务给fetcher。&lt;/p&gt;
 
-&lt;h5 id=&quot;fetcher&quot;&gt;fetcher&lt;/h5&gt;
+&lt;h4 id=&quot;fetcher&quot;&gt;fetcher&lt;/h4&gt;
 
 &lt;p&gt;fetcher的职责更为清晰：下载。&lt;/p&gt;
 
@@ -104,7 +103,7 @@
 
 &lt;p&gt;fetcher的入口也是&lt;code class=&quot;highlighter-rouge&quot;&gt;run&lt;/code&gt;方法，会从inqueue中读取任务去爬取。整个fetcher是基于tornado实现的（说真，tornado在py3 async的时代看起来显得好丑..）并提供了几种爬取的方式。这部分代码很简单，不细说了，就是下载下来，爬取结束之后发送到outqueue中。&lt;/p&gt;
 
-&lt;h5 id=&quot;processor&quot;&gt;processor&lt;/h5&gt;
+&lt;h4 id=&quot;processor&quot;&gt;processor&lt;/h4&gt;
 
 &lt;p&gt;涉及到四个队列&lt;/p&gt;
 
@@ -125,7 +124,7 @@
   &lt;li&gt;处理找到的外链（如果有需要的话，即在回调中有调用&lt;code class=&quot;highlighter-rouge&quot;&gt;self.crawl&lt;/code&gt;）包装一下，发送给newtask_queue&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h5 id=&quot;result-worker&quot;&gt;result worker&lt;/h5&gt;
+&lt;h4 id=&quot;result-worker&quot;&gt;result worker&lt;/h4&gt;
 
 &lt;p&gt;result worker只涉及到一个队列，就是processor中输出的result queue。&lt;/p&gt;
 
@@ -133,7 +132,7 @@
 
 &lt;p&gt;不过因为所有的输出都在一个队列，所以result worker也只能有一类（并不是一个，可以做分布式处理），处理一个类似的逻辑，比如统统都保存到mongo。或者在一个result worker中写判断语句，进行不同的逻辑处理。但这样就不够优雅了。&lt;/p&gt;
 
-&lt;h5 id=&quot;总结&quot;&gt;总结&lt;/h5&gt;
+&lt;h4 id=&quot;总结&quot;&gt;总结&lt;/h4&gt;
 
 &lt;p&gt;pyspider应该算是一个相当不错的框架，代码很清晰，很适合去读。不过适合的场景还是比较有限，着重于调度，分布式爬取，弱化了对数据的处理部分（当然，这部分也可以很方便的扩展）。&lt;/p&gt;
 
