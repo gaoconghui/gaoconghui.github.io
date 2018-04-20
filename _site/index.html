@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  <link rel="canonical" href="http://gaoconghui.github.io/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/" title="访问 Time_wait状态存在的必要性">Time_wait状态存在的必要性</a></h2>
+      <p class="excerpt">什么时候会TIME_WAITTCP在关闭的时候有个四次挥手的过程，主动关闭方在四次挥手的最后一个ACK发送之后会变成TIME_WAIT状态。主动关闭方跟握手不同，挥手可以由客户端发起，也可以是服务端发起。发起关闭的一端我们称之为主动关闭方，另一端称之为被动关闭方。四次挥手  主动关闭方会发送一个FIN给被动关闭方，表示数据已经发送完毕。  被动关闭方接收到FIN，响应一个ACK。它的接收作为一个文件结束符（end-of-file）传递给接收端应用进程（放在所有已排队等候该应用进程接收的任何...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-04-20 00:00:00 +0800" class="post-list__meta--date date">2018-04-20</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href=/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/04/pyspider%E7%AE%80%E6%9E%90/" title="访问 简析pyspider">简析pyspider</a></h2>
       <p class="excerpt">pyspider优势所在pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。scheduler了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是t...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-04-03 21:00:00 +0800" class="post-list__meta--date date">2018-04-03</time> &#8226; <span class="post-list__meta--tags tags">python pyspider</span><a class="btn-border-small" href=/2018/04/pyspider%E7%AE%80%E6%9E%90/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/" title="访问 chrome抓包websocket frame为空">chrome抓包websocket frame为空</a></h2>
       <p class="excerpt">尝试抓websocket的包，遇上一个奇葩的问题，分享下。测试网站如下http://websocket.org/echo.htmlchrome抓websocket的包很简单  打开http://websocket.org/echo.html  connect ，send，可以在前端看到输出  打开chrome开发者工具，可以看到已经有websocket的连接然而…啥都没有…很迷，看了许久，搜了很多地方，换了电脑，升级了最新版本，依旧啥都没有…终于，在StackOverflow 上找到了靠谱...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-12-30 20:00:00 +0800" class="post-list__meta--date date">2017-12-30</time> &#8226; <span class="post-list__meta--tags tags">websocket</span><a class="btn-border-small" href=/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/" title="访问 phash计算png图片指纹返回总为0">phash计算png图片指纹返回总为0</a></h2>
-      <p class="excerpt">今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。In [214]: lib = ctypes.CDLL(find_library('pHash'), use_errno=True)In [215]: phash = ctypes.c_uint64()In [216...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-12-28 20:00:00 +0800" class="post-list__meta--date date">2017-12-28</time> &#8226; <span class="post-list__meta--tags tags">phash</span><a class="btn-border-small" href=/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

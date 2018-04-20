@@ -3,11 +3,65 @@
   <channel>
     <title>Gao Conghui</title>
     <description>一点资讯，视频爬虫，视频处理。</description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 03 Apr 2018 21:17:52 +0800</pubDate>
-    <lastBuildDate>Tue, 03 Apr 2018 21:17:52 +0800</lastBuildDate>
+    <link>http://gaoconghui.github.io/</link>
+    <atom:link href="http://gaoconghui.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 20 Apr 2018 22:45:08 +0800</pubDate>
+    <lastBuildDate>Fri, 20 Apr 2018 22:45:08 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
+    
+      <item>
+        <title>Time_wait状态存在的必要性</title>
+        <description>&lt;h4 id=&quot;什么时候会time_wait&quot;&gt;什么时候会TIME_WAIT&lt;/h4&gt;
+
+&lt;p&gt;TCP在关闭的时候有个四次挥手的过程，主动关闭方在四次挥手的最后一个ACK发送之后会变成TIME_WAIT状态。&lt;/p&gt;
+
+&lt;h5 id=&quot;主动关闭方&quot;&gt;主动关闭方&lt;/h5&gt;
+
+&lt;p&gt;跟握手不同，挥手可以由客户端发起，也可以是服务端发起。发起关闭的一端我们称之为主动关闭方，另一端称之为被动关闭方。&lt;/p&gt;
+
+&lt;h5 id=&quot;四次挥手&quot;&gt;四次挥手&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;主动关闭方会发送一个FIN给被动关闭方，表示数据已经发送完毕。&lt;/li&gt;
+  &lt;li&gt;被动关闭方接收到FIN，响应一个ACK。它的接收作为一个文件结束符（end-of-file）传递给接收端应用进程（放在所有已排队等候该应用进程接收的任何其他数据之后）。FIN意味着接收端在相应连接上再无额外的数据可以接收了。&lt;/li&gt;
+  &lt;li&gt;一段时间后，被动关闭方的应用进程收到了文件结束符，发送完所有需要发送的内容，也会发送一个FIN给主动关闭方。&lt;/li&gt;
+  &lt;li&gt;接收到这个最终的FIN的主动关闭方也需要响应一个ACK。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;time_wait状态维持多久&quot;&gt;TIME_WAIT状态维持多久&lt;/h4&gt;
+
+&lt;p&gt;主动关闭方响应完最后一次ACK之后，会在TIME_WAIT这个状态维持2MSL。&lt;/p&gt;
+
+&lt;h5 id=&quot;msl&quot;&gt;MSL&lt;/h5&gt;
+
+&lt;p&gt;MSL全称是maximum segment lifetime，最长分节生命期。MSL是任何IP数据报能够在因特网存活的最长时间。我们知道，这个时间是有限的，因为每个数据报都含有一个限跳（hop limit）的8位字段，它的最大值是255（简单的讲就是不同经过超过255个路由器）。尽管这个跳数限制而不是真正的时间限制，我们仍然假设最大限跳的分组在网络中存在的时间不可能超过MSL秒。&lt;/p&gt;
+
+&lt;p&gt;MSL的具体值通常为30秒或者是2分钟。&lt;/p&gt;
+
+&lt;h4 id=&quot;为什么需要time_wait&quot;&gt;为什么需要TIME_WAIT&lt;/h4&gt;
+
+&lt;h5 id=&quot;可靠地实现了tcp全双工连接的终止&quot;&gt;可靠地实现了TCP全双工连接的终止&lt;/h5&gt;
+
+&lt;p&gt;我们知道，TCP是比较可靠的。当TCP向另一端发送数据时，他要求对端返回一个确认（如同我们关闭时候的FIN和ACK）。如果没有收到确认，则会重发。&lt;/p&gt;
+
+&lt;p&gt;回忆一下我们最终的那个FIN与ACK，被动关闭方发送FIN，并等待主动关闭方返回的ACK。我们假设最终的ACK丢失，被动关闭方将需要重新发送它的最终那个FIN，主动关闭方必须维护状态信息（TIME_WAIT），以允许它重发最终的那个ACK。&lt;/p&gt;
+
+&lt;p&gt;如果没有了这个状态，当他第二次收到FIN时，会响应一个RST（也是一种类型的TCP分节），会被服务器解释成一个错误。&lt;/p&gt;
+
+&lt;p&gt;为了TCP打算执行必要的工作以彻底终止某个连接两个方向上的数据流（即全双工关闭），那么他必须要正确处理连接终止四个分节中任何一个分节丢失的情况。&lt;/p&gt;
+
+&lt;h5 id=&quot;允许老的重复分节在网络中的消逝为什么需要2msl&quot;&gt;允许老的重复分节在网络中的消逝（为什么需要2MSL）&lt;/h5&gt;
+
+&lt;p&gt;首先，存在这样的情况，某个路由器崩溃或者两个路由器之间的某个链接断开时，路由协议需要花费数秒到数分钟的时间才能稳定找出另一条通路。在这段时间内，可能发生路由循环（路由器A把分组发送给B，B又发送回给A），这种情况我们称之为迷途。假设迷途的分组是一个TCP分节，在迷途期间，发送端TCP超时并重传该分组，重传分组通过某路径到达目的地，而后不久（最多MSL秒）路由循环修复，早先迷失在这个循环中的分组最终也被送到目的地。这种分组被称之为重复分组或者漫游的重复分组，TCP必须要正确处理这些重复的分组。&lt;/p&gt;
+
+&lt;p&gt;我们假设ip1:port1和ip2:port2 之间有一个TCP连接。我们关闭了这个链接，过一段时间后在相同IP和端口之间建立了另一个连接。TCP必须防止来自之前那个连接的老的重复分组在新连接上出现。为了做到这一点，TCP将不复用处于TIME_WAIT状态的连接。2MSL的时间足以让某个方向上的分组存活MSL秒后被丢弃，另一个方向上的应答也最多存活MSL秒后被丢弃。&lt;/p&gt;
+</description>
+        <pubDate>Fri, 20 Apr 2018 00:00:00 +0800</pubDate>
+        <link>http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</guid>
+        
+        
+      </item>
     
       <item>
         <title>简析pyspider</title>
@@ -138,8 +192,8 @@
 
 </description>
         <pubDate>Tue, 03 Apr 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/</guid>
+        <link>http://gaoconghui.github.io/2018/04/pyspider%E7%AE%80%E6%9E%90/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/04/pyspider%E7%AE%80%E6%9E%90/</guid>
         
         <category>python</category>
         
@@ -868,8 +922,8 @@
 
 </description>
         <pubDate>Thu, 15 Mar 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</guid>
+        <link>http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</guid>
         
         <category>python</category>
         
@@ -1062,8 +1116,8 @@
 ​&lt;/p&gt;
 </description>
         <pubDate>Fri, 02 Mar 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</guid>
+        <link>http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</guid>
         
         <category>kubernetes</category>
         
@@ -1113,8 +1167,8 @@
 &lt;p&gt;在给pod发出关闭指令时，k8s将会给应用发送SIGTERM信号，程序只需要捕获SIGTERM信号并做相应处理即可。配置为k8s会等待60秒后关闭。&lt;/p&gt;
 </description>
         <pubDate>Mon, 26 Feb 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
+        <link>http://gaoconghui.github.io/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
         
         <category>kubernetes</category>
         
@@ -1228,8 +1282,8 @@
 &lt;p&gt;哦。&lt;/p&gt;
 </description>
         <pubDate>Wed, 10 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
+        <link>http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
         
         <category>python</category>
         
@@ -1275,8 +1329,8 @@
 
 </description>
         <pubDate>Wed, 10 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</guid>
+        <link>http://gaoconghui.github.io/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</guid>
         
         <category>python</category>
         
@@ -1384,8 +1438,8 @@
 &lt;/ul&gt;
 </description>
         <pubDate>Mon, 08 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</guid>
+        <link>http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</guid>
         
         <category>python</category>
         
@@ -1545,8 +1599,8 @@
 
 </description>
         <pubDate>Tue, 02 Jan 2018 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</link>
-        <guid isPermaLink="true">http://localhost:4000/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</guid>
+        <link>http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</guid>
         
         <category>kibana</category>
         
@@ -1582,68 +1636,10 @@ chrome抓websocket的包很简单&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/5574483-d3bd935302ce4bd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;呵呵呵&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 30 Dec 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
+        <link>http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
+        <guid isPermaLink="true">http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
         
         <category>websocket</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>phash计算png图片指纹返回总为0</title>
-        <description>&lt;p&gt;今天在用phash做线上封面图去重，之前自己开发机mac上有个用port install phash安装的phash，源码是phash.org中提供的c++版本的，没遇到啥问题。今天打算用docker包一下放服务器上跑，发现了个有趣的现象，所有的png图片计算出来的指纹都是0。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;In [214]: lib = ctypes.CDLL(find_library('pHash'), use_errno=True)
-
-In [215]: phash = ctypes.c_uint64()
-
-In [216]: lib.ph_dct_imagehash(&quot;/tmp/new3.png&quot;, ctypes.pointer(phash))
-Out[216]: 0
-
-In [217]: phash
-Out[217]: c_ulong(0L)
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;而后在mac上直接编译使用，结果同上，也是总为0。很有意思，一开始一直在检查自己的代码，直到简化成只剩几行了，还是有问题。一直没敢怀疑phash.org上已经放出来好几年的代码，毕竟那一套东西2013年之后就没变过了，应该没啥太大问题。&lt;/p&gt;
-
-&lt;p&gt;04.23.2013 pHash 0.9.6 released. Fix some compilation errors and warnings, as well as updates to the automake files to support building on Gentoo.&lt;/p&gt;
-
-&lt;p&gt;而后开始对源码进行修改，采用print大法来debug，才发现真的是phash写的有些问题。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;CImg&amp;lt;float&amp;gt; img;
-if (src.spectrum() == 3){
-        img = src.RGBtoYCbCr().channel(0).get_convolve(meanfilter);
-    } else if (src.spectrum() == 4){
-	int width = img.width();
-        int height = img.height();
-        int depth = img.depth();
-	img = src.crop(0,0,0,0,width-1,height-1,depth-1,2).RGBtoYCbCr().channel(0).get_convolve(meanfilter);
-    } else {
-	img = src.channel(0).get_convolve(meanfilter);
-    }
-img.resize(32,32);
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;这段代码来源于ph_dct_imagehash方法，就是算phash的核心方法，这边用Cimg对图像做了一些处理，src是输入的原始图片，img应该是处理完之后的，生成一个32*32的图片。src.spectrum()方法获取图片通道，png图片有RGBA四个通道，问题就出在这，这块应该是想获取图片的宽高信息，而后做截图处理。然而img还没初始化，返回的都只能是0，导致后边各种计算返回一片0，修改为src后即可。&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;else if (src.spectrum() == 4){
-	int width = src.width();
-        int height = src.height();
-        int depth = src.depth();
-	img = src.crop(0,0,0,0,width-1,height-1,depth-1,2).RGBtoYCbCr().channel(0).get_convolve(meanfilter);
-    }
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;#####小记&lt;/p&gt;
-
-&lt;p&gt;说实话，这是我第一次对权威的代码（这应该算权威吧？）动手，只能说，代码总是人写的，总是会有bug的。&lt;/p&gt;
-</description>
-        <pubDate>Thu, 28 Dec 2017 20:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</link>
-        <guid isPermaLink="true">http://localhost:4000/2017/12/phash%E8%AE%A1%E7%AE%97png%E6%8C%87%E7%BA%B9%E6%80%BB%E6%98%AF%E8%BF%94%E5%9B%9E0/</guid>
-        
-        <category>phash</category>
         
         
       </item>
