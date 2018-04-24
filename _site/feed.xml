@@ -3,14 +3,14 @@
   <channel>
     <title>Gao Conghui</title>
     <description>一点资讯，视频爬虫，视频处理。</description>
-    <link>http://gaoconghui.github.io/</link>
-    <atom:link href="http://gaoconghui.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 Apr 2018 22:45:08 +0800</pubDate>
-    <lastBuildDate>Fri, 20 Apr 2018 22:45:08 +0800</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 24 Apr 2018 20:59:49 +0800</pubDate>
+    <lastBuildDate>Tue, 24 Apr 2018 20:59:49 +0800</lastBuildDate>
     <generator>Jekyll v3.7.3</generator>
     
       <item>
-        <title>Time_wait状态存在的必要性</title>
+        <title>TIME_WAIT状态存在的意义</title>
         <description>&lt;h4 id=&quot;什么时候会time_wait&quot;&gt;什么时候会TIME_WAIT&lt;/h4&gt;
 
 &lt;p&gt;TCP在关闭的时候有个四次挥手的过程，主动关闭方在四次挥手的最后一个ACK发送之后会变成TIME_WAIT状态。&lt;/p&gt;
@@ -56,9 +56,11 @@
 
 &lt;p&gt;我们假设ip1:port1和ip2:port2 之间有一个TCP连接。我们关闭了这个链接，过一段时间后在相同IP和端口之间建立了另一个连接。TCP必须防止来自之前那个连接的老的重复分组在新连接上出现。为了做到这一点，TCP将不复用处于TIME_WAIT状态的连接。2MSL的时间足以让某个方向上的分组存活MSL秒后被丢弃，另一个方向上的应答也最多存活MSL秒后被丢弃。&lt;/p&gt;
 </description>
-        <pubDate>Fri, 20 Apr 2018 00:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</guid>
+        <pubDate>Fri, 20 Apr 2018 21:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/</guid>
+        
+        <category>tcp</category>
         
         
       </item>
@@ -192,8 +194,8 @@
 
 </description>
         <pubDate>Tue, 03 Apr 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/04/pyspider%E7%AE%80%E6%9E%90/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/04/pyspider%E7%AE%80%E6%9E%90/</guid>
+        <link>http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/04/pyspider%E7%AE%80%E6%9E%90/</guid>
         
         <category>python</category>
         
@@ -922,8 +924,8 @@
 
 </description>
         <pubDate>Thu, 15 Mar 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</guid>
+        <link>http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/</guid>
         
         <category>python</category>
         
@@ -1116,8 +1118,8 @@
 ​&lt;/p&gt;
 </description>
         <pubDate>Fri, 02 Mar 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</guid>
+        <link>http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/</guid>
         
         <category>kubernetes</category>
         
@@ -1167,8 +1169,8 @@
 &lt;p&gt;在给pod发出关闭指令时，k8s将会给应用发送SIGTERM信号，程序只需要捕获SIGTERM信号并做相应处理即可。配置为k8s会等待60秒后关闭。&lt;/p&gt;
 </description>
         <pubDate>Mon, 26 Feb 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
+        <link>http://localhost:4000/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/</guid>
         
         <category>kubernetes</category>
         
@@ -1282,8 +1284,8 @@
 &lt;p&gt;哦。&lt;/p&gt;
 </description>
         <pubDate>Wed, 10 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
+        <link>http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/</guid>
         
         <category>python</category>
         
@@ -1329,8 +1331,8 @@
 
 </description>
         <pubDate>Wed, 10 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</guid>
+        <link>http://localhost:4000/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/</guid>
         
         <category>python</category>
         
@@ -1438,8 +1440,8 @@
 &lt;/ul&gt;
 </description>
         <pubDate>Mon, 08 Jan 2018 21:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</guid>
+        <link>http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/</guid>
         
         <category>python</category>
         
@@ -1599,8 +1601,8 @@
 
 </description>
         <pubDate>Tue, 02 Jan 2018 20:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</guid>
+        <link>http://localhost:4000/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</link>
+        <guid isPermaLink="true">http://localhost:4000/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/</guid>
         
         <category>kibana</category>
         
@@ -1636,8 +1638,8 @@ chrome抓websocket的包很简单&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;http://upload-images.jianshu.io/upload_images/5574483-d3bd935302ce4bd6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240&quot; alt=&quot;呵呵呵&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 30 Dec 2017 20:00:00 +0800</pubDate>
-        <link>http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
-        <guid isPermaLink="true">http://gaoconghui.github.io/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
+        <link>http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/</guid>
         
         <category>websocket</category>
         
