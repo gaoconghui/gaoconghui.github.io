@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  <link rel="canonical" href="http://gaoconghui.github.io/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/" title="访问 品读 werkzeug reloader 实现机制">品读 werkzeug reloader 实现机制</a></h2>
+      <p class="excerpt">werkzeug使用reloader可以在文件被改变时自动加载更改过的文件，使用方法也很简单，run_simple('localhost', 4000, application,use_reloader=True)，ues_reloader=True即可。本文试图去品读一下reloader的实现以及一些小细节。原理先概述下整个reloader的原理，看起来会舒服一些。非reloader的启动很简单，会调用make_server方法，然后调用serve_forever()去循环获取新的请求。...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-04-24 21:00:00 +0800" class="post-list__meta--date date">2018-04-24</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/" title="访问 TIME_WAIT状态存在的意义">TIME_WAIT状态存在的意义</a></h2>
       <p class="excerpt">什么时候会TIME_WAITTCP在关闭的时候有个四次挥手的过程，主动关闭方在四次挥手的最后一个ACK发送之后会变成TIME_WAIT状态。主动关闭方跟握手不同，挥手可以由客户端发起，也可以是服务端发起。发起关闭的一端我们称之为主动关闭方，另一端称之为被动关闭方。四次挥手  主动关闭方会发送一个FIN给被动关闭方，表示数据已经发送完毕。  被动关闭方接收到FIN，响应一个ACK。它的接收作为一个文件结束符（end-of-file）传递给接收端应用进程（放在所有已排队等候该应用进程接收的任何...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-04-20 21:00:00 +0800" class="post-list__meta--date date">2018-04-20</time> &#8226; <span class="post-list__meta--tags tags">tcp</span><a class="btn-border-small" href=/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/" title="访问 timelion一些基本表达式">timelion一些基本表达式</a></h2>
       <p class="excerpt">一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？  Timelion is a time series data visualizer that enables you to combine totally independent data sources within a single visualization. It’s driven by a simple expre...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-01-02 20:00:00 +0800" class="post-list__meta--date date">2018-01-02</time> &#8226; <span class="post-list__meta--tags tags">kibana timelion</span><a class="btn-border-small" href=/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/" title="访问 chrome抓包websocket frame为空">chrome抓包websocket frame为空</a></h2>
-      <p class="excerpt">尝试抓websocket的包，遇上一个奇葩的问题，分享下。测试网站如下http://websocket.org/echo.htmlchrome抓websocket的包很简单  打开http://websocket.org/echo.html  connect ，send，可以在前端看到输出  打开chrome开发者工具，可以看到已经有websocket的连接然而…啥都没有…很迷，看了许久，搜了很多地方，换了电脑，升级了最新版本，依旧啥都没有…终于，在StackOverflow 上找到了靠谱...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-12-30 20:00:00 +0800" class="post-list__meta--date date">2017-12-30</time> &#8226; <span class="post-list__meta--tags tags">websocket</span><a class="btn-border-small" href=/2017/12/chrome%E6%8A%93%E5%8C%85websocket-%E7%9C%8B%E4%B8%8D%E5%88%B0frame/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

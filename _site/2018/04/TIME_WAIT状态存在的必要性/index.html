@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://localhost:4000/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -171,6 +171,14 @@
 <section class="read-more">
    
    
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/" title="link to 品读 werkzeug reloader 实现机制">品读 werkzeug reloader 实现机制</a></h2>
+       <p class="excerpt">werkzeug使用reloader可以在文件被改变时自动加载更改过的文件，使用方法也很简单，run_simple('localhost', 4000, application,use_reloader=True)，ues_reloader=True即可。本文试图去品读一下reloader的实现以及一些小细节。原理先概述下整个reloader的原理，看起来会舒服一些。非reloader的启动很简单，会调用make_server方法，然后调用serve_forever()去循环获取新的请求。...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-04-24 21:00:00 +0800" class="post-list__meta--date date">2018-04-24</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/>继续阅读</a></div>
+   </div>
+   
+   
    
    
    <div class="read-more-item">
@@ -188,7 +196,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://localhost:4000/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/";
+        this.page.url = "http://gaoconghui.github.io/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/";
         this.page.identifier = "/2018/04/TIME_WAIT%E7%8A%B6%E6%80%81%E5%AD%98%E5%9C%A8%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7/";
     };
 
