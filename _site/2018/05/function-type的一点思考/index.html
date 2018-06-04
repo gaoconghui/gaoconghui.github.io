@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>对go中function type的一点思考</title>
+  <meta name="description" content="function type 可以理解为一组拥有相同参数类型和结果类型的方法的集合。我看也有人管他叫接口型函数。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="对go中function type的一点思考">
+  <meta name="twitter:description" content="function type 可以理解为一组拥有相同参数类型和结果类型的方法的集合。我看也有人管他叫接口型函数。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="对go中function type的一点思考">
+  <meta property="og:description" content="function type 可以理解为一组拥有相同参数类型和结果类型的方法的集合。我看也有人管他叫接口型函数。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/05/function-type%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-05-30 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-05-30</time> &#8226; <span class="post-meta__tags tags">go</span>
+    </div>
+    <h1 class="post-title">对go中function type的一点思考</h1>
+  </header>
+
+  <section class="post">
+    <p>function type 可以理解为一组拥有相同参数类型和结果类型的方法的集合。我看也有人管他叫接口型函数。</p>
+
+<blockquote>
+  <p>A function type denotes the set of all functions with the same parameter and result types. The value of an uninitialized variable of function type is <code class="highlighter-rouge">nil</code>.</p>
+</blockquote>
+
+<blockquote>
+  <p>Two function types are identical if they have the same number of parameters and result values, corresponding parameter and result types are identical, and either both functions are variadic or neither is. Parameter and result names are not required to match.</p>
+</blockquote>
+
+<p>下面是function type最一般的打开方式</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">Handler</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">string</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">process1</span><span class="p">(</span><span class="n">h</span><span class="x"> </span><span class="n">Handler</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="s">"process1"</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">h</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">process2</span><span class="p">(</span><span class="n">h</span><span class="x"> </span><span class="n">Handler</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="s">"process2"</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">h</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span></code></pre></div></div>
+
+<p>我们顶一个一个Handler，输入参数为string，输出为string，且有一系列的复杂方法都以Handler作为输入参数，做一些处理。这种情况下，我们可以很方便的去复用process1和process2方法。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">processResult</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">process1</span><span class="p">(</span><span class="k">func</span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="kt">string</span><span class="p">)</span><span class="x"> </span><span class="kt">string</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="n">strings</span><span class="o">.</span><span class="n">ToLower</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="x">
+</span><span class="p">},</span><span class="x"> </span><span class="s">"gch"</span><span class="p">)</span><span class="x">
+
+</span></code></pre></div></div>
+
+<p>process1的第一个参数为Handler，我们只需要构建一个和它拥有同样参数以及返回类型的方法即可。</p>
+
+<p>接下来是一种更神奇的用法，我们知道，方法可以被声明到任意类型（只要不是一个指针或者一个interface），因此，我们可以给function type添加一个方法。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// The HandlerFunc type is an adapter to allow the use of</span><span class="x">
+</span><span class="c">// ordinary functions as HTTP handlers. If f is a function</span><span class="x">
+</span><span class="c">// with the appropriate signature, HandlerFunc(f) is a</span><span class="x">
+</span><span class="c">// Handler that calls f.</span><span class="x">
+</span><span class="k">type</span><span class="x"> </span><span class="n">HandlerFunc</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="o">*</span><span class="n">Request</span><span class="p">)</span><span class="x">
+
+</span><span class="c">// ServeHTTP calls f(w, r).</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">f</span><span class="x"> </span><span class="n">HandlerFunc</span><span class="p">)</span><span class="x"> </span><span class="n">ServeHTTP</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">f</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>这个例子来源于<code class="highlighter-rouge">net/http</code>包，我们只需要定义一个方法，拥有相同的参数，如</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">NotFound</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x"> </span><span class="n">Error</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="s">"404 page not found"</span><span class="p">,</span><span class="x"> </span><span class="n">StatusNotFound</span><span class="p">)</span><span class="x"> </span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>就能将这个方法转型为HandlerFunc，并调用ServerHTTP方法。</p>
+
+<p>个人觉得这种给function附带一个function的方法可读性不太强，第一次看到会觉得很奇怪，更常见的用法是使用struct和interface组合起来使用，能以差不多的行的代码实现相同的功能。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">HandleS</span><span class="x"> </span><span class="k">struct</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">handle</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">NewHandler</span><span class="p">(</span><span class="n">f</span><span class="x"> </span><span class="k">func</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">))</span><span class="x"> </span><span class="n">Handlers</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">return</span><span class="x"> </span><span class="o">&amp;</span><span class="n">HandlerS</span><span class="p">{</span><span class="n">handle</span><span class="o">:</span><span class="x"> </span><span class="n">f</span><span class="p">}</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">h</span><span class="x"> </span><span class="o">*</span><span class="n">HandlerS</span><span class="p">)</span><span class="x"> </span><span class="n">ServerHTTP</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">h</span><span class="o">.</span><span class="n">Handle</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>也许道行不深，以后会有新的想法。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/" title="link to 品读 werkzeug reloader 实现机制">品读 werkzeug reloader 实现机制</a></h2>
+       <p class="excerpt">werkzeug使用reloader可以在文件被改变时自动加载更改过的文件，使用方法也很简单，run_simple('localhost', 4000, application,use_reloader=True)，ues_reloader=True即可。本文试图去品读一下reloader的实现以及一些小细节。原理先概述下整个reloader的原理，看起来会舒服一些。非reloader的启动很简单，会调用make_server方法，然后调用serve_forever()去循环获取新的请求。...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-04-24 21:00:00 +0800" class="post-list__meta--date date">2018-04-24</time> &#8226; <span class="post-list__meta--tags tags">python werkzeug</span><a class="btn-border-small" href=/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/05/function-type%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/";
+        this.page.identifier = "/2018/05/function-type%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
