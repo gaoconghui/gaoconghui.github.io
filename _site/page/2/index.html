@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/" title="访问 python随笔 Mock vs MagicMock">python随笔 Mock vs MagicMock</a></h2>
+      <p class="excerpt">首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。_mock = mock.Mock()_magicmock = mock.MagicMock()mock.__iter__ # error_magicmock.__iter__ #&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。&gt;&gt;&gt;...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-01-08 21:00:00 +0800" class="post-list__meta--date date">2018-01-08</time> &#8226; <span class="post-list__meta--tags tags">python mock</span><a class="btn-border-small" href=/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/" title="访问 timelion一些基本表达式">timelion一些基本表达式</a></h2>
       <p class="excerpt">一开始看到Kibana中自带了个叫timelion的东西，感觉很神奇，为什么有了kibana之前的一些展现数据的图了（如柱状图，折线图等）还需要timelion嘞？  Timelion is a time series data visualizer that enables you to combine totally independent data sources within a single visualization. It’s driven by a simple expre...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-01-02 20:00:00 +0800" class="post-list__meta--date date">2018-01-02</time> &#8226; <span class="post-list__meta--tags tags">kibana timelion</span><a class="btn-border-small" href=/2018/01/timelion%E4%B8%80%E4%BA%9B%E8%A1%A8%E8%BE%BE%E5%BC%8F/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/" title="访问 python随笔--socket关闭之后端口占用的问题">python随笔--socket关闭之后端口占用的问题</a></h2>
       <p class="excerpt">先上一段代码class MyHttpHandler(BaseHTTPRequestHandler):    def do_GET(self):        print "do get"        self.send_response(code=200)        self.end_headers()        self.wfile.write("hello world")if __name__ == '__main__':    serv = TCPServer(('', 2...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-09-11 21:00:00 +0800" class="post-list__meta--date date">2017-09-11</time> &#8226; <span class="post-list__meta--tags tags">python随笔 socket</span><a class="btn-border-small" href=/2017/09/socket%E5%85%B3%E9%97%AD%E4%B9%8B%E5%90%8E%E7%AB%AF%E5%8F%A3%E5%8D%A0%E7%94%A8%E7%9A%84%E9%97%AE%E9%A2%98/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/" title="访问 mysql随笔之事务隔离级别">mysql随笔之事务隔离级别</a></h2>
-      <p class="excerpt">这是一个相当基础的问题  SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。  Read Uncommitted（读取未提交内容）在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。  Read Committed（读取提交内容）这是大多数数据库系统的默认...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-09-08 21:00:00 +0800" class="post-list__meta--date date">2017-09-08</time> &#8226; <span class="post-list__meta--tags tags">mysql随笔</span><a class="btn-border-small" href=/2017/09/mysql%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

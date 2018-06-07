@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/06/groupcache/" title="访问 groupcache源码中几个有趣的点">groupcache源码中几个有趣的点</a></h2>
+      <p class="excerpt">简介  groupcache is a caching and cache-filling library, intended as a replacement for memcached in many cases.groupcache是一个可分布式缓存组件，用于在某些方面替代memcache，不过和一般的缓存有些区别，它只能做get操作（没错，只能get），但是不能做更新和删除操作。另外，groupcache可以很方便的集成到应用程序中，用http接口的形式与其他程序交互。几个概念  ...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-06-06 21:00:00 +0800" class="post-list__meta--date date">2018-06-06</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/groupcache/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/05/function-type%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/" title="访问 对go中function type的一点思考">对go中function type的一点思考</a></h2>
       <p class="excerpt">function type 可以理解为一组拥有相同参数类型和结果类型的方法的集合。我看也有人管他叫接口型函数。  A function type denotes the set of all functions with the same parameter and result types. The value of an uninitialized variable of function type is nil.  Two function types are identical i...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-05-30 21:00:00 +0800" class="post-list__meta--date date">2018-05-30</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/05/function-type%E7%9A%84%E4%B8%80%E7%82%B9%E6%80%9D%E8%80%83/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/" title="访问 kafka-python 获取topic lag值">kafka-python 获取topic lag值</a></h2>
       <p class="excerpt">说真，这个问题看上去很简单，但“得益”与kafka-python神奇的文档，真的不算简单，反正我是搜了半天还看了半天源码。直接上代码吧from kafka import SimpleClient, KafkaConsumerfrom kafka.common import OffsetRequestPayload, TopicPartitiondef get_topic_offset(brokers, topic):    """    获取一个topic的offset值的和    """...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python kafka</span><a class="btn-border-small" href=/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/" title="访问 python随笔 Mock vs MagicMock">python随笔 Mock vs MagicMock</a></h2>
-      <p class="excerpt">首先，从现象上看，Mock有的MagicMock都有，而MagicMock多了一些magic方法。_mock = mock.Mock()_magicmock = mock.MagicMock()mock.__iter__ # error_magicmock.__iter__ #&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。&gt;&gt;&gt;...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2018-01-08 21:00:00 +0800" class="post-list__meta--date date">2018-01-08</time> &#8226; <span class="post-list__meta--tags tags">python mock</span><a class="btn-border-small" href=/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
