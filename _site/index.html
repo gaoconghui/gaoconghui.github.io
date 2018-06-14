@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" title="访问 golang hijack打开方式">golang hijack打开方式</a></h2>
+      <p class="excerpt">简介Hijacktype Hijacker interface {	// Hijack lets the caller take over the connection.	// After a call to Hijack the HTTP server library	// will not do anything else with the connection.	//	// It becomes the caller's responsibility to manage	// and...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-06-13 21:00:00 +0800" class="post-list__meta--date date">2018-06-13</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/06/groupcache/" title="访问 groupcache源码中几个有趣的点">groupcache源码中几个有趣的点</a></h2>
       <p class="excerpt">简介  groupcache is a caching and cache-filling library, intended as a replacement for memcached in many cases.groupcache是一个可分布式缓存组件，用于在某些方面替代memcache，不过和一般的缓存有些区别，它只能做get操作（没错，只能get），但是不能做更新和删除操作。另外，groupcache可以很方便的集成到应用程序中，用http接口的形式与其他程序交互。几个概念  ...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-06-06 21:00:00 +0800" class="post-list__meta--date date">2018-06-06</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/groupcache/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/" title="访问 一种神奇的批量创建类的方法--参照namedtuple">一种神奇的批量创建类的方法--参照namedtuple</a></h2>
       <p class="excerpt">def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.namedtuple是一个很神奇的东西，在看kafka-python的时候看到了很多地方用到了这玩意。用法也非常简单from collections import namedtuplePeople = namedtuple(typename="peo...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python</span><a class="btn-border-small" href=/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/" title="访问 kafka-python 获取topic lag值">kafka-python 获取topic lag值</a></h2>
-      <p class="excerpt">说真，这个问题看上去很简单，但“得益”与kafka-python神奇的文档，真的不算简单，反正我是搜了半天还看了半天源码。直接上代码吧from kafka import SimpleClient, KafkaConsumerfrom kafka.common import OffsetRequestPayload, TopicPartitiondef get_topic_offset(brokers, topic):    """    获取一个topic的offset值的和    """...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python kafka</span><a class="btn-border-small" href=/2018/01/python-kafka%E8%8E%B7%E5%8F%96topic-lag%E5%80%BC/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

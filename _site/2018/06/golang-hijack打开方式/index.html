@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>golang hijack打开方式</title>
+  <meta name="description" content="简介Hijack">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="golang hijack打开方式">
+  <meta name="twitter:description" content="简介Hijack">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="golang hijack打开方式">
+  <meta property="og:description" content="简介Hijack">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-06-13 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-06-13</time> &#8226; <span class="post-meta__tags tags">go</span>
+    </div>
+    <h1 class="post-title">golang hijack打开方式</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="简介hijack">简介Hijack</h3>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">type</span><span class="x"> </span><span class="n">Hijacker</span><span class="x"> </span><span class="k">interface</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="c">// Hijack lets the caller take over the connection.</span><span class="x">
+	</span><span class="c">// After a call to Hijack the HTTP server library</span><span class="x">
+	</span><span class="c">// will not do anything else with the connection.</span><span class="x">
+	</span><span class="c">//</span><span class="x">
+	</span><span class="c">// It becomes the caller's responsibility to manage</span><span class="x">
+	</span><span class="c">// and close the connection.</span><span class="x">
+	</span><span class="c">//</span><span class="x">
+	</span><span class="c">// The returned net.Conn may have read or write deadlines</span><span class="x">
+	</span><span class="c">// already set, depending on the configuration of the</span><span class="x">
+	</span><span class="c">// Server. It is the caller's responsibility to set</span><span class="x">
+	</span><span class="c">// or clear those deadlines as needed.</span><span class="x">
+	</span><span class="c">//</span><span class="x">
+	</span><span class="c">// The returned bufio.Reader may contain unprocessed buffered</span><span class="x">
+	</span><span class="c">// data from the client.</span><span class="x">
+	</span><span class="c">//</span><span class="x">
+	</span><span class="c">// After a call to Hijack, the original Request.Body must</span><span class="x">
+	</span><span class="c">// not be used.</span><span class="x">
+	</span><span class="n">Hijack</span><span class="p">()</span><span class="x"> </span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">Conn</span><span class="p">,</span><span class="x"> </span><span class="o">*</span><span class="n">bufio</span><span class="o">.</span><span class="n">ReadWriter</span><span class="p">,</span><span class="x"> </span><span class="kt">error</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p><code class="highlighter-rouge">Hijack()</code>可以将HTTP对应的TCP连接取出，连接在<code class="highlighter-rouge">Hijack()</code>之后，HTTP的相关操作就会受到影响，调用方需要负责去关闭连接。看一个简单的例子。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="n">handle1</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">hj</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">w</span><span class="o">.</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">Hijacker</span><span class="p">)</span><span class="x">
+	</span><span class="n">conn</span><span class="p">,</span><span class="x"> </span><span class="n">buf</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">hj</span><span class="o">.</span><span class="n">Hijack</span><span class="p">()</span><span class="x">
+	</span><span class="k">defer</span><span class="x"> </span><span class="n">conn</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+	</span><span class="n">buf</span><span class="o">.</span><span class="n">WriteString</span><span class="p">(</span><span class="s">"hello world"</span><span class="p">)</span><span class="x">
+	</span><span class="n">buf</span><span class="o">.</span><span class="n">Flush</span><span class="p">()</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="n">handle2</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">r</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="s">"hello world"</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>问题来了，上面两个<code class="highlighter-rouge">handle</code>方法有什么区别呢？很简单，同样是http请求，返回的结果一个遵循http协议，一个不遵循。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>➜  ~ curl -i http://localhost:9090/handle1
+hello world%                                                                                                                                                                                                                            ➜  ~ curl -i http://localhost:9090/handle2
+HTTP/1.1 200 OK
+Date: Thu, 14 Jun 2018 07:51:31 GMT
+Content-Length: 11
+Content-Type: text/plain; charset=utf-8
+
+hello world%
+</code></pre></div></div>
+
+<p>分别是以上两者的返回，可以看到，hijack之后的返回，虽然body是相同的，但是完全没有遵循http协议。（废话，别人都说了hijack之后返回了body然后直接关闭了，哪来的headers = = ）</p>
+
+<p>但我们还是要看看为啥..</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">c</span><span class="x"> </span><span class="o">*</span><span class="n">conn</span><span class="p">)</span><span class="x"> </span><span class="n">serve</span><span class="p">(</span><span class="n">ctx</span><span class="x"> </span><span class="n">context</span><span class="o">.</span><span class="n">Context</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="o">...</span><span class="x">
+  	</span><span class="n">serverHandler</span><span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">server</span><span class="p">}</span><span class="o">.</span><span class="n">ServeHTTP</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="n">w</span><span class="o">.</span><span class="n">req</span><span class="p">)</span><span class="x">
+    </span><span class="n">w</span><span class="o">.</span><span class="n">cancelCtx</span><span class="p">()</span><span class="x">
+    </span><span class="k">if</span><span class="x"> </span><span class="n">c</span><span class="o">.</span><span class="n">hijacked</span><span class="p">()</span><span class="x"> </span><span class="p">{</span><span class="x">
+      </span><span class="k">return</span><span class="x">
+    </span><span class="p">}</span><span class="x">
+    </span><span class="n">w</span><span class="o">.</span><span class="n">finishRequest</span><span class="p">()</span><span class="x">
+  	</span><span class="o">...</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>这是net/http包中的方法，也是http路由的核心方法。调用<code class="highlighter-rouge">ServeHTTP</code>（也就是上边的handle方法）方法，如果被<code class="highlighter-rouge">hijack</code>了就直接return了，而一般的http请求会经过后边的<code class="highlighter-rouge">finishRequest</code>方法，加入headers等并关闭连接。</p>
+
+<h3 id="打开方式">打开方式</h3>
+
+<p>上边我们说了<code class="highlighter-rouge">Hijack</code>方法，一般在在创建连接阶段使用HTTP连接，后续自己完全处理connection。符合这样的使用场景的并不多，基于HTTP协议的rpc算一个，从HTTP升级到WebSocket也算一个。</p>
+
+<h4 id="rpc中的应用">RPC中的应用</h4>
+
+<p>go中自带的rpc可以直接复用http server处理请求的那一套流程去创建连接，连接创建完毕后再使用<code class="highlighter-rouge">Hijack</code>方法拿到连接。</p>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ServeHTTP implements an http.Handler that answers RPC requests.</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">server</span><span class="x"> </span><span class="o">*</span><span class="n">server</span><span class="p">)</span><span class="x"> </span><span class="n">servehttp</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">responsewriter</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">req</span><span class="o">.</span><span class="n">method</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="s">"connect"</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">w</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">"content-type"</span><span class="p">,</span><span class="x"> </span><span class="s">"text/plain; charset=utf-8"</span><span class="p">)</span><span class="x">
+		</span><span class="n">w</span><span class="o">.</span><span class="n">writeheader</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">statusmethodnotallowed</span><span class="p">)</span><span class="x">
+		</span><span class="n">io</span><span class="o">.</span><span class="n">writestring</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="s">"405 must connect</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">conn</span><span class="p">,</span><span class="x"> </span><span class="n">_</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">w</span><span class="o">.</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">hijacker</span><span class="p">)</span><span class="o">.</span><span class="n">hijack</span><span class="p">()</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="n">log</span><span class="o">.</span><span class="nb">print</span><span class="p">(</span><span class="s">"rpc hijacking "</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="o">.</span><span class="n">remoteaddr</span><span class="p">,</span><span class="x"> </span><span class="s">": "</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="o">.</span><span class="kt">error</span><span class="p">())</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">io</span><span class="o">.</span><span class="n">writestring</span><span class="p">(</span><span class="n">conn</span><span class="p">,</span><span class="x"> </span><span class="s">"http/1.0 "</span><span class="o">+</span><span class="n">connected</span><span class="o">+</span><span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span><span class="x">
+	</span><span class="n">server</span><span class="o">.</span><span class="n">serveconn</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>客户端通过向服务端发送method为connect的请求创建连接，创建成功后即可开始rpc调用。</p>
+
+<h4 id="websocket中的应用">websocket中的应用</h4>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">// ServeHTTP implements the http.Handler interface for a WebSocket</span><span class="x">
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="n">Server</span><span class="p">)</span><span class="x"> </span><span class="n">ServeHTTP</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">s</span><span class="o">.</span><span class="n">serveWebSocket</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+
+</span><span class="k">func</span><span class="x"> </span><span class="p">(</span><span class="n">s</span><span class="x"> </span><span class="n">Server</span><span class="p">)</span><span class="x"> </span><span class="n">serveWebSocket</span><span class="p">(</span><span class="n">w</span><span class="x"> </span><span class="n">http</span><span class="o">.</span><span class="n">ResponseWriter</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="x"> </span><span class="o">*</span><span class="n">http</span><span class="o">.</span><span class="n">Request</span><span class="p">)</span><span class="x"> </span><span class="p">{</span><span class="x">
+	</span><span class="n">rwc</span><span class="p">,</span><span class="x"> </span><span class="n">buf</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">w</span><span class="o">.</span><span class="p">(</span><span class="n">http</span><span class="o">.</span><span class="n">Hijacker</span><span class="p">)</span><span class="o">.</span><span class="n">Hijack</span><span class="p">()</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"Hijack failed: "</span><span class="x"> </span><span class="o">+</span><span class="x"> </span><span class="n">err</span><span class="o">.</span><span class="n">Error</span><span class="p">())</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="c">// The server should abort the WebSocket connection if it finds</span><span class="x">
+	</span><span class="c">// the client did not send a handshake that matches with protocol</span><span class="x">
+	</span><span class="c">// specification.</span><span class="x">
+	</span><span class="k">defer</span><span class="x"> </span><span class="n">rwc</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span><span class="x">
+	</span><span class="n">conn</span><span class="p">,</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">:=</span><span class="x"> </span><span class="n">newServerConn</span><span class="p">(</span><span class="n">rwc</span><span class="p">,</span><span class="x"> </span><span class="n">buf</span><span class="p">,</span><span class="x"> </span><span class="n">req</span><span class="p">,</span><span class="x"> </span><span class="o">&amp;</span><span class="n">s</span><span class="o">.</span><span class="n">Config</span><span class="p">,</span><span class="x"> </span><span class="n">s</span><span class="o">.</span><span class="n">Handshake</span><span class="p">)</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">err</span><span class="x"> </span><span class="o">!=</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="k">return</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="k">if</span><span class="x"> </span><span class="n">conn</span><span class="x"> </span><span class="o">==</span><span class="x"> </span><span class="no">nil</span><span class="x"> </span><span class="p">{</span><span class="x">
+		</span><span class="nb">panic</span><span class="p">(</span><span class="s">"unexpected nil conn"</span><span class="p">)</span><span class="x">
+	</span><span class="p">}</span><span class="x">
+	</span><span class="n">s</span><span class="o">.</span><span class="n">Handler</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span><span class="x">
+</span><span class="p">}</span><span class="x">
+</span></code></pre></div></div>
+
+<p>websocket在创建连接的阶段与http使用相同的协议，而在后边的数据传输的过程中使用了他自己的协议，符合了<code class="highlighter-rouge">Hijack</code>的用途。通过<code class="highlighter-rouge">serveWebSocket</code>方法将HTTP协议升级到Websocket协议。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/06/groupcache/" title="link to groupcache源码中几个有趣的点">groupcache源码中几个有趣的点</a></h2>
+       <p class="excerpt">简介  groupcache is a caching and cache-filling library, intended as a replacement for memcached in many cases.groupcache是一个可分布式缓存组件，用于在某些方面替代memcache，不过和一般的缓存有些区别，它只能做get操作（没错，只能get），但是不能做更新和删除操作。另外，groupcache可以很方便的集成到应用程序中，用http接口的形式与其他程序交互。几个概念  ...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-06-06 21:00:00 +0800" class="post-list__meta--date date">2018-06-06</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/groupcache/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/";
+        this.page.identifier = "/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
