@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>mac vpn翻墙，部分网站走vpn</title>
+  <meta name="description" content="需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="mac vpn翻墙，部分网站走vpn">
+  <meta name="twitter:description" content="需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="mac vpn翻墙，部分网站走vpn">
+  <meta property="og:description" content="需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-06-19 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-06-19</time> &#8226; <span class="post-meta__tags tags">网络</span>
+    </div>
+    <h1 class="post-title">mac vpn翻墙，部分网站走vpn</h1>
+  </header>
+
+  <section class="post">
+    <p>需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。</p>
+
+<ul>
+  <li>
+    <p>通过<code class="highlighter-rouge">ifconfig</code>找到vpn使用的虚拟网卡名以及非vpn的时候使用的网卡</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lo0: flags=8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; mtu 16384
+	options=3&lt;RXCSUM,TXCSUM&gt;
+	inet6 ::1 prefixlen 128
+	inet 127.0.0.1 netmask 0xff000000
+	inet6 fe80::1%lo0 prefixlen 64 scopeid 0x1
+	nd6 options=1&lt;PERFORMNUD&gt;
+en5: flags=8863&lt;UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST&gt; mtu 1500
+	options=4&lt;VLAN_MTU&gt;
+	ether 00:0e:c6:c3:12:d6
+	inet 10.60.90.42 netmask 0xffffff00 broadcast 10.60.90.255
+	media: autoselect (100baseTX &lt;full-duplex,flow-control&gt;)
+	status: active
+utun0: flags=8051&lt;UP,POINTOPOINT,RUNNING,MULTICAST&gt; mtu 1280
+	inet 192.168.3.45 --&gt; 192.168.3.45 netmask 0xffffffff
+</code></pre></div>    </div>
+
+    <p>上边en5是非vpn时走的网卡，utun0是通过vpn走的虚拟网卡。</p>
+  </li>
+  <li>
+    <p>通过<code class="highlighter-rouge">netstat -r</code>查看<code class="highlighter-rouge">routing table</code>验证一下</p>
+
+    <p>在非vpn时，走的都是en5这个卡，vpn时，走的utun0这个卡。</p>
+  </li>
+  <li>
+    <p>开启vpn，所有流量都默认会走utun0的卡，使用<code class="highlighter-rouge">route add</code>来指定特定ip走en5这个卡</p>
+
+    <p><code class="highlighter-rouge">route add -net &lt;destination subnet&gt; -netmask &lt;subnet mask&gt; -interface en5</code>，其中<code class="highlighter-rouge">destination subnet</code>与<code class="highlighter-rouge">subnet mask</code>来确定哪些流量走的卡</p>
+
+    <p>如，我要所有10起头的都走en5，则<code class="highlighter-rouge">route add -net 10.0.0.0 -netmask 255.0.0.0 -interface en5</code>即可。</p>
+  </li>
+  <li>
+    <p>再次时候用<code class="highlighter-rouge">netstat -r</code>查看<code class="highlighter-rouge">routing table</code>验证</p>
+  </li>
+</ul>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" title="link to golang hijack打开方式">golang hijack打开方式</a></h2>
+       <p class="excerpt">简介Hijacktype Hijacker interface {	// Hijack lets the caller take over the connection.	// After a call to Hijack the HTTP server library	// will not do anything else with the connection.	//	// It becomes the caller's responsibility to manage	// and...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-06-13 21:00:00 +0800" class="post-list__meta--date date">2018-06-13</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/";
+        this.page.identifier = "/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

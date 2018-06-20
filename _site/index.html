@@ -116,6 +116,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/" title="访问 mac vpn翻墙，部分网站走vpn">mac vpn翻墙，部分网站走vpn</a></h2>
+      <p class="excerpt">需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。      通过ifconfig找到vpn使用的虚拟网卡名以及非vpn的时候使用的网卡    lo0: flags=8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; mtu 16384	o...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-06-19 21:00:00 +0800" class="post-list__meta--date date">2018-06-19</time> &#8226; <span class="post-list__meta--tags tags">网络</span><a class="btn-border-small" href=/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" title="访问 golang hijack打开方式">golang hijack打开方式</a></h2>
       <p class="excerpt">简介Hijacktype Hijacker interface {	// Hijack lets the caller take over the connection.	// After a call to Hijack the HTTP server library	// will not do anything else with the connection.	//	// It becomes the caller's responsibility to manage	// and...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-06-13 21:00:00 +0800" class="post-list__meta--date date">2018-06-13</time> &#8226; <span class="post-list__meta--tags tags">go</span><a class="btn-border-small" href=/2018/06/golang-hijack%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/>继续阅读</a></div>
@@ -175,13 +182,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/" title="访问 优雅关闭以及机器kubernetes pods">优雅关闭以及机器kubernetes pods</a></h2>
       <p class="excerpt">优雅启动很常见的一个场景，一个服务刚启动，可能会有一堆东西要加载（比如我这边需要读数据库中一堆东西）需要一些时间，而这段时间里，我不希望kubernetes 把请求打到这些还没初始化的pod上。kubernetes提供了一个叫探针的东西，可以用来检测pod是否就绪，只有就绪的情况才会把请求打过来，如果非就绪状态，这些pod会从service的load balancer中暂时移除。探针可以是一个command或者是一个HTTP的请求，这边使用的是一个HTTP请求的形式。需要保证程序在正常情况...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-02-26 21:00:00 +0800" class="post-list__meta--date date">2018-02-26</time> &#8226; <span class="post-list__meta--tags tags">kubernetes</span><a class="btn-border-small" href=/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/" title="访问 一种神奇的批量创建类的方法--参照namedtuple">一种神奇的批量创建类的方法--参照namedtuple</a></h2>
-      <p class="excerpt">def namedtuple(typename, field_names, verbose=False, rename=False):  """Returns a new subclass of tuple with named fields.namedtuple是一个很神奇的东西，在看kafka-python的时候看到了很多地方用到了这玩意。用法也非常简单from collections import namedtuplePeople = namedtuple(typename="peo...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2018-01-10 21:00:00 +0800" class="post-list__meta--date date">2018-01-10</time> &#8226; <span class="post-list__meta--tags tags">python</span><a class="btn-border-small" href=/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
