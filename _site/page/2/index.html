@@ -72,6 +72,14 @@
   
 
   
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/https://github.com/gaoconghui" title="@https://github.com/gaoconghui 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
   
   
 
@@ -114,6 +122,13 @@
             <div class="main-post-list hidden">
 
   <ol class="post-list">
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/" title="访问 优雅关闭以及机器kubernetes pods">优雅关闭以及机器kubernetes pods</a></h2>
+      <p class="excerpt">优雅启动很常见的一个场景，一个服务刚启动，可能会有一堆东西要加载（比如我这边需要读数据库中一堆东西）需要一些时间，而这段时间里，我不希望kubernetes 把请求打到这些还没初始化的pod上。kubernetes提供了一个叫探针的东西，可以用来检测pod是否就绪，只有就绪的情况才会把请求打过来，如果非就绪状态，这些pod会从service的load balancer中暂时移除。探针可以是一个command或者是一个HTTP的请求，这边使用的是一个HTTP请求的形式。需要保证程序在正常情况...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-02-26 21:00:00 +0800" class="post-list__meta--date date">2018-02-26</time> &#8226; <span class="post-list__meta--tags tags">kubernetes</span><a class="btn-border-small" href=/2018/02/kubernetes%E4%BC%98%E9%9B%85%E5%85%B3%E9%97%AD%E4%BB%A5%E5%8F%8A%E5%90%AF%E5%8A%A8/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/" title="访问 一种神奇的批量创建类的方法--参照namedtuple">一种神奇的批量创建类的方法--参照namedtuple</a></h2>
@@ -175,13 +190,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/" title="访问 python随笔之实现classmethod staticmethod">python随笔之实现classmethod staticmethod</a></h2>
       <p class="excerpt">大概刚学python的时候就知道了classmethod和staticmethod的用法，后来看到描述器才知道描述器与他们之间千丝万缕的关系，是否能动手实现下这俩货嘞？这边先从bound和unbound method说起bound unbound看下面的例子class Cla():    def __init__(self,a):        self.a = a    def f(self):        print self,self.a        print Cla.f# &...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-11-20 21:00:00 +0800" class="post-list__meta--date date">2017-11-20</time> &#8226; <span class="post-list__meta--tags tags">python随笔</span><a class="btn-border-small" href=/2017/11/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E5%AE%9E%E7%8E%B0classmethod-staticmethod/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" title="访问 pyredis中ttl的坑">pyredis中ttl的坑</a></h2>
-      <p class="excerpt">问题复现在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。r = redis.Redis()lock_name = "test_lock"r.set(lock_name, "test")r.expire(lock_name, 1)t1 = 0t2 = 0while True:    #...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-11-13 20:07:00 +0800" class="post-list__meta--date date">2017-11-13</time> &#8226; <span class="post-list__meta--tags tags">pyredis</span><a class="btn-border-small" href=/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

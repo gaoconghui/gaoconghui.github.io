@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>布隆过滤器扩容及删除过期数据</title>
+  <meta name="description" content="我们知道，布隆过滤器是不可变的，但如果布隆过滤器容量确实不够了，该怎么办呢？或者如果要每个月都删除几个月前的去重数据，该如何处理呢？这边要记录一种布隆过滤器的巧用，多个布隆过滤器组成的循环布隆过滤器。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="布隆过滤器扩容及删除过期数据">
+  <meta name="twitter:description" content="我们知道，布隆过滤器是不可变的，但如果布隆过滤器容量确实不够了，该怎么办呢？或者如果要每个月都删除几个月前的去重数据，该如何处理呢？这边要记录一种布隆过滤器的巧用，多个布隆过滤器组成的循环布隆过滤器。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="布隆过滤器扩容及删除过期数据">
+  <meta property="og:description" content="我们知道，布隆过滤器是不可变的，但如果布隆过滤器容量确实不够了，该怎么办呢？或者如果要每个月都删除几个月前的去重数据，该如何处理呢？这边要记录一种布隆过滤器的巧用，多个布隆过滤器组成的循环布隆过滤器。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://gaoconghui.github.io/2018/07/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E6%89%A9%E5%AE%B9%E4%BB%A5%E5%8F%8A%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9F%E6%95%B0%E6%8D%AE/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/https://github.com/gaoconghui" title="@https://github.com/gaoconghui 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2018-07-18 21:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2018-07-18</time> &#8226; <span class="post-meta__tags tags">crawler bloomfilter</span>
+    </div>
+    <h1 class="post-title">布隆过滤器扩容及删除过期数据</h1>
+  </header>
+
+  <section class="post">
+    <p>我们知道，布隆过滤器是不可变的，但如果布隆过滤器容量确实不够了，该怎么办呢？或者如果要每个月都删除几个月前的去重数据，该如何处理呢？这边要记录一种布隆过滤器的巧用，多个布隆过滤器组成的循环布隆过滤器。</p>
+
+<h3 id="布隆过滤器">布隆过滤器</h3>
+
+<p>布隆过滤器的细节这边不做赘述，他在创建的时候就确定了容量以及错误率（false postive），为了后续的方便，这边假设我们有了一个可靠的布隆过滤器。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BloomFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">error_rate</span><span class="p">):</span>
+      	<span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+    	<span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+      	<span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      	<span class="k">pass</span>
+</code></pre></div></div>
+
+<p>很简单的一个结构，接下去我们会用基础的布隆过滤器去实现最开始说的两个需求。</p>
+
+<h3 id="布隆过滤器扩容">布隆过滤器扩容</h3>
+
+<p>因为布隆过滤器的不可逆，我们没法重新建一个更大的布隆过滤器然后去把数据重新导入。这边采取的扩容的方法是，保留原有的布隆过滤器，建立一个更大的，新增数据都放在新的布隆过滤器中，去重的时候检查所有的布隆过滤器。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">BloomFilterAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_filters</span><span class="p">,</span> <span class="n">new_filter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_filters</span> <span class="o">=</span> <span class="n">old_filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_filter</span> <span class="o">=</span> <span class="n">new_filter</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new_filter</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_filters</span><span class="p">])</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_filter</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">old_filters</span><span class="p">])</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">new_filter</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>非常巧妙的方法，用一个新的布隆过滤器和多个老的布隆过滤器共同组成一个新的过滤器，提供相同的接口。</p>
+
+<h3 id="附带时效的布隆过滤器">附带时效的布隆过滤器</h3>
+
+<p>为了实现这么一个需求：使用布隆过滤器对url去重，但是每五个月要重新爬取一次。这边介绍一种循环的布隆过滤器，类似于之前的思路，由多个布隆过滤器组成，每个月都清空最早的那个过滤器。demo如下。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">CircleBloomFilter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_num</span><span class="p">):</span>
+        <span class="s">"""
+        :param filter_num: 预期包含的filter数量
+        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_num</span> <span class="o">=</span> <span class="n">filter_num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="p">[</span><span class="n">new_bloomfilter</span><span class="p">()]</span>
+
+    <span class="k">def</span> <span class="nf">do_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">"""
+        执行循环逻辑
+        :return: 
+        """</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_num</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_bloomfilter</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">])</span>
+    
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>一样非常简单的逻辑，只要定期执行<code class="highlighter-rouge">do_circle</code>即可。</p>
+
+<p>另外，我们可以看到，上边的实现<code class="highlighter-rouge">add</code>方法只对一个过滤器执行，而<code class="highlighter-rouge">exists</code>方法对所有过滤器都要执行，比较适用于插入多，但是判断是否重复少的场景。我们还可以换一种方式，应对查询是否重复大于添加操作的场景。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">]</span>
+        
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>每次的插入操作，我们对所有的过滤器都执行，而查询是否重复，只需要查询最早的过滤器是否存在即可（包含了全部的数据）</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/" title="link to mac vpn翻墙，部分网站走vpn">mac vpn翻墙，部分网站走vpn</a></h2>
+       <p class="excerpt">需求是这样，现在有一个vpn，我可以通过这个vpn翻墙，但同时我需要访问内网，换言之，就是需要白名单或者黑名单翻墙的机制。mac上使用vpn很方便，偏好设置中就可以直接弄，但是没找到合适的黑白名单机制，没办法，只能另辟蹊径，通过iptable来指定不同的ip走不同的网卡。      通过ifconfig找到vpn使用的虚拟网卡名以及非vpn的时候使用的网卡    lo0: flags=8049&lt;UP,LOOPBACK,RUNNING,MULTICAST&gt; mtu 16384	o...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-06-19 21:00:00 +0800" class="post-list__meta--date date">2018-06-19</time> &#8226; <span class="post-list__meta--tags tags">网络</span><a class="btn-border-small" href=/2018/06/mac-%E9%83%A8%E5%88%86%E7%BD%91%E7%AB%99%E8%B5%B0vpn/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://gaoconghui.github.io/2018/07/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E6%89%A9%E5%AE%B9%E4%BB%A5%E5%8F%8A%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9F%E6%95%B0%E6%8D%AE/";
+        this.page.identifier = "/2018/07/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E6%89%A9%E5%AE%B9%E4%BB%A5%E5%8F%8A%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9F%E6%95%B0%E6%8D%AE/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

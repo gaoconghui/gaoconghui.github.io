@@ -72,6 +72,14 @@
   
 
   
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/https://github.com/gaoconghui" title="@https://github.com/gaoconghui 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
   
   
 
@@ -114,6 +122,13 @@
             <div class="main-post-list hidden">
 
   <ol class="post-list">
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/" title="访问 pyredis中ttl的坑">pyredis中ttl的坑</a></h2>
+      <p class="excerpt">问题复现在用py-redis 的redis类做redis悲观锁的时候发现了一个问题，ttl方法显示过期（返回None）的时候，redis中key实际上没有消失，大概还能存活0.5秒，但是如果换成strictRedis就没问题了，很有意思。下面是一个简单的复现的代码。r = redis.Redis()lock_name = "test_lock"r.set(lock_name, "test")r.expire(lock_name, 1)t1 = 0t2 = 0while True:    #...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-11-13 20:07:00 +0800" class="post-list__meta--date date">2017-11-13</time> &#8226; <span class="post-list__meta--tags tags">pyredis</span><a class="btn-border-small" href=/2017/11/pyredis%E4%B8%ADttl%E7%9A%84%E4%B8%80%E4%B8%AA%E5%9D%91/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
     
     <li>
       <h2 class="post-list__post-title post-title"><a href="/2017/10/LocalPorxy%E4%BD%9C%E7%94%A8%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F/" title="访问 LocalProxy作用的一点感悟">LocalProxy作用的一点感悟</a></h2>
