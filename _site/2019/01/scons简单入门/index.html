@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>scons 简单入门</title>
+  <meta name="description" content="简单入门">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="scons 简单入门">
+  <meta name="twitter:description" content="简单入门">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="scons 简单入门">
+  <meta property="og:description" content="简单入门">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/https://github.com/gaoconghui" title="@https://github.com/gaoconghui 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2019-01-20 08:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2019-01-20</time> &#8226; <span class="post-meta__tags tags">build scons</span>
+    </div>
+    <h1 class="post-title">scons 简单入门</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="简单入门">简单入门</h3>
+
+<h4 id="hello-world">hello world</h4>
+
+<p>scons由Sconstruct 作为入口，控制如何进行编译操作。Sconstruct 本身是一个python文件，故需要遵循python的语法，以及能使用一些python的方法。(如我们可以用print 来debug）</p>
+
+<p>这有一段很简单的hello.cpp</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include &lt;iostream&gt;
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"hello world"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>以及一个很简单的Sconstruct</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">Program</span><span class="p">(</span><span class="s">"hello.cpp"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Program是Scons中的一个编译方法(builder_method)， 告诉Scons 我们想要把hello.cpp 编译成一个可执行文件。</p>
+
+<p>保证Sconstruct 和hello.cpp 在同一个文件夹下，执行scons，就可以完成编译，生成可执行文件hello。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scons: Reading SConscript files ...
+scons: done reading SConscript files.
+scons: Building targets ...
+g++ -o hello.o -c hello.cpp
+g++ -o hello hello.o
+scons: done building targets.
+</code></pre></div></div>
+
+<p>可以看到，我们只指定了一个cpp文件，scons会默认给可执行文件一个名字，以及完成.o文件的生成，非常智能。当然，我们也能指定输出文件的名字，<code class="highlighter-rouge">Program("target_name", hello.cpp")</code></p>
+
+<p>另外，除了Program ，还有其他很多builder_method， 如<code class="highlighter-rouge">Object</code>, <code class="highlighter-rouge">SharedLibrary</code>，<code class="highlighter-rouge">StaticLibrary</code>，<code class="highlighter-rouge">LoadableModule</code>，<code class="highlighter-rouge">StaticObject</code>，<code class="highlighter-rouge">CFile</code></p>
+
+<h4 id="编译多个文件">编译多个文件</h4>
+
+<p>编译多个文件非常简单</p>
+
+<ul>
+  <li>
+    <p>直接使用list <code class="highlighter-rouge">Program(["a.cpp", "b.cpp", "c.cpp"])</code>即可。</p>
+  </li>
+  <li>
+    <p>也可以使用Glob方法</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source = Glob("src/*.cpp")
+print source # python语法，可以打印出来debug
+Program(["hello.cpp"] + source) 
+</code></pre></div>    </div>
+
+    <p>用这种方式把src下的文件都加进来</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">Program(Split("a.cpp, b.cpp c.cpp")</code> Split 也是SCons提供的一个方法，顾名思义了。</p>
+  </li>
+</ul>
+
+<h4 id="编译一个库">编译一个库</h4>
+
+<p>把Program改为 Library (或者StaticLibrary，这两者是一样的)即可。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Library("t", Glob("src/*.cpp"))
+</code></pre></div></div>
+
+<p>这样就能得到一个静态库了。 如果如要一个动态库，则可以使用SharedLibrary。</p>
+
+<h4 id="链接一个库">链接一个库</h4>
+
+<p>上边我们学会如何编译一个库了，那么如何链接呢？也很简单，加个参数即可</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source = Glob("src/*.cpp")
+SharedLibrary("t", source)
+Program(["hello.cpp"], LIBS=["t"], LIBPATH=".")
+</code></pre></div></div>
+
+<p>Program 可以理解为python 的一个方法，很多参数都有默认值，我们要做的只用覆盖其默认值即可。如上，我们指定引入LIBS。同样的，LIBS参数也可以是个str，LIBPATH也可以是个list，放上所有要查找的路径，如[‘/usr/lib’, ‘/usr/local/lib’]，这里就不赘述了。</p>
+
+<h3 id="略微高级一点的功能">略微高级一点的功能</h3>
+
+<h4 id="判断是否需要重新编译">判断是否需要重新编译</h4>
+
+<p>SCons很智能，只会编译需要编译的内容。比如我刚执行完scons，再次执行，则会提示<code class="highlighter-rouge">scons: . is up to date.</code>。 那么他是如何做到的呢？也不复杂，依赖一个Decider的方法，以及一个<code class="highlighter-rouge">.sconsign.dblite</code>文件。</p>
+
+<p>默认情况下，如果文件的md5值改变了，才会重新编译。每次编译，SCons都会把md5存起来，再次执行时，如果md5没变，则不需要rebuild。</p>
+
+<p>如果我们不希望使用md5，而是使用文件修改时间呢？很简单，增加<code class="highlighter-rouge">Decider('timestamp-newer')</code> （默认情况下为md5）。也可以使用<code class="highlighter-rouge">'MD5-timestamp</code>，则他们一起变了才会rebuild。</p>
+
+<p>我们前面也说到，Decider是一个方法，那很显然，我们也可以自己写个decider方法，详细的可以看<a href="https://scons.org/doc/production/PDF/scons-user.pdf">scons-user.pdf</a> 6.1.5，这里不细写了。。</p>
+
+<h4 id="env">env</h4>
+
+<p>env分为三种</p>
+
+<ul>
+  <li>
+    <p>external enviroment  保存在os.environ 中，和scons其实没太大关系，保存着一些系统定义的环境变量，如PATH之类</p>
+  </li>
+  <li>
+    <p>construction environment</p>
+
+    <p>这个比较重要，我们可能希望不同的源文件使用不同的编译参数，这时候我们就能设置不同的编译环境，指定哪个文件用哪种编译。construction environment 中保存了构建相关的一些参数。</p>
+
+    <p>使用方式如下</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env1 = Environment(CXX = 'gcc') # 创建一个env
+print env1["CXX"]	# 获取参数
+env2 = env1.Clone(CXX = 'g++')	# 复制一个env
+env1.Replace(CXX = 'g++')	# 修改参数
+env1["CXX"] = "clang++"	#再修改参数
+  
+env1.MergeFlags("-g")	#增加一个flag
+</code></pre></div>    </div>
+
+    <p>就可以构建出一个env，除了CXX 被修改以外，其他参数均不变。另外，我们也可以像一个dict一样，去获取env中的内容。</p>
+  </li>
+  <li>
+    <p>execution enviroment</p>
+
+    <p>这其实就是construction environment 中的一个变量ENV</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env = Environment()
+print env["ENV"]
+  
+env2 = Environment(ENV=os.environ)
+env3 = Environment(ENV = {"PATH" : os.environ["PATH"]})
+</code></pre></div>    </div>
+
+    <p>几个简单的例子，一看就明白了</p>
+  </li>
+</ul>
+
+<h4 id="命令行输入的参数">命令行输入的参数</h4>
+
+<p>比如我们想通过一个debug字段来控制是否开启debug模式，怎么做呢？可以通过ARGUMENTS</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>env = Environment()
+debug = ARGUMENTS.get("debug", 0)
+if int(debug):
+	print "in debug mode"
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">scons debug=1</code>就可以了。</p>
+
+<h3 id="小结">小结</h3>
+
+<p>上面只是我在看的时候做的一个小结，详细的可以看(文档)[https://scons.org/doc/production/PDF/scons-user.pdf]，很多东西都没写，在日常工作中可以一点一点去体会。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2018/07/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E6%89%A9%E5%AE%B9%E4%BB%A5%E5%8F%8A%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9F%E6%95%B0%E6%8D%AE/" title="link to 布隆过滤器扩容及删除过期数据">布隆过滤器扩容及删除过期数据</a></h2>
+       <p class="excerpt">我们知道，布隆过滤器是不可变的，但如果布隆过滤器容量确实不够了，该怎么办呢？或者如果要每个月都删除几个月前的去重数据，该如何处理呢？这边要记录一种布隆过滤器的巧用，多个布隆过滤器组成的循环布隆过滤器。布隆过滤器布隆过滤器的细节这边不做赘述，他在创建的时候就确定了容量以及错误率（false postive），为了后续的方便，这边假设我们有了一个可靠的布隆过滤器。class BloomFilter(object):    def __init__(self, capacity, error_r...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2018-07-18 21:00:00 +0800" class="post-list__meta--date date">2018-07-18</time> &#8226; <span class="post-list__meta--tags tags">crawler bloomfilter</span><a class="btn-border-small" href=/2018/07/%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E6%89%A9%E5%AE%B9%E4%BB%A5%E5%8F%8A%E5%88%A0%E9%99%A4%E8%BF%87%E6%9C%9F%E6%95%B0%E6%8D%AE/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/";
+        this.page.identifier = "/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

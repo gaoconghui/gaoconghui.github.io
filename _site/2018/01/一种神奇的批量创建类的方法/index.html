@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -157,20 +157,20 @@
 
 <p>带着疑问，点开了namedtuple的源码。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">class_definition</span> <span class="o">=</span> <span class="n">_class_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">class_definition</span> <span class="o">=</span> <span class="n">_class_template</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span>
     <span class="n">typename</span> <span class="o">=</span> <span class="n">typename</span><span class="p">,</span>
     <span class="n">field_names</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">field_names</span><span class="p">),</span>
     <span class="n">num_fields</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">field_names</span><span class="p">),</span>
     <span class="n">arg_list</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">field_names</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">"'"</span><span class="p">,</span> <span class="s">""</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">repr_fmt</span> <span class="o">=</span> <span class="s">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_repr_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">repr_fmt</span> <span class="o">=</span> <span class="s">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_repr_template</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
                          <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">field_names</span><span class="p">),</span>
-    <span class="n">field_defs</span> <span class="o">=</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_field_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">field_defs</span> <span class="o">=</span> <span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_field_template</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
                            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">field_names</span><span class="p">))</span>
 <span class="p">)</span>
 
-<span class="c"># Execute the template string in a temporary namespace and support</span>
-<span class="c"># tracing utilities by setting a value for frame.f_globals['__name__']</span>
-<span class="n">namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_itemgetter</span><span class="o">=</span><span class="n">_itemgetter</span><span class="p">,</span> <span class="n">__name__</span><span class="o">=</span><span class="s">'namedtuple_</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">typename</span><span class="p">,</span>
+<span class="c1"># Execute the template string in a temporary namespace and support
+# tracing utilities by setting a value for frame.f_globals['__name__']
+</span><span class="n">namespace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_itemgetter</span><span class="o">=</span><span class="n">_itemgetter</span><span class="p">,</span> <span class="n">__name__</span><span class="o">=</span><span class="s">'namedtuple_</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="n">typename</span><span class="p">,</span>
                  <span class="n">OrderedDict</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">_property</span><span class="o">=</span><span class="nb">property</span><span class="p">,</span> <span class="n">_tuple</span><span class="o">=</span><span class="nb">tuple</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="k">exec</span> <span class="n">class_definition</span> <span class="ow">in</span> <span class="n">namespace</span>
@@ -263,7 +263,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/";
+        this.page.url = "http://localhost:4000/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/";
         this.page.identifier = "/2018/01/%E4%B8%80%E7%A7%8D%E7%A5%9E%E5%A5%87%E7%9A%84%E6%89%B9%E9%87%8F%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95/";
     };
 
@@ -288,7 +288,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

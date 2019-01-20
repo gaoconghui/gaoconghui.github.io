@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -153,8 +153,8 @@
 <h4 id="实现">实现</h4>
 <p>我们要做的很简单，把上面那个.png的的A通道取出来，再把要加工图片的RGB三个通道取出来，merge一下就可以了。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># -*- coding: utf-8 -*-</span>
-<span class="s">"""
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># -*- coding: utf-8 -*-
+</span><span class="s">"""
 生成tag page 的背景图
 """</span>
 
@@ -162,10 +162,10 @@
 
 <span class="n">template_image</span> <span class="o">=</span> <span class="s">"/tmp/ori.png"</span>
 <span class="n">template</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="nb">open</span><span class="p">(</span><span class="n">template_image</span><span class="p">)</span>
-<span class="c"># 拿到A通道</span>
-<span class="n">a_band</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-<span class="c"># 拿到图片的尺寸</span>
-<span class="n">template_size</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">size</span>
+<span class="c1"># 拿到A通道
+</span><span class="n">a_band</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1"># 拿到图片的尺寸
+</span><span class="n">template_size</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">size</span>
 
 
 <span class="k">def</span> <span class="nf">resize_and_crop</span><span class="p">(</span><span class="n">ori_image</span><span class="p">,</span> <span class="n">target_size</span><span class="p">):</span>
@@ -224,7 +224,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/";
+        this.page.url = "http://localhost:4000/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/";
         this.page.identifier = "/2017/07/PIL%E5%A4%84%E7%90%86%E8%83%8C%E6%99%AF%E5%9B%BE/";
     };
 
@@ -249,7 +249,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

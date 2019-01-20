@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -150,34 +150,34 @@
     <span class="n">rm1</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Idle'</span>
     <span class="n">rm2</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Running'</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
 
     <span class="n">rm2</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">'Zombie'</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm1 id: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm1</span><span class="p">)))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm2 id: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm2</span><span class="p">)))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1 id: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm1</span><span class="p">)))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2 id: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">rm2</span><span class="p">)))</span>
 
     <span class="n">rm3</span> <span class="o">=</span> <span class="n">YourBorg</span><span class="p">()</span>
 
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">'rm3: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rm3</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm1: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm1</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm2: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm2</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'rm3: {0}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">rm3</span><span class="p">))</span>
 
-<span class="c">### OUTPUT ###</span>
-<span class="c"># rm1: Running</span>
-<span class="c"># rm2: Running</span>
-<span class="c"># rm1: Zombie</span>
-<span class="c"># rm2: Zombie</span>
-<span class="c"># rm1 id: 140732837899224</span>
-<span class="c"># rm2 id: 140732837899296</span>
-<span class="c"># rm1: Init</span>
-<span class="c"># rm2: Init</span>
-<span class="c"># rm3: Init</span>
-</code></pre></div></div>
+<span class="c1">### OUTPUT ###
+# rm1: Running
+# rm2: Running
+# rm1: Zombie
+# rm2: Zombie
+# rm1 id: 140732837899224
+# rm2 id: 140732837899296
+# rm1: Init
+# rm2: Init
+# rm3: Init
+</span></code></pre></div></div>
 
 <p>上面这一段代码，乍看挺神奇的，Borg 的各个实例共享了state。实现起来也很巧妙，利用了__dict__。 我们知道，python中__dict__存储了该对象的一些属性。类和实例分别拥有自己的__dict__，且实例会共享类的__dict__。</p>
 
@@ -217,37 +217,37 @@ print a.__dict__ # {'in_func': {}}
 
 <span class="k">def</span> <span class="nf">object_getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
     <span class="s">'Look for attribute /name/ in object /obj/.'</span>
-    <span class="c"># First look in class and base classes.</span>
-    <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">class_lookup</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1"># First look in class and base classes.
+</span>    <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">class_lookup</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__get__'</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__set__'</span><span class="p">):</span>
-        <span class="c"># Data descriptor.  Overrides instance member.</span>
-        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+        <span class="c1"># Data descriptor.  Overrides instance member.
+</span>        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
     <span class="n">w</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-        <span class="c"># Found in object</span>
-        <span class="k">return</span> <span class="n">w</span>
+        <span class="c1"># Found in object
+</span>        <span class="k">return</span> <span class="n">w</span>
     <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">'__get__'</span><span class="p">):</span>
-            <span class="c"># Function-like descriptor.</span>
-            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
+            <span class="c1"># Function-like descriptor.
+</span>            <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">__get__</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c"># Normal data member in class</span>
-            <span class="k">return</span> <span class="n">v</span>
+            <span class="c1"># Normal data member in class
+</span>            <span class="k">return</span> <span class="n">v</span>
     <span class="k">raise</span> <span class="nb">AttributeError</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
     
  <span class="k">def</span> <span class="nf">class_lookup</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span> 
      <span class="s">'Look for attribute /name/ in class /cls/ and bases.'</span> 
      <span class="n">v</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> 
      <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
-         <span class="c"># found in this class </span>
-         <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> 
-     <span class="c"># search in base classes </span>
-     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">__bases__</span><span class="p">:</span> 
+         <span class="c1"># found in this class 
+</span>         <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">cls</span> 
+     <span class="c1"># search in base classes 
+</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">__bases__</span><span class="p">:</span> 
          <span class="n">v</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">class_lookup</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> 
          <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span> 
              <span class="k">return</span> <span class="n">v</span><span class="p">,</span> <span class="n">c</span> 
-     <span class="c"># not found </span>
-     <span class="k">return</span> <span class="bp">None</span>
+     <span class="c1"># not found 
+</span>     <span class="k">return</span> <span class="bp">None</span>
 
 </code></pre></div></div>
 
@@ -270,17 +270,17 @@ print a.__dict__ # {'in_func': {}}
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">ClassA</span><span class="p">()</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c"># DataDescriptor __get__0</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c"># 0</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="o">=</span> <span class="s">"has change"</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c1"># DataDescriptor __get__0
+</span>    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c1"># 0
+</span>    <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="o">=</span> <span class="s">"has change"</span>
     <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="o">=</span> <span class="s">"has change"</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span>  <span class="c"># DataDescriptor __get__has change</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c"># has change</span>
-    <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_descriptor"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span>  <span class="c1"># DataDescriptor __get__has change
+</span>    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c1"># has change
+</span>    <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_descriptor"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
     <span class="n">a</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">"val_normal"</span><span class="p">]</span> <span class="o">=</span> <span class="s">"change again"</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c"># DataDescriptor __get__has change</span>
-    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c">#change again</span>
-</code></pre></div></div>
+    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_descriptor</span> <span class="c1"># DataDescriptor __get__has change
+</span>    <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">val_normal</span> <span class="c1">#change again
+</span></code></pre></div></div>
 
 <p>重点是最后两行行，要修改的是一个descriptor 的话，obj.key = val 的方式是而已修改成功的，会调用descriptor 的__set__ 方法，而直接修改__dict__的方式则会有问题，因为在搜索attr的时候会先查找class的descriptor（对，即便<code class="highlighter-rouge">a.__dict__["val_descriptor"] = DataDescriptor("change again")</code>这样子也是没用的）。</p>
 
@@ -334,7 +334,7 @@ print a.__dict__ # {'in_func': {}}
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/";
+        this.page.url = "http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/";
         this.page.identifier = "/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E4%BB%8E__dict__%E8%AF%B4%E8%B5%B7/";
     };
 
@@ -359,7 +359,7 @@ print a.__dict__ # {'in_func': {}}
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

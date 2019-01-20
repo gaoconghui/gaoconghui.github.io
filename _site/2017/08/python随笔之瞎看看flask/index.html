@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -146,8 +146,8 @@ app.run()
 
 <h5 id="上述代码发生了什么">上述代码发生了什么？</h5>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#flask</span>
-<span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#flask
+</span><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">'localhost'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
     <span class="s">"""Runs the application on a local development server"""</span>
     <span class="kn">from</span> <span class="nn">werkzeug</span> <span class="kn">import</span> <span class="n">run_simple</span>
     <span class="k">if</span> <span class="s">'debug'</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
@@ -163,8 +163,8 @@ app.run()
 
 <p>run 是一个只有在测试的时候才会使用的方法，从werkzeug中import了run_simple ， run_simple 可以认为会运行一个wsgi的server，其中接受的第三个参数即时application。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># werkzeug.serving</span>
-<span class="k">def</span> <span class="nf">run_simple</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># werkzeug.serving
+</span><span class="k">def</span> <span class="nf">run_simple</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">use_reloader</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                <span class="n">use_debugger</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">use_evalex</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
                <span class="n">extra_files</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">reloader_interval</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                <span class="n">reloader_type</span><span class="o">=</span><span class="s">'auto'</span><span class="p">,</span> <span class="n">threaded</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
@@ -183,16 +183,16 @@ response_headers: 返回信息头部列表
 
 <p>而上述传入run_simple中的application即为Flask的实例本身，自身作为application，在__call__中接收了这两个参数。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># flask</span>
-<span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># flask
+</span><span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="s">"""Shortcut for :attr:`wsgi_app`"""</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wsgi_app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>终于，我们找到了核心的方法，wsgi_app，flask处理一个request的流程也能在这比较清晰的看到。flask的具体解析也会在这开始展开。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># flask</span>
-<span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># flask
+</span><span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
     <span class="s">"""The actual WSGI application.  This is not implemented in
     `__call__` so that middlewares can be applied:
 
@@ -219,8 +219,8 @@ _request_ctx_stack.pop()
 
 <p>乍一看这两行很迷，但却非常有用。用过flask的都知道，在具体写业务的时候，可以直接import request进来，request中会包含当前请求的一些属性。这个实现就是靠的这两行。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># context locals</span>
-<span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># context locals
+</span><span class="n">_request_ctx_stack</span> <span class="o">=</span> <span class="n">LocalStack</span><span class="p">()</span>
 <span class="n">current_app</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
 <span class="n">request</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">LocalProxy</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">_request_ctx_stack</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">session</span><span class="p">)</span>
@@ -347,7 +347,7 @@ preprocess_request 和process_response两个方法非常的相似，都是类似
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/";
+        this.page.url = "http://localhost:4000/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/";
         this.page.identifier = "/2017/08/python%E9%9A%8F%E7%AC%94%E4%B9%8B%E7%9E%8E%E7%9C%8B%E7%9C%8Bflask/";
     };
 
@@ -372,7 +372,7 @@ preprocess_request 和process_response两个方法非常的相似，都是类似
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

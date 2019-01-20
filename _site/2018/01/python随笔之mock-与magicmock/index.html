@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -132,9 +132,9 @@
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_mock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">Mock</span><span class="p">()</span>
 <span class="n">_magicmock</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">()</span>
-<span class="n">mock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c"># error</span>
-<span class="n">_magicmock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c">#&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;</span>
-</code></pre></div></div>
+<span class="n">mock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c1"># error
+</span><span class="n">_magicmock</span><span class="o">.</span><span class="n">__iter__</span> <span class="c1">#&lt;MagicMock name='mock.__iter__' id='4458398224'&gt;
+</span></code></pre></div></div>
 
 <p>而且MagicMock是懒加载的，在没调用magic方法的时候，是不存在这个方法的。</p>
 
@@ -164,10 +164,10 @@
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">MagicMixin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c"># make magic work for kwargs in init</span>
-        <span class="n">_safe_super</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c"># fix magic broken by upper level init</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c1"># make magic work for kwargs in init
+</span>        <span class="n">_safe_super</span><span class="p">(</span><span class="n">MagicMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mock_set_magics</span><span class="p">()</span>  <span class="c1"># fix magic broken by upper level init
+</span>
 
     <span class="k">def</span> <span class="nf">_mock_set_magics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">these_magics</span> <span class="o">=</span> <span class="n">_magics</span>
@@ -180,11 +180,11 @@
 
             <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">remove_magics</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__dict__</span><span class="p">:</span>
-                    <span class="c"># remove unneeded magic methods</span>
-                    <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
+                    <span class="c1"># remove unneeded magic methods
+</span>                    <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span>
 
-        <span class="c"># don't overwrite existing attributes if called a second time</span>
-        <span class="n">these_magics</span> <span class="o">=</span> <span class="n">these_magics</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="c1"># don't overwrite existing attributes if called a second time
+</span>        <span class="n">these_magics</span> <span class="o">=</span> <span class="n">these_magics</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
 
         <span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">these_magics</span><span class="p">:</span>
@@ -204,10 +204,10 @@
 <p>直觉告诉我，是什么地方有修改<code class="highlighter-rouge">__new__</code>的地方。果然，在很上层的父类，NonCallableMock中找到了这么个东西。</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
-        <span class="c"># every instance has its own class</span>
-        <span class="c"># so we can create magic methods on the</span>
-        <span class="c"># class without stomping on other mocks</span>
-        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls</span><span class="p">,),</span> <span class="p">{</span><span class="s">'__doc__'</span><span class="p">:</span> <span class="n">cls</span><span class="o">.</span><span class="n">__doc__</span><span class="p">})</span>
+        <span class="c1"># every instance has its own class
+</span>        <span class="c1"># so we can create magic methods on the
+</span>        <span class="c1"># class without stomping on other mocks
+</span>        <span class="n">new</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="p">(</span><span class="n">cls</span><span class="p">,),</span> <span class="p">{</span><span class="s">'__doc__'</span><span class="p">:</span> <span class="n">cls</span><span class="o">.</span><span class="n">__doc__</span><span class="p">})</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span>
 </code></pre></div></div>
@@ -255,7 +255,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/";
+        this.page.url = "http://localhost:4000/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/";
         this.page.identifier = "/2018/01/python%E9%9A%8F%E7%AC%94%E4%B9%8Bmock-%E4%B8%8Emagicmock/";
     };
 
@@ -280,7 +280,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

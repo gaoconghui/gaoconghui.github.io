@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -158,37 +158,37 @@
     <span class="n">srv</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
 
 <span class="k">if</span> <span class="n">use_reloader</span><span class="p">:</span>
-    <span class="c"># If we're not running already in the subprocess that is the</span>
-    <span class="c"># reloader we want to open up a socket early to make sure the</span>
-    <span class="c"># port is actually available.</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'WERKZEUG_RUN_MAIN'</span><span class="p">)</span> <span class="o">!=</span> <span class="s">'true'</span><span class="p">:</span>
+    <span class="c1"># If we're not running already in the subprocess that is the
+</span>    <span class="c1"># reloader we want to open up a socket early to make sure the
+</span>    <span class="c1"># port is actually available.
+</span>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'WERKZEUG_RUN_MAIN'</span><span class="p">)</span> <span class="o">!=</span> <span class="s">'true'</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">port</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">can_open_by_fd</span><span class="p">:</span>
             <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">'Cannot bind to a random port with enabled '</span>
                              <span class="s">'reloader if the Python interpreter does '</span>
                              <span class="s">'not support socket opening by fd.'</span><span class="p">)</span>
 
-        <span class="c"># Create and destroy a socket so that any exceptions are</span>
-        <span class="c"># raised before we spawn a separate Python interpreter and</span>
-        <span class="c"># lose this ability.</span>
-        <span class="n">address_family</span> <span class="o">=</span> <span class="n">select_ip_version</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="c1"># Create and destroy a socket so that any exceptions are
+</span>        <span class="c1"># raised before we spawn a separate Python interpreter and
+</span>        <span class="c1"># lose this ability.
+</span>        <span class="n">address_family</span> <span class="o">=</span> <span class="n">select_ip_version</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">address_family</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">get_sockaddr</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">address_family</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">'set_inheritable'</span><span class="p">):</span>
             <span class="n">s</span><span class="o">.</span><span class="n">set_inheritable</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
 
-        <span class="c"># If we can open the socket by file descriptor, then we can just</span>
-        <span class="c"># reuse this one and our socket will survive the restarts.</span>
-        <span class="k">if</span> <span class="n">can_open_by_fd</span><span class="p">:</span>
+        <span class="c1"># If we can open the socket by file descriptor, then we can just
+</span>        <span class="c1"># reuse this one and our socket will survive the restarts.
+</span>        <span class="k">if</span> <span class="n">can_open_by_fd</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'WERKZEUG_SERVER_FD'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
             <span class="n">s</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">LISTEN_QUEUE</span><span class="p">)</span>
             <span class="n">log_startup</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="c"># Do not use relative imports, otherwise "python -m werkzeug.serving"</span>
-    <span class="c"># breaks.</span>
-    <span class="kn">from</span> <span class="nn">werkzeug._reloader</span> <span class="kn">import</span> <span class="n">run_with_reloader</span>
+    <span class="c1"># Do not use relative imports, otherwise "python -m werkzeug.serving"
+</span>    <span class="c1"># breaks.
+</span>    <span class="kn">from</span> <span class="nn">werkzeug._reloader</span> <span class="kn">import</span> <span class="n">run_with_reloader</span>
     <span class="n">run_with_reloader</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="n">extra_files</span><span class="p">,</span> <span class="n">reloader_interval</span><span class="p">,</span>
                       <span class="n">reloader_type</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
@@ -264,8 +264,8 @@
     <span class="n">_sleep</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra_files</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-      	<span class="c"># 接受 extra_files 参数，除了监控.py的变化以外，还会监控 extra_files 列表中所有文件的变化</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">extra_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+      	<span class="c1"># 接受 extra_files 参数，除了监控.py的变化以外，还会监控 extra_files 列表中所有文件的变化
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">extra_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
                                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">extra_files</span> <span class="ow">or</span> <span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interval</span> <span class="o">=</span> <span class="n">interval</span>
 
@@ -275,10 +275,10 @@
     <span class="k">def</span> <span class="nf">restart_with_reloader</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">_log</span><span class="p">(</span><span class="s">'info'</span><span class="p">,</span> <span class="s">' * Restarting with </span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-            <span class="c"># 获取到启动脚本，如['/usr/bin/python','test.py']</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="n">_get_args_for_reloading</span><span class="p">()</span>
-            <span class="c"># 把环境变量(包括前面的fd等)</span>
-            <span class="n">new_environ</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="c1"># 获取到启动脚本，如['/usr/bin/python','test.py']
+</span>            <span class="n">args</span> <span class="o">=</span> <span class="n">_get_args_for_reloading</span><span class="p">()</span>
+            <span class="c1"># 把环境变量(包括前面的fd等)
+</span>            <span class="n">new_environ</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">new_environ</span><span class="p">[</span><span class="s">'WERKZEUG_RUN_MAIN'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'true'</span>
 
             <span class="n">exit_code</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">new_environ</span><span class="p">,</span>
@@ -385,8 +385,8 @@
         <span class="kn">from</span> <span class="nn">watchdog.events</span> <span class="kn">import</span> <span class="n">FileSystemEventHandler</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observable_paths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="c"># 根据发生变化的文件名，确定是否需要重启(如果变动了一个不重要的小文件就没必要重启了)</span>
-        <span class="k">def</span> <span class="nf">_check_modification</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+        <span class="c1"># 根据发生变化的文件名，确定是否需要重启(如果变动了一个不重要的小文件就没必要重启了)
+</span>        <span class="k">def</span> <span class="nf">_check_modification</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">extra_files</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">trigger_reload</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
             <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -394,8 +394,8 @@
                 <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s">'.pyc'</span><span class="p">,</span> <span class="s">'.pyo'</span><span class="p">,</span> <span class="s">'.py'</span><span class="p">)):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">trigger_reload</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
-        <span class="c"># 定义一个处理器类，分别处理不懂改变时要做的事(都是调用_check_modification方法)</span>
-        <span class="k">class</span> <span class="nc">_CustomHandler</span><span class="p">(</span><span class="n">FileSystemEventHandler</span><span class="p">):</span>
+        <span class="c1"># 定义一个处理器类，分别处理不懂改变时要做的事(都是调用_check_modification方法)
+</span>        <span class="k">class</span> <span class="nc">_CustomHandler</span><span class="p">(</span><span class="n">FileSystemEventHandler</span><span class="p">):</span>
             <span class="k">def</span> <span class="nf">on_created</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span> <span class="n">_check_modification</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">src_path</span><span class="p">)</span>
             <span class="k">def</span> <span class="nf">on_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>  <span class="o">...</span>         
             <span class="k">def</span> <span class="nf">on_moved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span> <span class="o">...</span>
@@ -406,8 +406,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">should_reload</span> <span class="o">=</span> <span class="bp">False</span>
 
     <span class="k">def</span> <span class="nf">trigger_reload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="c"># 调用会发生在handler中，退出没什么卵用，所以覆写了这个方法，让run循环自动退出</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">should_reload</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c1"># 调用会发生在handler中，退出没什么卵用，所以覆写了这个方法，让run循环自动退出
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">should_reload</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_reload</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -417,13 +417,13 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">should_reload</span><span class="p">:</span>
-                <span class="c"># 使用watchdog去检查文件是否发生变化，并使用handler去处理。</span>
-        <span class="k">finally</span><span class="p">:</span>
-           <span class="c"># observer是一个线程，让observer也正常退出</span>
-            <span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="c1"># 使用watchdog去检查文件是否发生变化，并使用handler去处理。
+</span>        <span class="k">finally</span><span class="p">:</span>
+           <span class="c1"># observer是一个线程，让observer也正常退出
+</span>            <span class="n">observer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
             <span class="n">observer</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
-		<span class="c"># 返回3，标识文件发生变化</span>
-        <span class="n">sys</span><span class="o">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+		<span class="c1"># 返回3，标识文件发生变化
+</span>        <span class="n">sys</span><span class="o">.</span><span class="nb">exit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>这部分代码很长，我把不太重要的省略掉了。代码比较简单，注释都卸载里边了，简单的说就是使用watchdog的方式去调用处理文件变化的事件，并按正常流程退出。</p>
@@ -466,7 +466,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/";
+        this.page.url = "http://localhost:4000/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/";
         this.page.identifier = "/2018/04/%E5%93%81%E8%AF%BBwerkzeug-reloader/";
     };
 
@@ -491,7 +491,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 

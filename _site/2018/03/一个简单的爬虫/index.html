@@ -24,8 +24,8 @@
   <link rel="stylesheet" href="/css/main.css">
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
-  <link rel="canonical" href="http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/">
-  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://gaoconghui.github.io/feed.xml">
+  <link rel="canonical" href="http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
   
   <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
   
@@ -167,16 +167,16 @@
 <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
-<span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>  <span class="c"># nonblocking的情况下，会抛出这个异常，无视掉就好</span>
-    <span class="k">pass</span>
+<span class="k">except</span> <span class="nb">BlockingIOError</span><span class="p">:</span>  <span class="c1"># nonblocking的情况下，会抛出这个异常，无视掉就好
+</span>    <span class="k">pass</span>
 <span class="n">request</span> <span class="o">=</span> <span class="s">'GET / HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span>
 <span class="n">encoded</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">)</span>
 <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="c"># 尝试去发送，如果连接还没连接就会抛错，直到连接成功并发送成功，再break出去</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
-        <span class="k">break</span>  <span class="c"># Done.</span>
-    <span class="k">except</span> <span class="nb">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># 尝试去发送，如果连接还没连接就会抛错，直到连接成功并发送成功，再break出去
+</span>        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="k">break</span>  <span class="c1"># Done.
+</span>    <span class="k">except</span> <span class="nb">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">pass</span>
 
 </code></pre></div></div>
@@ -194,8 +194,8 @@
 <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
-<span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>  <span class="c"># nonblocking的情况下，会抛出这个异常，无视掉就好</span>
-    <span class="k">pass</span>
+<span class="k">except</span> <span class="nb">BlockingIOError</span><span class="p">:</span>  <span class="c1"># nonblocking的情况下，会抛出这个异常，无视掉就好
+</span>    <span class="k">pass</span>
 
 
 <span class="k">def</span> <span class="nf">connected</span><span class="p">():</span>
@@ -235,24 +235,24 @@
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fetcher</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">b</span><span class="s">''</span>  <span class="c"># Empty array of bytes.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">b</span><span class="s">''</span>  <span class="c1"># Empty array of bytes.
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="bp">None</span>
 </code></pre></div></div>
 
 <p>这个类传入一个url，并调用fetch方法启动，完成后，响应会写在response中。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c"># Method on Fetcher class.</span>
-    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="c1"># Method on Fetcher class.
+</span>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
-        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="nb">BlockingIOError</span><span class="p">:</span>
             <span class="k">pass</span>
 
-        <span class="c"># Register next callback.</span>
-        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
+        <span class="c1"># Register next callback.
+</span>        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
                           <span class="n">EVENT_WRITE</span><span class="p">,</span>
                           <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">)</span>
 </code></pre></div></div>
@@ -271,37 +271,37 @@
 
 <p>如上，在连接建立后，便能从selector.select()中获取到已经连接的socket，获取其回调，并执行。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method on Fetcher class.</span>
-    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># Method on Fetcher class.
+</span>    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="k">print</span><span class="p">(</span><span class="s">'connected!'</span><span class="p">)</span>
         <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
-        <span class="n">request</span> <span class="o">=</span> <span class="s">'GET {} HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="s">'GET {} HTTP/1.0</span><span class="se">\r\n</span><span class="s">Host: xkcd.com</span><span class="se">\r\n\r\n</span><span class="s">'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
 
-        <span class="c"># Register the next callback.</span>
-        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span>
+        <span class="c1"># Register the next callback.
+</span>        <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span>
                           <span class="n">EVENT_READ</span><span class="p">,</span>
                           <span class="bp">self</span><span class="o">.</span><span class="n">read_response</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>一般我们在send之前要先检查请求体的大小，看看是否可以一次性发送。但我们这发送的内容确实少，就免了这步了。在最后，注册<code class="highlighter-rouge">EVENT_READ</code>，event loop会在socket可读或者已经关闭的时候调用read_response方法。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method on Fetcher class.</span>
-    <span class="k">def</span> <span class="nf">read_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># Method on Fetcher class.
+</span>    <span class="k">def</span> <span class="nf">read_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="k">global</span> <span class="n">stopped</span>
 
-        <span class="n">chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>  <span class="c"># 4k chunk size.</span>
-        <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>  <span class="c1"># 4k chunk size.
+</span>        <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">+=</span> <span class="n">chunk</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>  <span class="c"># Done reading.</span>
-            <span class="n">links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">()</span>
+            <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>  <span class="c1"># Done reading.
+</span>            <span class="n">links</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">()</span>
 
-            <span class="c"># Python set-logic:</span>
-            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">seen_urls</span><span class="p">):</span>
+            <span class="c1"># Python set-logic:
+</span>            <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">seen_urls</span><span class="p">):</span>
                 <span class="n">urls_todo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">link</span><span class="p">)</span>
-                <span class="n">Fetcher</span><span class="p">(</span><span class="n">link</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>  <span class="c"># &lt;- New Fetcher.</span>
-
+                <span class="n">Fetcher</span><span class="p">(</span><span class="n">link</span><span class="p">)</span><span class="o">.</span><span class="n">fetch</span><span class="p">()</span>  <span class="c1"># &lt;- New Fetcher.
+</span>
             <span class="n">seen_urls</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">links</span><span class="p">)</span>
             <span class="n">urls_todo</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">urls_todo</span><span class="p">:</span>
@@ -344,7 +344,7 @@
 
 <p>Python 3.4引入了一个叫asyncio，以及一个<code class="highlighter-rouge">aiohttp</code>的包，我们可以很简洁的重构之前的代码。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="n">body</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -392,11 +392,11 @@
 <span class="o">...</span>     <span class="n">frame</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span>
 <span class="o">...</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">foo</span><span class="p">()</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="c"># The frame was executing the code for 'bar'.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># The frame was executing the code for 'bar'.
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
 <span class="s">'bar'</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="c"># Its back pointer refers to the frame for 'foo'.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">caller_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="c1"># Its back pointer refers to the frame for 'foo'.
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">caller_frame</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_back</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">caller_frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
 <span class="s">'foo'</span>
 </code></pre></div></div>
@@ -405,17 +405,17 @@
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">gen_fn</span><span class="p">():</span>
 <span class="o">...</span>     <span class="n">result</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">1</span>
-<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of yield: {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of yield: {}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
 <span class="o">...</span>     <span class="n">result2</span> <span class="o">=</span> <span class="k">yield</span> <span class="mi">2</span>
-<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of 2nd yield: {}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result2</span><span class="p">))</span>
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">'result of 2nd yield: {}'</span><span class="o">.</span><span class="nb">format</span><span class="p">(</span><span class="n">result2</span><span class="p">))</span>
 <span class="o">...</span>     <span class="k">return</span> <span class="s">'done'</span>
 <span class="o">...</span>     
 </code></pre></div></div>
 
 <p>当解释器看到<code class="highlighter-rouge">yield</code>时，它会知道<code class="highlighter-rouge">gen_fn</code>方法是一个生成器方法，然后会给他打一个标记</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="c"># The generator flag is bit position 5.</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">generator_bit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="c1"># The generator flag is bit position 5.
+</span><span class="o">&gt;&gt;&gt;</span> <span class="n">generator_bit</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="nb">bool</span><span class="p">(</span><span class="n">gen_fn</span><span class="o">.</span><span class="n">__code__</span><span class="o">.</span><span class="n">co_flags</span> <span class="o">&amp;</span> <span class="n">generator_bit</span><span class="p">)</span>
 <span class="bp">True</span>
 </code></pre></div></div>
@@ -507,7 +507,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
-        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="nb">BlockingIOError</span><span class="p">:</span>
             <span class="k">pass</span>
         <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span>
                           <span class="n">EVENT_WRITE</span><span class="p">,</span>
@@ -515,8 +515,8 @@
 
     <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="k">print</span><span class="p">(</span><span class="s">'connected!'</span><span class="p">)</span>
-        <span class="c"># And so on....</span>
-</code></pre></div></div>
+        <span class="c1"># And so on....
+</span></code></pre></div></div>
 
 <p>原本的方法会先创建连接，注册一个connected的回调，然后会在连接创建后回调。我们用future和生成器对其改造。</p>
 
@@ -525,7 +525,7 @@
         <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s">'xkcd.com'</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span>
-        <span class="k">except</span> <span class="n">BlockingIOError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="nb">BlockingIOError</span><span class="p">:</span>
             <span class="k">pass</span>
 
         <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
@@ -558,8 +558,8 @@
 
         <span class="n">next_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
 
-<span class="c"># Begin fetching http://xkcd.com/353/</span>
-<span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetcher</span><span class="p">(</span><span class="s">'/353/'</span><span class="p">)</span>
+<span class="c1"># Begin fetching http://xkcd.com/353/
+</span><span class="n">fetcher</span> <span class="o">=</span> <span class="n">Fetcher</span><span class="p">(</span><span class="s">'/353/'</span><span class="p">)</span>
 <span class="n">Task</span><span class="p">(</span><span class="n">fetcher</span><span class="o">.</span><span class="n">fetch</span><span class="p">())</span>
 
 <span class="n">loop</span><span class="p">()</span>
@@ -572,8 +572,8 @@
 <p>在socket连接王城后，我们可以继续发送get请求以及获取响应，这些都可以在同一个生成器方法中实现。</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c"># ... connection logic from above, then:</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+        <span class="c1"># ... connection logic from above, then:
+</span>        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
 
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
@@ -589,8 +589,8 @@
             <span class="k">if</span> <span class="n">chunk</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">+=</span> <span class="n">chunk</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c"># Done reading.</span>
-                <span class="k">break</span>
+                <span class="c1"># Done reading.
+</span>                <span class="k">break</span>
 </code></pre></div></div>
 
 <p>这个方法显得很长，因为我们把发的过程，分段收的过程都放在同一个方法中了，显得很乱，用yield from语法可以让方法看上去美观很多。</p>
@@ -604,15 +604,15 @@
         <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">))</span>
 
     <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">EVENT_READ</span><span class="p">,</span> <span class="n">on_readable</span><span class="p">)</span>
-    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">f</span>  <span class="c"># Read one chunk.</span>
-    <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
+    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="n">f</span>  <span class="c1"># Read one chunk.
+</span>    <span class="n">selector</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">sock</span><span class="o">.</span><span class="n">fileno</span><span class="p">())</span>
     <span class="k">return</span> <span class="n">chunk</span>
     
 
 <span class="k">def</span> <span class="nf">read_all</span><span class="p">(</span><span class="n">sock</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c"># Read whole response.</span>
-    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+    <span class="c1"># Read whole response.
+</span>    <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">chunk</span><span class="p">:</span>
         <span class="n">response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
         <span class="n">chunk</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
@@ -624,8 +624,8 @@
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">Fetcher</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-         <span class="c"># ... connection logic from above, then:</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
+         <span class="c1"># ... connection logic from above, then:
+</span>        <span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'ascii'</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">read_all</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
 </code></pre></div></div>
 
@@ -633,7 +633,7 @@
 
 <p>对于一个熟悉asyncio的人来说，实现上边的功能会更加简单。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
         <span class="n">body</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -654,9 +654,9 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">JoinableQueue</span> <span class="k">as</span> <span class="n">Queue</span>
 <span class="k">except</span> <span class="nb">ImportError</span><span class="p">:</span>
-    <span class="c"># In Python 3.5, asyncio.JoinableQueue is</span>
-    <span class="c"># merged into Queue.</span>
-    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Queue</span>
+    <span class="c1"># In Python 3.5, asyncio.JoinableQueue is
+</span>    <span class="c1"># merged into Queue.
+</span>    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Queue</span>
 </code></pre></div></div>
 
 <p>另外，我们会有一个crawler的类，并有crawl方法，然后在事件驱动中启动crawl</p>
@@ -678,12 +678,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="c"># aiohttp's ClientSession does connection pooling and</span>
-        <span class="c"># HTTP keep-alives for us.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
+        <span class="c1"># aiohttp's ClientSession does connection pooling and
+</span>        <span class="c1"># HTTP keep-alives for us.
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">aiohttp</span><span class="o">.</span><span class="n">ClientSession</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">)</span>
 
-        <span class="c"># Put (URL, max_redirect) in the queue.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">root_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span><span class="p">))</span>
+        <span class="c1"># Put (URL, max_redirect) in the queue.
+</span>        <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">root_url</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span><span class="p">))</span>
 </code></pre></div></div>
 
 <p>现在在队列中未完成的任务数只有一个，我们用事件驱动方式启动</p>
@@ -693,27 +693,27 @@
 
 <p><code class="highlighter-rouge">crawl</code>方法会启动workers，类似与多线程中的主线程，会用join方法阻塞，直到所有任务完成。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">crawl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s">"""Run the crawler until all work is done."""</span>
         <span class="n">workers</span> <span class="o">=</span> <span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">work</span><span class="p">())</span>
                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_tasks</span><span class="p">)]</span>
 
-        <span class="c"># When all work is done, exit.</span>
-        <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="c1"># When all work is done, exit.
+</span>        <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
             <span class="n">w</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 </code></pre></div></div>
 
 <p>worker会从队列中获取url，爬取，解析。每个worker都会运行worker方法。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nd">@asyncio.coroutine</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
 
-            <span class="c"># Download page and add new links to self.q.</span>
-            <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">)</span>
+            <span class="c1"># Download page and add new links to self.q.
+</span>            <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
 </code></pre></div></div>
 
@@ -730,10 +730,10 @@
 
 <p>接下来说说重定向。重定向可能导致A页面指向B，又重定向到C的情况，形成一条链 A—&gt;B —&gt;C，而这个B或者C可能使我们曾经访问过的。aiohttp会自动重定向，这样我们可能爬到重复的页面。因此，我们需要禁止自动重定向，并手动重定向并去重。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nd">@asyncio.coroutine</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">max_redirect</span><span class="p">):</span>
-        <span class="c"># Handle redirects ourselves.</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="c1"># Handle redirects ourselves.
+</span>        <span class="n">response</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">url</span><span class="p">,</span> <span class="n">allow_redirects</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -741,23 +741,23 @@
                 <span class="k">if</span> <span class="n">max_redirect</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">next_url</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s">'location'</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">next_url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="p">:</span>
-                        <span class="c"># We have been down this path before.</span>
-                        <span class="k">return</span>
+                        <span class="c1"># We have been down this path before.
+</span>                        <span class="k">return</span>
 
-                    <span class="c"># Remember we have seen this URL.</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">next_url</span><span class="p">)</span>
+                    <span class="c1"># Remember we have seen this URL.
+</span>                    <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">next_url</span><span class="p">)</span>
 
-                    <span class="c"># Follow the redirect. One less redirect remains.</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">((</span><span class="n">next_url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                    <span class="c1"># Follow the redirect. One less redirect remains.
+</span>                    <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">((</span><span class="n">next_url</span><span class="p">,</span> <span class="n">max_redirect</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
              <span class="k">else</span><span class="p">:</span>
                  <span class="n">links</span> <span class="o">=</span> <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_links</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-                 <span class="c"># Python set-logic:</span>
-                 <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="p">):</span>
+                 <span class="c1"># Python set-logic:
+</span>                 <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="n">links</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">put_nowait</span><span class="p">((</span><span class="n">link</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_redirect</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">seen_urls</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">links</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="c"># Return connection to pool.</span>
-            <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="c1"># Return connection to pool.
+</span>            <span class="k">yield</span> <span class="k">from</span> <span class="n">response</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 </code></pre></div></div>
 
 <p>如果是多线程版本，上述代码会变得异常复杂，需要考虑线程安全的问题：A线程判断url没爬过，不在seen_urls中，正准备把url插入seen_urls中，B线程也刚好爬到了相同链接，同样判断url没爬过，也加入到seen_urls中，导致一个url出现了两次，解决这个问题可能需要引入锁之类的，而协程代码就简单许多，无需考虑线程安全的问题。</p>
@@ -768,18 +768,18 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="c"># ... other initialization ...</span>
-
+        <span class="c1"># ... other initialization ...
+</span>
     <span class="k">def</span> <span class="nf">put_nowait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c"># ... store the item ...</span>
-
+        <span class="c1"># ... store the item ...
+</span>
     <span class="k">def</span> <span class="nf">task_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
 
-    <span class="nd">@asyncio.coroutine</span>
+    <span class="o">@</span><span class="n">asyncio</span><span class="o">.</span><span class="n">coroutine</span>
     <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unfinished_tasks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">yield</span> <span class="k">from</span> <span class="bp">self</span><span class="o">.</span><span class="n">_join_future</span>
@@ -821,8 +821,8 @@
 
 <p>一般情况下，future会在被调用set_result的时候被激活，而task会在协程退出的时候激活。</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c"># Method of class Task.</span>
-    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">future</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># Method of class Task.
+</span>    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">future</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">next_future</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">coro</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">CancelledError</span><span class="p">:</span>
@@ -830,9 +830,9 @@
             <span class="k">return</span>
         <span class="k">except</span> <span class="nb">StopIteration</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
 
-            <span class="c"># Task resolves itself with coro's return</span>
-            <span class="c"># value.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="c1"># Task resolves itself with coro's return
+</span>            <span class="c1"># value.
+</span>            <span class="bp">self</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">exc</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="k">return</span>
 
         <span class="n">next_future</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
@@ -876,7 +876,7 @@
     <script>
     
     var disqus_config = function () {
-        this.page.url = "http://gaoconghui.github.io/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/";
+        this.page.url = "http://localhost:4000/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/";
         this.page.identifier = "/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/";
     };
 
@@ -901,7 +901,7 @@
             <section class="footer">
     <footer>
     	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
-        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2018</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
     </footer>
 </section>
 
