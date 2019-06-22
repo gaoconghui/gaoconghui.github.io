@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>无头浏览器反爬与反反爬</title>
+  <meta name="description" content="总结一下最近做的无头浏览器（chrome headless 的检测以及反检测）。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="无头浏览器反爬与反反爬">
+  <meta name="twitter:description" content="总结一下最近做的无头浏览器（chrome headless 的检测以及反检测）。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="无头浏览器反爬与反反爬">
+  <meta property="og:description" content="总结一下最近做的无头浏览器（chrome headless 的检测以及反检测）。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/">
+  <link rel="alternate" type="application/rss+xml" title="Gao Conghui" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Gao Conghui 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Gao Conghui logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Gao Conghui" class="blog-button">Gao Conghui</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">爬虫，视频处理</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/https://github.com/gaoconghui" title="@https://github.com/gaoconghui 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:381147882@qq.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2019-06-22 08:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2019-06-22</time> &#8226; <span class="post-meta__tags tags">spider chrome headless</span>
+    </div>
+    <h1 class="post-title">无头浏览器反爬与反反爬</h1>
+  </header>
+
+  <section class="post">
+    <p>总结一下最近做的无头浏览器（chrome headless 的检测以及反检测）。</p>
+
+<p>无头浏览器的检测应该是爬虫中非常重要的一块，一开始接触到的是 <a href="https://intoli.com/blog/not-possible-to-block-chrome-headless/">not-possible-to-block-chrome-headless</a> 这个文章，大概是最初级的无头浏览器检测方案。不过在后续的爬虫中，有一种魔高一尺，道高一丈的感觉，陆续发现很多站点都能通过各种其他手法检测无头浏览器。</p>
+
+<p>再后来，看一些网站的js，发现了他们会对很多字段进行收集，都与<a href="https://github.com/Valve/fingerprintjs2">fingerprintjs2</a> 收集的差不多，才算是豁然开朗。</p>
+
+<p>故在此记录一下可以被用于检测无头浏览器的字段即如果绕过去。</p>
+
+<ul>
+  <li>
+    <p>userAgent</p>
+
+    <p>ua可以说是最基础的字段了，然是无头浏览器中，单纯修改ua还不行，需要ua 和一些字段（如navigator.platform）跟着修改才行。当然，单纯的ua 还是要尽量模仿桌面浏览器的</p>
+
+    <p>识别：通过 navigator.userAgent  通过ua来识别是否为爬虫</p>
+
+    <p>反识别：可以修改属性来绕过</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'userAgent'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>webdriver</p>
+
+    <blockquote>
+      <p>The <strong>webdriver</strong> read-only property of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Navigator"><code class="highlighter-rouge">navigator</code></a> interface indicates whether the user agent is controlled by automation.</p>
+    </blockquote>
+
+    <p>识别：桌面chrome 浏览器navigator.webdriver 返回为undefined，故可以判断<code class="highlighter-rouge">!!navigator.webdriver</code></p>
+
+    <p>反识别：</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'webdriver'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="kc">false</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+
+    <p>或者:</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">delete</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">__proto__</span><span class="p">.</span><span class="nx">webdriver</span>
+</code></pre></div>    </div>
+
+    <p>发现过有网站监测<code class="highlighter-rouge">navigator.webdriver</code> 是否为undefined，而不是简单的通过<code class="highlighter-rouge">!!navigator.webdriver</code>进行监测的</p>
+  </li>
+  <li>
+    <p>language</p>
+
+    <p>不同浏览器对language 支持不同，chrome只有navigator.language  <a href="http://www.w3help.org/zh-cn/causes/BX2040">参考</a></p>
+
+    <p>识别： navigator.language || navigator.userLanguage || navigator.browserLanguage || navigator.systemLanguage 是否存在</p>
+
+    <p>反识别：</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'language'</span><span class="p">,</span> <span class="p">{</span>
+	<span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s2">"zh-CN"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>colorDepth</p>
+
+    <p>window.screen.colorDepth 屏幕颜色深度，一般收集指纹的时候会用到。无头浏览器这个字段一般与桌面浏览器相同</p>
+  </li>
+  <li>
+    <p>deviceMemory</p>
+
+    <p>只读属性返回千兆字节为单位的大概的机器内存。这个值是一个2的次方数除以1024，舍去小数点的近似值。不过这还只是个实验特性，不一定所有浏览器都有。指纹收集的时候会使用到，以防万一可以设个值</p>
+
+    <p>navigator.deviceMemory</p>
+
+    <p>反识别:</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'deviceMemory'</span><span class="p">,</span> <span class="p">{</span>
+	<span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="mi">8</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>hardwareConcurrency</p>
+
+    <p>浏览器环境所拥有的CPU核心数</p>
+
+    <p>navigator.hardwareConcurrency</p>
+
+    <p>反识别:</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'hardwareConcurrency'</span><span class="p">,</span> <span class="p">{</span>
+	<span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="mi">8</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>screenResolution</p>
+
+    <p>会被用于指纹</p>
+
+    <p>[window.screen.width, window.screen.height]</p>
+  </li>
+  <li>
+    <p>availableScreenResolution</p>
+
+    <p>会被用于指纹</p>
+
+    <p>[window.screen.availHeight, window.screen.availWidth]</p>
+  </li>
+  <li>
+    <p>timezoneOffset</p>
+
+    <p>调世界时（UTC）相对于当前时区的时间差值，单位为分钟。</p>
+
+    <p>new Date().getTimezoneOffset()</p>
+  </li>
+  <li>
+    <p>timezone</p>
+
+    <p>new window.Intl.DateTimeFormat().resolvedOptions().timeZone</p>
+  </li>
+  <li>
+    <p>sessionStorage *</p>
+
+    <p>只判断是否有sessionStorage</p>
+
+    <p>!!window.sessionStorage</p>
+  </li>
+  <li>
+    <p>localStorage *</p>
+
+    <p>!!window.localStorage</p>
+  </li>
+  <li>
+    <p>indexedDb</p>
+
+    <p>!!window.indexedDB</p>
+  </li>
+  <li>
+    <p>addBehavior</p>
+
+    <p>该字段为IE特有 <a href="http://www.w3help.org/zh-cn/causes/BT9027">参考</a></p>
+
+    <p>!!(document.body &amp;&amp; document.body.addBehavior)</p>
+  </li>
+  <li>
+    <p>openDatabase *</p>
+
+    <p>会返回一个databse，可以执行sql。 指纹只判断是否有这个方法</p>
+
+    <p>!!window.openDatabase</p>
+  </li>
+  <li>
+    <p>cpuClass</p>
+
+    <p>cpu 类型，似乎chrome 浏览器返回为undefined</p>
+
+    <p>navigator.cpuClass</p>
+  </li>
+  <li>
+    <p>platform *</p>
+
+    <p>navigator.platform</p>
+
+    <p>识别： if (navigator.platform === Linux x86_64)  Linux x86_64占有率较小，如果为Linux x86_64，大概率为爬虫</p>
+
+    <p>反识别:</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nb">navigator</span><span class="p">,</span> <span class="s1">'platform'</span><span class="p">,</span> <span class="p">{</span>
+	<span class="na">get</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="s1">'MacIntel'</span>
+<span class="p">});</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>plugins</p>
+
+    <p>navigator.plugins</p>
+
+    <p>plugin对象有name filename description version  属性。可以使用plugin[0] 的方式获取MimeType对象</p>
+  </li>
+  <li>
+    <p>mimeTypes</p>
+
+    <p>navigator.mimeTypes</p>
+
+    <p>mimeTypes对象需要和plugin 对象对应，有type, suffixes, description, enabledPlugin 属性</p>
+  </li>
+  <li>
+    <p>canvas</p>
+
+    <p>获取canvas 指纹  <a href="https://browserleaks.com/canvas">参考</a>， 通过指纹来判别一个浏览器，并根据指纹的一些特征识别是何种浏览器。</p>
+
+    <p>识别:</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">definition</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">module</span> <span class="o">!==</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">definition</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">define</span> <span class="o">===</span> <span class="s1">'function'</span> <span class="o">&amp;&amp;</span> <span class="nx">define</span><span class="p">.</span><span class="nx">amd</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">define</span><span class="p">(</span><span class="nx">definition</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">context</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">definition</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">})(</span><span class="s1">'Fingerprint'</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="s1">'use strict'</span><span class="p">;</span>
+  
+        <span class="kd">var</span> <span class="nx">Fingerprint</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">nativeForEach</span><span class="p">,</span> <span class="nx">nativeMap</span><span class="p">;</span>
+            <span class="nx">nativeForEach</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">forEach</span><span class="p">;</span>
+            <span class="nx">nativeMap</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">map</span><span class="p">;</span>
+  
+            <span class="k">this</span><span class="p">.</span><span class="nx">each</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">iterator</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">nativeForEach</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">forEach</span> <span class="o">===</span> <span class="nx">nativeForEach</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">obj</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">iterator</span><span class="p">,</span> <span class="nx">context</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="o">+</span><span class="nx">obj</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">iterator</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="o">===</span> <span class="p">{})</span> <span class="k">return</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="nx">iterator</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">obj</span><span class="p">[</span><span class="nx">key</span><span class="p">],</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="o">===</span> <span class="p">{})</span> <span class="k">return</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">};</span>
+  
+            <span class="k">this</span><span class="p">.</span><span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">iterator</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+                <span class="c1">// Not using strict equality so that this acts as a</span>
+                <span class="c1">// shortcut to checking for `null` and `undefined`.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">nativeMap</span> <span class="o">&amp;&amp;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">map</span> <span class="o">===</span> <span class="nx">nativeMap</span><span class="p">)</span> <span class="k">return</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">iterator</span><span class="p">,</span> <span class="nx">context</span><span class="p">);</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">results</span><span class="p">[</span><span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">list</span><span class="p">);</span>
+                <span class="p">});</span>
+                <span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+            <span class="p">};</span>
+  
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">options</span> <span class="o">==</span> <span class="s1">'object'</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">hasher</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">hasher</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">screen_resolution</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">screen_resolution</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">screen_orientation</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">screen_orientation</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">canvas</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">canvas</span><span class="p">;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">ie_activex</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">ie_activex</span><span class="p">;</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">options</span> <span class="o">==</span> <span class="s1">'function'</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">hasher</span> <span class="o">=</span> <span class="nx">options</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+  
+        <span class="nx">Fingerprint</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">get</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">keys</span> <span class="o">=</span> <span class="p">[];</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">);</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">language</span><span class="p">);</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">screen</span><span class="p">.</span><span class="nx">colorDepth</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">screen_resolution</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">resolution</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getScreenResolution</span><span class="p">();</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">resolution</span> <span class="o">!==</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// headless browsers, such as phantomjs</span>
+                        <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">resolution</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'x'</span><span class="p">));</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTimezoneOffset</span><span class="p">());</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasSessionStorage</span><span class="p">());</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasLocalStorage</span><span class="p">());</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasIndexDb</span><span class="p">());</span>
+                <span class="c1">//body might not be defined at this point or removed programmatically</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">addBehavior</span><span class="p">));</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">typeof</span> <span class="kc">undefined</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">openDatabase</span><span class="p">));</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">cpuClass</span><span class="p">);</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">platform</span><span class="p">);</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">doNotTrack</span><span class="p">);</span>
+                <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getPluginsString</span><span class="p">());</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">canvas</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">isCanvasSupported</span><span class="p">())</span> <span class="p">{</span>
+                    <span class="nx">keys</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getCanvasFingerprint</span><span class="p">());</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasher</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">hasher</span><span class="p">(</span><span class="nx">keys</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'###'</span><span class="p">),</span> <span class="mi">31</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">murmurhash3_32_gc</span><span class="p">(</span><span class="nx">keys</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">'###'</span><span class="p">),</span> <span class="mi">31</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="cm">/**
+             * JS Implementation of MurmurHash3 (r136) (as of May 20, 2011)
+             *
+             * @author &lt;a href="mailto:gary.court@gmail.com"&gt;Gary Court&lt;/a&gt;
+             * @see http://github.com/garycourt/murmurhash-js
+             * @author &lt;a href="mailto:aappleby@gmail.com"&gt;Austin Appleby&lt;/a&gt;
+             * @see http://sites.google.com/site/murmurhash/
+             *
+             * @param {string} key ASCII only
+             * @param {number} seed Positive integer only
+             * @return {number} 32-bit positive integer hash
+             */</span>
+  
+            <span class="na">murmurhash3_32_gc</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">seed</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">remainder</span><span class="p">,</span> <span class="nx">bytes</span><span class="p">,</span> <span class="nx">h1</span><span class="p">,</span> <span class="nx">h1b</span><span class="p">,</span> <span class="nx">c1</span><span class="p">,</span> <span class="nx">c2</span><span class="p">,</span> <span class="nx">k1</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+  
+                <span class="nx">remainder</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nx">length</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">;</span> <span class="c1">// key.length % 4</span>
+                <span class="nx">bytes</span> <span class="o">=</span> <span class="nx">key</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">remainder</span><span class="p">;</span>
+                <span class="nx">h1</span> <span class="o">=</span> <span class="nx">seed</span><span class="p">;</span>
+                <span class="nx">c1</span> <span class="o">=</span> <span class="mh">0xcc9e2d51</span><span class="p">;</span>
+                <span class="nx">c2</span> <span class="o">=</span> <span class="mh">0x1b873593</span><span class="p">;</span>
+                <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  
+                <span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">bytes</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">k1</span> <span class="o">=</span>
+                        <span class="p">((</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">))</span> <span class="o">|</span>
+                        <span class="p">((</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">|</span>
+                        <span class="p">((</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">|</span>
+                        <span class="p">((</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="o">++</span><span class="nx">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">24</span><span class="p">);</span>
+                    <span class="o">++</span><span class="nx">i</span><span class="p">;</span>
+  
+                    <span class="nx">k1</span> <span class="o">=</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c1</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                    <span class="nx">k1</span> <span class="o">=</span> <span class="p">(</span><span class="nx">k1</span> <span class="o">&lt;&lt;</span> <span class="mi">15</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">17</span><span class="p">);</span>
+                    <span class="nx">k1</span> <span class="o">=</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c2</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+  
+                    <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">k1</span><span class="p">;</span>
+                    <span class="nx">h1</span> <span class="o">=</span> <span class="p">(</span><span class="nx">h1</span> <span class="o">&lt;&lt;</span> <span class="mi">13</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">19</span><span class="p">);</span>
+                    <span class="nx">h1b</span> <span class="o">=</span> <span class="p">((((</span><span class="nx">h1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                    <span class="nx">h1</span> <span class="o">=</span> <span class="p">(((</span><span class="nx">h1b</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">+</span> <span class="mh">0x6b64</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">h1b</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">+</span> <span class="mh">0xe654</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">));</span>
+                <span class="p">}</span>
+  
+                <span class="nx">k1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  
+                <span class="k">switch</span> <span class="p">(</span><span class="nx">remainder</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">case</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="nx">k1</span> <span class="o">^=</span> <span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="nx">k1</span> <span class="o">^=</span> <span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">;</span>
+                    <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="nx">k1</span> <span class="o">^=</span> <span class="p">(</span><span class="nx">key</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">);</span>
+  
+                        <span class="nx">k1</span> <span class="o">=</span> <span class="p">(((</span><span class="nx">k1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c1</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                        <span class="nx">k1</span> <span class="o">=</span> <span class="p">(</span><span class="nx">k1</span> <span class="o">&lt;&lt;</span> <span class="mi">15</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">17</span><span class="p">);</span>
+                        <span class="nx">k1</span> <span class="o">=</span> <span class="p">(((</span><span class="nx">k1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c2</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">k1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="nx">c2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                        <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">k1</span><span class="p">;</span>
+                <span class="p">}</span>
+  
+                <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">key</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  
+                <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">;</span>
+                <span class="nx">h1</span> <span class="o">=</span> <span class="p">(((</span><span class="nx">h1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x85ebca6b</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0x85ebca6b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">13</span><span class="p">;</span>
+                <span class="nx">h1</span> <span class="o">=</span> <span class="p">((((</span><span class="nx">h1</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0xc2b2ae35</span><span class="p">)</span> <span class="o">+</span> <span class="p">((((</span><span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">*</span> <span class="mh">0xc2b2ae35</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">;</span>
+                <span class="nx">h1</span> <span class="o">^=</span> <span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">16</span><span class="p">;</span>
+  
+                <span class="k">return</span> <span class="nx">h1</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="p">},</span>
+  
+            <span class="c1">// https://bugzilla.mozilla.org/show_bug.cgi?id=781447</span>
+            <span class="na">hasLocalStorage</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="o">!!</span><span class="nb">window</span><span class="p">.</span><span class="nx">localStorage</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// SecurityError when referencing it means it exists</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="na">hasSessionStorage</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="o">!!</span><span class="nb">window</span><span class="p">.</span><span class="nx">sessionStorage</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// SecurityError when referencing it means it exists</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="na">hasIndexDb</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="o">!!</span><span class="nb">window</span><span class="p">.</span><span class="nx">indexedDB</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// SecurityError when referencing it means it exists</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="na">isCanvasSupported</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">elem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">'canvas'</span><span class="p">);</span>
+                <span class="k">return</span> <span class="o">!!</span><span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">getContext</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">'2d'</span><span class="p">));</span>
+            <span class="p">},</span>
+  
+            <span class="na">isIE</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">appName</span> <span class="o">===</span> <span class="s1">'Microsoft Internet Explorer'</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">appName</span> <span class="o">===</span> <span class="s1">'Netscape'</span> <span class="o">&amp;&amp;</span> <span class="sr">/Trident/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">))</span> <span class="p">{</span><span class="c1">// IE 11</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+            <span class="p">},</span>
+  
+            <span class="na">getPluginsString</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">isIE</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">ie_activex</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">getIEPluginsString</span><span class="p">();</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRegularPluginsString</span><span class="p">();</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="na">getRegularPluginsString</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">plugins</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">mimeTypes</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">mt</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">return</span> <span class="p">[</span><span class="nx">mt</span><span class="p">.</span><span class="nx">type</span><span class="p">,</span> <span class="nx">mt</span><span class="p">.</span><span class="nx">suffixes</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">'~'</span><span class="p">);</span>
+                    <span class="p">}).</span><span class="nx">join</span><span class="p">(</span><span class="s1">','</span><span class="p">);</span>
+                    <span class="k">return</span> <span class="p">[</span><span class="nx">p</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">p</span><span class="p">.</span><span class="nx">description</span><span class="p">,</span> <span class="nx">mimeTypes</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">'::'</span><span class="p">);</span>
+                <span class="p">},</span> <span class="k">this</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">';'</span><span class="p">);</span>
+            <span class="p">},</span>
+  
+            <span class="na">getIEPluginsString</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">ActiveXObject</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="kd">var</span> <span class="nx">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'ShockwaveFlash.ShockwaveFlash'</span><span class="p">,</span><span class="c1">//flash plugin</span>
+                        <span class="s1">'AcroPDF.PDF'</span><span class="p">,</span> <span class="c1">// Adobe PDF reader 7+</span>
+                        <span class="s1">'PDF.PdfCtrl'</span><span class="p">,</span> <span class="c1">// Adobe PDF reader 6 and earlier, brrr</span>
+                        <span class="s1">'QuickTime.QuickTime'</span><span class="p">,</span> <span class="c1">// QuickTime</span>
+                        <span class="c1">// 5 versions of real players</span>
+                        <span class="s1">'rmocx.RealPlayer G2 Control'</span><span class="p">,</span>
+                        <span class="s1">'rmocx.RealPlayer G2 Control.1'</span><span class="p">,</span>
+                        <span class="s1">'RealPlayer.RealPlayer(tm) ActiveX Control (32-bit)'</span><span class="p">,</span>
+                        <span class="s1">'RealVideo.RealVideo(tm) ActiveX Control (32-bit)'</span><span class="p">,</span>
+                        <span class="s1">'RealPlayer'</span><span class="p">,</span>
+                        <span class="s1">'SWCtl.SWCtl'</span><span class="p">,</span> <span class="c1">// ShockWave player</span>
+                        <span class="s1">'WMPlayer.OCX'</span><span class="p">,</span> <span class="c1">// Windows media player</span>
+                        <span class="s1">'AgControl.AgControl'</span><span class="p">,</span> <span class="c1">// Silverlight</span>
+                        <span class="s1">'Skype.Detection'</span><span class="p">];</span>
+  
+                    <span class="c1">// starting to detect plugins in IE</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">names</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">try</span> <span class="p">{</span>
+                            <span class="k">new</span> <span class="nx">ActiveXObject</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+                            <span class="k">return</span> <span class="nx">name</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+                        <span class="p">}</span>
+                    <span class="p">}).</span><span class="nx">join</span><span class="p">(</span><span class="s1">';'</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="s2">""</span><span class="p">;</span> <span class="c1">// behavior prior version 0.5.0, not breaking backwards compat.</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+  
+            <span class="na">getScreenResolution</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">resolution</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">screen_orientation</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">resolution</span> <span class="o">=</span> <span class="p">(</span><span class="nx">screen</span><span class="p">.</span><span class="nx">height</span> <span class="o">&gt;</span> <span class="nx">screen</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="p">?</span> <span class="p">[</span><span class="nx">screen</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="nx">screen</span><span class="p">.</span><span class="nx">width</span><span class="p">]</span> <span class="p">:</span> <span class="p">[</span><span class="nx">screen</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">screen</span><span class="p">.</span><span class="nx">height</span><span class="p">];</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">resolution</span> <span class="o">=</span> <span class="p">[</span><span class="nx">screen</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="nx">screen</span><span class="p">.</span><span class="nx">width</span><span class="p">];</span>
+                <span class="p">}</span>
+                <span class="k">return</span> <span class="nx">resolution</span><span class="p">;</span>
+            <span class="p">},</span>
+  
+            <span class="na">getCanvasFingerprint</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">'canvas'</span><span class="p">);</span>
+                <span class="kd">var</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s1">'2d'</span><span class="p">);</span>
+                <span class="c1">// https://www.browserleaks.com/canvas#how-does-it-work</span>
+                <span class="kd">var</span> <span class="nx">txt</span> <span class="o">=</span> <span class="s1">'http://valve.github.io'</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">textBaseline</span> <span class="o">=</span> <span class="s2">"top"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">font</span> <span class="o">=</span> <span class="s2">"14px 'Arial'"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">textBaseline</span> <span class="o">=</span> <span class="s2">"alphabetic"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s2">"#f60"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">125</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">62</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s2">"#069"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="nx">txt</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="s2">"rgba(102, 204, 0, 0.7)"</span><span class="p">;</span>
+                <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="nx">txt</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">17</span><span class="p">);</span>
+                <span class="k">return</span> <span class="nx">canvas</span><span class="p">.</span><span class="nx">toDataURL</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+        <span class="k">return</span> <span class="nx">Fingerprint</span><span class="p">;</span>
+    <span class="p">});</span>
+  
+    <span class="k">new</span> <span class="nx">Fingerprint</span><span class="p">({</span><span class="na">canvas</span><span class="p">:</span> <span class="kc">true</span><span class="p">}).</span><span class="kd">get</span><span class="p">();</span>
+</code></pre></div>    </div>
+
+    <p>反识别: 通过重写toBlob 以及toDataURL 方法来解决</p>
+  </li>
+</ul>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">var</span> <span class="nx">inject</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">overwrite</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">OLD</span> <span class="o">=</span> <span class="nx">HTMLCanvasElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+      <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">HTMLCanvasElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="p">{</span>
+        <span class="s2">"value"</span><span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">shift</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">'r'</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s1">'g'</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s1">'b'</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s1">'a'</span><span class="p">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span>
+          <span class="p">};</span>
+          <span class="kd">var</span> <span class="nx">width</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span> <span class="nx">height</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span> <span class="nx">context</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getContext</span><span class="p">(</span><span class="s2">"2d"</span><span class="p">);</span>
+          <span class="kd">var</span> <span class="nx">imageData</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getImageData</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">);</span>
+          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">height</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">width</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+              <span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="p">((</span><span class="nx">i</span> <span class="o">*</span> <span class="p">(</span><span class="nx">width</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="nx">j</span> <span class="o">*</span> <span class="mi">4</span><span class="p">));</span>
+              <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">shift</span><span class="p">.</span><span class="nx">r</span><span class="p">;</span>
+              <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">shift</span><span class="p">.</span><span class="nx">g</span><span class="p">;</span>
+              <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="nx">shift</span><span class="p">.</span><span class="nx">b</span><span class="p">;</span>
+              <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">imageData</span><span class="p">.</span><span class="nx">data</span><span class="p">[</span><span class="nx">n</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="nx">shift</span><span class="p">.</span><span class="nx">a</span><span class="p">;</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+          <span class="nx">context</span><span class="p">.</span><span class="nx">putImageData</span><span class="p">(</span><span class="nx">imageData</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+          <span class="k">return</span> <span class="nx">OLD</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="kr">arguments</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>
+    <span class="p">};</span>
+    <span class="nx">overwrite</span><span class="p">(</span><span class="s1">'toBlob'</span><span class="p">);</span>
+    <span class="nx">overwrite</span><span class="p">(</span><span class="s1">'toDataURL'</span><span class="p">);</span>
+  <span class="p">};</span>
+  <span class="nx">inject</span><span class="p">();</span>
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>webgl</p>
+
+    <p>TODO</p>
+  </li>
+  <li>
+    <p>webglVendorAndRenderer</p>
+
+    <p>返会显卡型号相关信息</p>
+
+    <p>TODO</p>
+  </li>
+  <li>
+    <p>adBlock</p>
+
+    <p>检测adBlock 插件是否存在</p>
+  </li>
+  <li>
+    <p>hasLiedLanguages</p>
+
+    <p>判断navigator.language 是否为navigator.languages数组的第一个</p>
+  </li>
+  <li>
+    <p>hasLiedResolution</p>
+
+    <p>window.screen.width &lt; window.screen.availWidth || window.screen.height &lt; window.screen.availHeight</p>
+  </li>
+  <li>
+    <p>hasLiedOs</p>
+
+    <p>识别: 判断ua 和platform 之间的关联。</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">getHasLiedOs</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">userAgent</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nx">oscpu</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">oscpu</span>
+    <span class="kd">var</span> <span class="nx">platform</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">platform</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nx">os</span>
+    <span class="c1">// We extract the OS from the user agent (respect the order of the if else if statement)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'windows phone'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Windows Phone'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'win'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Windows'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'android'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Android'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'linux'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'cros'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Linux'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'iphone'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'ipad'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'iOS'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'mac'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Mac'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">os</span> <span class="o">=</span> <span class="s1">'Other'</span>
+    <span class="p">}</span>
+    <span class="c1">// We detect if the person uses a mobile device</span>
+    <span class="kd">var</span> <span class="nx">mobileDevice</span> <span class="o">=</span> <span class="p">((</span><span class="s1">'ontouchstart'</span> <span class="k">in</span> <span class="nb">window</span><span class="p">)</span> <span class="o">||</span>
+      <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">maxTouchPoints</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">||</span>
+      <span class="p">(</span><span class="nb">navigator</span><span class="p">.</span><span class="nx">msMaxTouchPoints</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">))</span>
+  
+    <span class="k">if</span> <span class="p">(</span><span class="nx">mobileDevice</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows Phone'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Android'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'iOS'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Other'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span>
+  
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">oscpu</span><span class="p">);</span>
+    <span class="c1">// We compare oscpu with the OS extracted from the UA</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">oscpu</span> <span class="o">!==</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">oscpu</span> <span class="o">=</span> <span class="nx">oscpu</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'win'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows Phone'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'linux'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Linux'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Android'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'mac'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Mac'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'iOS'</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'win'</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'linux'</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">oscpu</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'mac'</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">!==</span> <span class="p">(</span><span class="nx">os</span> <span class="o">===</span> <span class="s1">'Other'</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  
+    <span class="c1">// We compare platform with the OS extracted from the UA</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'win'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows Phone'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'linux'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'android'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'pike'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Linux'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Android'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">((</span><span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'mac'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'ipad'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'ipod'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'iphone'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Mac'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'iOS'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">platformIsOther</span> <span class="o">=</span> <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'win'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'linux'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'mac'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'iphone'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span>
+        <span class="nx">platform</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'ipad'</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">platformIsOther</span> <span class="o">!==</span> <span class="p">(</span><span class="nx">os</span> <span class="o">===</span> <span class="s1">'Other'</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  
+    <span class="k">return</span> <span class="k">typeof</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">plugins</span> <span class="o">===</span> <span class="s1">'undefined'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows'</span> <span class="o">&amp;&amp;</span> <span class="nx">os</span> <span class="o">!==</span> <span class="s1">'Windows Phone'</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
+
+    <p>反识别： 确保ua 以及platform 之间的关系</p>
+  </li>
+  <li>
+    <p>hasLiedBrowser</p>
+
+    <p>识别: 根据ua 判断browser，在根据一些神奇的特性去判断。。</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">getHasLiedBrowser</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">userAgent</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span>
+    <span class="kd">var</span> <span class="nx">productSub</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">productSub</span>
+  
+    <span class="c1">// we extract the browser from the user agent (respect the order of the tests)</span>
+    <span class="kd">var</span> <span class="nx">browser</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'firefox'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Firefox'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'opera'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'opr'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Opera'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'chrome'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Chrome'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'safari'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Safari'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'trident'</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Internet Explorer'</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">browser</span> <span class="o">=</span> <span class="s1">'Other'</span>
+    <span class="p">}</span>
+  
+    <span class="k">if</span> <span class="p">((</span><span class="nx">browser</span> <span class="o">===</span> <span class="s1">'Chrome'</span> <span class="o">||</span> <span class="nx">browser</span> <span class="o">===</span> <span class="s1">'Safari'</span> <span class="o">||</span> <span class="nx">browser</span> <span class="o">===</span> <span class="s1">'Opera'</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">productSub</span> <span class="o">!==</span> <span class="s1">'20030107'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span>
+  
+    <span class="c1">// eslint-disable-next-line no-eval</span>
+    <span class="kd">var</span> <span class="nx">tempRes</span> <span class="o">=</span> <span class="kr">eval</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">length</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">tempRes</span> <span class="o">===</span> <span class="mi">37</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Safari'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Firefox'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Other'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tempRes</span> <span class="o">===</span> <span class="mi">39</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Internet Explorer'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Other'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">tempRes</span> <span class="o">===</span> <span class="mi">33</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Chrome'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Opera'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Other'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span>
+    <span class="p">}</span>
+  
+    <span class="c1">// We create an error to see how it is handled</span>
+    <span class="kd">var</span> <span class="nx">errFirefox</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="c1">// eslint-disable-next-line no-throw-literal</span>
+      <span class="k">throw</span> <span class="s1">'a'</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">try</span> <span class="p">{</span>
+        <span class="nx">err</span><span class="p">.</span><span class="nx">toSource</span><span class="p">()</span>
+        <span class="nx">errFirefox</span> <span class="o">=</span> <span class="kc">true</span>
+      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">errOfErr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">errFirefox</span> <span class="o">=</span> <span class="kc">false</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">errFirefox</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Firefox'</span> <span class="o">&amp;&amp;</span> <span class="nx">browser</span> <span class="o">!==</span> <span class="s1">'Other'</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>touchSupport</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="kd">var</span> <span class="nx">getTouchSupport</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">maxTouchPoints</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="kd">var</span> <span class="nx">touchEvent</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">maxTouchPoints</span> <span class="o">!==</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">maxTouchPoints</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">maxTouchPoints</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">msMaxTouchPoints</span> <span class="o">!==</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">maxTouchPoints</span> <span class="o">=</span> <span class="nb">navigator</span><span class="p">.</span><span class="nx">msMaxTouchPoints</span>
+    <span class="p">}</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">createEvent</span><span class="p">(</span><span class="s1">'TouchEvent'</span><span class="p">)</span>
+      <span class="nx">touchEvent</span> <span class="o">=</span> <span class="kc">true</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">_</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">touchEvent</span> <span class="o">=</span> <span class="kc">false</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">touchStart</span> <span class="o">=</span> <span class="s1">'ontouchstart'</span> <span class="k">in</span> <span class="nb">window</span>
+    <span class="c1">// [0, false, false]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nx">maxTouchPoints</span><span class="p">,</span> <span class="nx">touchEvent</span><span class="p">,</span> <span class="nx">touchStart</span><span class="p">]</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>fonts</p>
+
+    <p>看有多少个font</p>
+  </li>
+  <li>
+    <p>audio</p>
+
+    <p>音频指纹 TODO</p>
+  </li>
+</ul>
+
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/" title="link to scons 简单入门">scons 简单入门</a></h2>
+       <p class="excerpt">简单入门hello worldscons由Sconstruct 作为入口，控制如何进行编译操作。Sconstruct 本身是一个python文件，故需要遵循python的语法，以及能使用一些python的方法。(如我们可以用print 来debug）这有一段很简单的hello.cpp#include &lt;iostream&gt;int main() {    std::cout &lt;&lt; "hello world" &lt;&lt; std::endl;}以及一个很简单的Sco...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2019-01-20 08:00:00 +0800" class="post-list__meta--date date">2019-01-20</time> &#8226; <span class="post-list__meta--tags tags">build scons</span><a class="btn-border-small" href=/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/";
+        this.page.identifier = "/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2019</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

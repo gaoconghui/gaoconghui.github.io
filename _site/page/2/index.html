@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <title>Gao Conghui</title>
-  <meta name="description" content="一点资讯，视频爬虫，视频处理。">
+  <meta name="description" content="爬虫，视频处理">
   <meta name="author" content="Wei Wang">
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Gao Conghui">
-  <meta name="twitter:description" content="一点资讯，视频爬虫，视频处理。">
+  <meta name="twitter:description" content="爬虫，视频处理">
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="Gao Conghui">
-  <meta property="og:description" content="一点资讯，视频爬虫，视频处理。">
+  <meta property="og:description" content="爬虫，视频处理">
   
   <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
   <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -51,7 +51,7 @@
         <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
         
         <hr class="panel-cover__divider" />
-        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <p class="panel-cover__description">爬虫，视频处理</p>
         <hr class="panel-cover__divider panel-cover__divider--secondary" />
         
         
@@ -124,6 +124,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/" title="访问 基于asyncio实现的异步协程爬虫">基于asyncio实现的异步协程爬虫</a></h2>
+      <p class="excerpt">前言以下内容是看500 lines or less中 A Web Crawler With asyncio Coroutines这个章节后做的一些记录。一个最简单的爬虫一个非常简单的get请求，爬取获取xkcd.com，import socketdef crawl():    sock = socket.socket()    sock.connect(('xkcd.com', 80))    request = 'GET / HTTP/1.0\r\nHost: xkcd.com\r\n\...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2018-03-15 21:00:00 +0800" class="post-list__meta--date date">2018-03-15</time> &#8226; <span class="post-list__meta--tags tags">python asyncio</span><a class="btn-border-small" href=/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/" title="访问 kubernetes中部署spark集群">kubernetes中部署spark集群</a></h2>
       <p class="excerpt">在写这个的时候，spark版本为2.2.1。基于kubernetes部署的两种方式  直接使用kubernetes作为集群管理器(Cluster Manager)，类似与mesos和yarn，使用方式可以看running-on-kubernetes。但是这个部署方式，一是还不成熟，不推荐在生产环境使用。第二是要求k8s版本大于1.6，但我这边版本1.5.1，线上在用，不太想升级，而spark只是想搭起来玩玩…  第二种方式是standalone的方式，即便是不用集群也能很方便的用sbin下...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-03-02 21:00:00 +0800" class="post-list__meta--date date">2018-03-02</time> &#8226; <span class="post-list__meta--tags tags">kubernetes spark</span><a class="btn-border-small" href=/2018/03/k8s%E4%B8%AD%E9%83%A8%E7%BD%B2spark-standalone%E6%A8%A1%E5%BC%8F/>继续阅读</a></div>
@@ -183,13 +190,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/" title="访问 python实现redis三种cas操作">python实现redis三种cas操作</a></h2>
       <p class="excerpt">cas全称是compare and set，是一种典型的事务操作，本文会介绍三种redis实现cas事务的方法，并会解决下面的虚拟问题：维护一个值，如果这个值小于当前时间，则设置为当前时间；如果这个值大于当前时间，则设置为当前时间+30。简单的单线程环境下代码如下:# 初始化r = redis.Redis()if not r.exists("key_test"):    r.set("key_test", 0)def inc():    count = int(r.get('key_tes...&hellip;</p>
       <div class="post-list__meta"><time datetime="2017-12-08 21:10:00 +0800" class="post-list__meta--date date">2017-12-08</time> &#8226; <span class="post-list__meta--tags tags">redis python</span><a class="btn-border-small" href=/2017/12/python%E5%AE%9E%E7%8E%B0redis%E4%B8%89%E7%A7%8Dcas%E6%93%8D%E4%BD%9C/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/" title="访问 mongodump 在数据量大的时候非常缓慢">mongodump 在数据量大的时候非常缓慢</a></h2>
-      <p class="excerpt">这边的解决方案是增加 --forceTableScan  –forceTableScan  Forces mongodump to scan the data store directly: typically, mongodump saves entries as they appear in the index of the _id field. Use –forceTableScan to skip the index and scan the data directly. Typi...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2017-11-28 21:10:00 +0800" class="post-list__meta--date date">2017-11-28</time> &#8226; <span class="post-list__meta--tags tags">mongo mongodump</span><a class="btn-border-small" href=/2017/11/mongodump-%E5%9C%A8%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E6%97%B6%E9%9D%9E%E5%B8%B8%E7%BC%93%E6%85%A2/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     

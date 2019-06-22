@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <title>Gao Conghui</title>
-  <meta name="description" content="一点资讯，视频爬虫，视频处理。">
+  <meta name="description" content="爬虫，视频处理">
   <meta name="author" content="Wei Wang">
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Gao Conghui">
-  <meta name="twitter:description" content="一点资讯，视频爬虫，视频处理。">
+  <meta name="twitter:description" content="爬虫，视频处理">
   
   <meta property="og:type" content="article">
   <meta property="og:title" content="Gao Conghui">
-  <meta property="og:description" content="一点资讯，视频爬虫，视频处理。">
+  <meta property="og:description" content="爬虫，视频处理">
   
   <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
   <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
@@ -51,7 +51,7 @@
         <span class="panel-cover__subtitle panel-subtitle">好好学习，天天向上</span>
         
         <hr class="panel-cover__divider" />
-        <p class="panel-cover__description">一点资讯，视频爬虫，视频处理。</p>
+        <p class="panel-cover__description">爬虫，视频处理</p>
         <hr class="panel-cover__divider panel-cover__divider--secondary" />
         
         
@@ -124,6 +124,13 @@
   <ol class="post-list">
     
     <li>
+      <h2 class="post-list__post-title post-title"><a href="/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/" title="访问 无头浏览器反爬与反反爬">无头浏览器反爬与反反爬</a></h2>
+      <p class="excerpt">总结一下最近做的无头浏览器（chrome headless 的检测以及反检测）。无头浏览器的检测应该是爬虫中非常重要的一块，一开始接触到的是 not-possible-to-block-chrome-headless 这个文章，大概是最初级的无头浏览器检测方案。不过在后续的爬虫中，有一种魔高一尺，道高一丈的感觉，陆续发现很多站点都能通过各种其他手法检测无头浏览器。再后来，看一些网站的js，发现了他们会对很多字段进行收集，都与fingerprintjs2 收集的差不多，才算是豁然开朗。故在此...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2019-06-22 08:00:00 +0800" class="post-list__meta--date date">2019-06-22</time> &#8226; <span class="post-list__meta--tags tags">spider chrome headless</span><a class="btn-border-small" href=/2019/06/%E6%97%A0%E5%A4%B4%E6%B5%8F%E8%A7%88%E5%99%A8%E5%8F%8D%E7%88%AC%E4%B8%8E%E5%8F%8D%E5%8F%8D%E7%88%AC/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
       <h2 class="post-list__post-title post-title"><a href="/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/" title="访问 scons 简单入门">scons 简单入门</a></h2>
       <p class="excerpt">简单入门hello worldscons由Sconstruct 作为入口，控制如何进行编译操作。Sconstruct 本身是一个python文件，故需要遵循python的语法，以及能使用一些python的方法。(如我们可以用print 来debug）这有一段很简单的hello.cpp#include &lt;iostream&gt;int main() {    std::cout &lt;&lt; "hello world" &lt;&lt; std::endl;}以及一个很简单的Sco...&hellip;</p>
       <div class="post-list__meta"><time datetime="2019-01-20 08:00:00 +0800" class="post-list__meta--date date">2019-01-20</time> &#8226; <span class="post-list__meta--tags tags">build scons</span><a class="btn-border-small" href=/2019/01/scons%E7%AE%80%E5%8D%95%E5%85%A5%E9%97%A8/>继续阅读</a></div>
@@ -183,13 +190,6 @@
       <h2 class="post-list__post-title post-title"><a href="/2018/04/pyspider%E7%AE%80%E6%9E%90/" title="访问 简析pyspider">简析pyspider</a></h2>
       <p class="excerpt">pyspider优势所在pyspider非常适合那种很小很杂的爬虫的管理，比如有100个小网站，规则又各不相同，我要获取他的一些很简单的内容，如标题，所有的图片，正文内容。他分为几个模块：scheduler，fetcher，processor，resultworker以及一个ui，前三者各自分离，用消息队列连接，因此很容易做成分布式（或者说设计之初就是为了分布式的）。scheduler了解scheduler之前，先了解两个概念，一个是project，代表着一个项目，如百度爬虫项目；一个是t...&hellip;</p>
       <div class="post-list__meta"><time datetime="2018-04-03 21:00:00 +0800" class="post-list__meta--date date">2018-04-03</time> &#8226; <span class="post-list__meta--tags tags">python pyspider</span><a class="btn-border-small" href=/2018/04/pyspider%E7%AE%80%E6%9E%90/>继续阅读</a></div>
-      <hr class="post-list__divider" />
-    </li>
-    
-    <li>
-      <h2 class="post-list__post-title post-title"><a href="/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/" title="访问 基于asyncio实现的异步协程爬虫">基于asyncio实现的异步协程爬虫</a></h2>
-      <p class="excerpt">前言以下内容是看500 lines or less中 A Web Crawler With asyncio Coroutines这个章节后做的一些记录。一个最简单的爬虫一个非常简单的get请求，爬取获取xkcd.com，import socketdef crawl():    sock = socket.socket()    sock.connect(('xkcd.com', 80))    request = 'GET / HTTP/1.0\r\nHost: xkcd.com\r\n\...&hellip;</p>
-      <div class="post-list__meta"><time datetime="2018-03-15 21:00:00 +0800" class="post-list__meta--date date">2018-03-15</time> &#8226; <span class="post-list__meta--tags tags">python asyncio</span><a class="btn-border-small" href=/2018/03/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%88%AC%E8%99%AB/>继续阅读</a></div>
       <hr class="post-list__divider" />
     </li>
     
